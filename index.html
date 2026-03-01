@@ -1,13 +1,1130 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>bobby.md</title>
-    <script type="module" crossorigin src="/assets/index-CgWI5ZKw.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-DODz6ESt.css">
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bobby Kenner</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    @font-face { font-family: "SuperSans"; src: url("fonts/SuperSans-Regular.otf") format("opentype"); font-weight: 400; font-display: swap; }
+    @font-face { font-family: "SuperSans"; src: url("fonts/SuperSans-Medium.otf") format("opentype"); font-weight: 500; font-display: swap; }
+    @font-face { font-family: "SuperSans"; src: url("fonts/SuperSans-SemiBold.otf") format("opentype"); font-weight: 600; font-display: swap; }
+    @font-face { font-family: "SuperSansMono"; src: url("fonts/SuperSansMono-Regular.otf") format("opentype"); font-weight: 400; font-display: swap; }
+    @font-face { font-family: "SuperSansMono"; src: url("fonts/SuperSansMono-Medium.otf") format("opentype"); font-weight: 500; font-display: swap; }
+
+    :root {
+      --bg-base:          #151413;
+      --bg-surface:       #1c1a18;
+      --bg-elevated:      #242220;
+      --text-primary:     #eaeaea;
+      --text-secondary:   #a3a3a3;
+      --text-muted:       #666;
+      --border:           #2e2a27;
+      --border-highlight: #4a4340;
+      --font-main:        "SuperSans", sans-serif;
+      --font-mono:        "SuperSansMono", monospace;
+      --transition:       .3s cubic-bezier(.2, .8, .2, 1);
+      --radius:           12px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 18px; -webkit-font-smoothing: antialiased; }
+    body { font-family: var(--font-main); font-weight: 400; line-height: 1.6; color: var(--text-primary); background-color: var(--bg-base); }
+
+    #cloud-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; width: 100%; height: 100%; animation: fadeIn 2s ease .2s both; }
+    #cloud-bg + .grain { position: fixed; inset: -100%; z-index: 1; pointer-events: none; width: 300%; height: 300%; opacity: .06; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)'/%3E%3C/svg%3E"); background-size: 180px 180px; }
+
+    section, footer { position: relative; z-index: 2; }
+    a { color: inherit; text-decoration: none; }
+
+    .container { width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 3rem; }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+
+    /* ── Hero ─────────────────────────────────────────── */
+    .hero { padding-top: 7rem; padding-bottom: 4rem; position: relative; z-index: 2; animation: fadeIn 1.4s ease .6s both; text-align: center; }
+
+    .hero-intro {
+      font-size: clamp(1.5rem, 2.4vw, 2.1rem);
+      font-weight: 400; letter-spacing: -.03em; line-height: 1.4;
+      color: var(--text-secondary); max-width: 48ch; margin: 0 auto 2.5rem;
+      text-align: center;
+    }
+
+    .hero-contact { display: flex; gap: 2rem; flex-wrap: wrap; }
+    .hero-contact-item { display: flex; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .78rem; color: var(--text-muted); transition: color var(--transition); }
+    .hero-contact-item:hover { color: var(--text-secondary); }
+    .hero-contact-item svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+    /* ── Cards ────────────────────────────────────────── */
+    #card-canvas { position: relative; z-index: 2; }
+
+    .card-group {
+      position: relative; height: 580px; overflow: visible;
+      animation: fadeIn .8s ease 1.1s both;
+    }
+
+    .s-card {
+      position: absolute;
+      width: 300px; height: 415px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, transparent 60%), var(--bg-surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.75rem;
+      text-align: left; cursor: grab; font-family: var(--font-main);
+      display: flex; flex-direction: column; justify-content: space-between;
+      user-select: none;
+      transition: background .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+      animation: fadeIn 1.2s ease both;
+    }
+    .s-card.dragging { cursor: grabbing; transition: none; }
+
+    .s-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: inherit;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 180px 180px;
+      opacity: 0.08;
+      pointer-events: none;
+    }
+    .s-card::after {
+      content: ''; position: absolute; inset: 5px;
+      border: 0.5px solid rgba(0,0,0,0.35);
+      border-radius: calc(var(--radius) - 5px);
+      pointer-events: none;
+    }
+    .s-card:nth-child(1) { transform: rotate(-2deg);   animation-delay: 1.4s; }
+    .s-card:nth-child(2) { transform: rotate(1.5deg);  animation-delay: 1.55s; }
+    .s-card:nth-child(3) { transform: rotate(-1deg);   animation-delay: 1.7s; }
+    .s-card:nth-child(4) { transform: rotate(2.5deg);  animation-delay: 1.85s; }
+    .s-card:nth-child(5) { transform: rotate(-1.5deg); animation-delay: 2.0s; }
+    .s-card:nth-child(6) { transform: rotate(2deg);    animation-delay: 2.15s; }
+    .s-card:nth-child(7) { transform: rotate(-2.5deg); animation-delay: 2.3s; }
+
+    .s-card:hover {
+      background: linear-gradient(145deg, rgba(255,255,255,0.07) 0%, transparent 60%), var(--bg-surface);
+      z-index: 10;
+    }
+
+    .s-card--visited { opacity: 0.55; }
+    .s-card--visited:hover { opacity: 0.75; }
+
+    .s-card__company {
+      font-family: var(--font-mono); font-size: .62rem;
+      letter-spacing: .08em; text-transform: uppercase;
+      color: var(--text-muted); margin-bottom: .6rem;
+    }
+
+    .s-card__title {
+      font-size: 1.15rem; font-weight: 400;
+      letter-spacing: -.02em; line-height: 1.35;
+      color: var(--text-secondary); flex: 1;
+    }
+
+    .s-card__glyph {
+      font-size: 1.4rem; color: var(--text-secondary);
+      display: flex; align-items: center; justify-content: center;
+      width: 1.8rem; height: 1.8rem; line-height: 1;
+      transition: transform .6s cubic-bezier(.2, .8, .2, 1);
+      transform-origin: center center; margin-top: 1.5rem;
+    }
+
+
+    /* ── Modal ────────────────────────────────────────── */
+    #modal { position: fixed; inset: 0; z-index: 200; background: var(--bg-base); opacity: 0; pointer-events: none; transition: opacity .28s ease; overflow: hidden; }
+    #modal.open { opacity: 1; pointer-events: all; }
+
+    #modal-close { position: fixed; top: 4rem; left: 4rem; background: none; border: none; padding: 0; color: var(--text-muted); cursor: pointer; z-index: 201; line-height: 1; transition: color var(--transition); }
+    #modal-close:hover { color: var(--text-primary); }
+    #modal-close i { font-size: 64px; display: block; }
+
+    .modal-inner { display: flex; height: 100vh; overflow: hidden; }
+
+    .modal-left { position: relative; overflow: hidden; width: 42%; flex-shrink: 0; border-right: 1px solid var(--border); padding: 5rem 4rem; display: flex; align-items: center; transition: background .28s ease; }
+    .modal-left::before {
+      content: ''; position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 180px 180px; opacity: 0.08; pointer-events: none;
+    }
+
+    #modal-title { font-size: clamp(1.6rem, 2.5vw, 2.5rem); font-weight: 500; letter-spacing: -.03em; line-height: 1.2; color: var(--text-primary); }
+    #modal-company { font-family: var(--font-mono); font-size: .65rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1rem; }
+
+    .modal-right { flex: 1; padding: 5rem 4rem; overflow-y: auto; display: flex; align-items: flex-start; }
+    #modal-content { width: 100%; }
+
+    @media (max-width: 640px) {
+      .modal-inner { flex-direction: column; overflow-y: auto; }
+      .modal-left { width: 100%; border-right: none; border-bottom: 1px solid var(--border); padding: 5rem 1.5rem 2rem; align-items: flex-start; }
+      .modal-right { padding: 2rem 1.5rem; overflow-y: visible; }
+    }
+
+    /* case study structure */
+    .cs-label {
+      font-family: var(--font-mono); font-size: .62rem;
+      letter-spacing: .08em; text-transform: uppercase;
+      color: var(--text-muted); margin-bottom: .5rem;
+      margin-top: 2.25rem;
+    }
+    .cs-label:first-child { margin-top: 0; }
+
+    .cs-body { font-size: .95rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: .25rem; }
+
+    .cs-callout { font-size: .95rem; color: var(--text-secondary); line-height: 1.7; border-left: 2px solid var(--border-highlight); padding-left: 1rem; margin-top: 2rem; }
+
+    .cs-divider { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+
+    .cs-img { border-radius: 8px; overflow: hidden; margin: 1.5rem 0; background: #0d0c0b; }
+    .cs-img img { width: 100%; display: block; opacity: .92; }
+    .cs-img-pair { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin: 1.5rem 0 .5rem; }
+    .cs-img-pair .cs-img { margin: 0; }
+    .cs-caption { font-family: var(--font-mono); font-size: .62rem; color: var(--text-muted); display: block; margin-bottom: 1.5rem; line-height: 1.55; }
+
+    .video-wrap { position: relative; cursor: pointer; background: #0d0c0b; border-radius: 8px; overflow: hidden; margin: 1.5rem 0; }
+    .video-wrap video { width: 100%; display: block; aspect-ratio: 16 / 9; object-fit: cover; opacity: .9; }
+    .play-btn { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); transition: background var(--transition), opacity .2s ease; }
+    .play-btn svg { width: 52px; height: 52px; filter: drop-shadow(0 2px 12px rgba(0,0,0,0.6)); transition: transform .15s ease-out; }
+    .video-wrap:hover .play-btn { background: rgba(0,0,0,0.1); }
+    .video-wrap:hover .play-btn svg { transform: scale(1.08); }
+    .play-btn.hidden { opacity: 0; pointer-events: none; }
+
+    /* ── Footer ───────────────────────────────────────── */
+    footer { position: fixed; bottom: 1.5rem; left: 1.5rem; right: 1.5rem; z-index: 2; display: flex; align-items: center; justify-content: space-between; animation: fadeIn 1s ease 2.6s both; }
+    .footer-name, .footer-contact { font-family: var(--font-mono); font-size: .68rem; color: var(--text-muted); letter-spacing: .04em; }
+    .footer-contact { display: flex; gap: 1.5rem; }
+    .footer-contact a { display: flex; align-items: center; gap: .4rem; color: var(--text-muted); transition: color var(--transition); }
+    .footer-contact a:hover { color: var(--text-secondary); }
+    .footer-contact svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+    /* ── About modal ──────────────────────────────────── */
+    #about-modal { position: fixed; inset: 0; z-index: 200; background: var(--bg-base); opacity: 0; pointer-events: none; transition: opacity .28s ease; }
+    #about-modal.open { opacity: 1; pointer-events: all; }
+    #about-modal-close { position: fixed; top: 4rem; left: 4rem; background: none; border: none; padding: 0; color: var(--text-muted); cursor: pointer; z-index: 500; line-height: 1; transition: color var(--transition); }
+    #about-modal-close:hover { color: var(--text-primary); }
+    #about-modal-close i { font-size: 64px; display: block; }
+
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; height: 100vh; width: 100vw; }
+    .about-quad { position: relative; overflow: hidden; background: var(--bg-surface); }
+    .about-quad-video video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) brightness(0.7); transition: filter .5s ease; }
+    #leaflet-map { width: 100%; height: 100%; }
+    .quad-label { position: absolute; bottom: 1.25rem; left: 1.25rem; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255,0.45); z-index: 1000; pointer-events: none; }
+    .leaflet-tooltip { background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-secondary); font-family: var(--font-mono); font-size: .65rem; letter-spacing: .04em; box-shadow: none; border-radius: 4px; padding: .25rem .5rem; }
+    .leaflet-tooltip::before { display: none; }
+
+    /* ── SYNTHIA Diagram ─────────────────────────────── */
+    .synthia-diagram { margin: 1.75rem 0; display: flex; flex-direction: column; align-items: flex-start; }
+    .sd-connector { color: rgba(255,255,255,0.25); font-size: 12px; padding-left: 18px; margin: 4px 0; line-height: 1; }
+    .sd-journey { display: flex; align-items: center; gap: 7px; }
+    .sd-journey-step { display: flex; flex-direction: column; gap: 4px; font-family: "SuperSansMono", monospace; color: rgba(163,163,163,0.75); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; border: 1px solid rgba(255,255,255,0.18); border-radius: 8px; padding: 8px 12px; background: rgba(255,255,255,0.04); }
+    .sd-journey-sublabel { font-family: "SuperSansMono", monospace; color: rgba(163,163,163,0.45); font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .sd-journey-arrow { font-size: 9px; opacity: 0.35; color: rgba(255,255,255,0.8); align-self: center; }
+    .sd-card { display: inline-block; border: 1px solid rgba(255,255,255,0.18); border-radius: 16px; padding: 16px 20px; background: rgba(255,255,255,0.04); }
+    .sd-card-title { font-family: "SuperSansMono", monospace; color: #eaeaea; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; display: block; margin-bottom: 10px; }
+    .sd-card-list { list-style: none; padding: 0; margin: 0; }
+    .sd-card-list li { font-family: "SuperSansMono", monospace; color: rgba(163,163,163,0.85); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.06em; display: flex; align-items: center; gap: 5px; margin-bottom: 5px; }
+    .sd-card-list li:last-child { margin-bottom: 0; }
+    .sd-card-list i { font-size: 11px; opacity: 0.5; flex-shrink: 0; }
+    .sd-line { stroke: rgba(255,255,255,0.12); stroke-width: 1; fill: none; }
+    .sd-node { fill: rgba(255,255,255,0.04); stroke: rgba(255,255,255,0.14); stroke-width: 1; }
+    .sd-node-planned { fill: rgba(255,255,255,0.03); stroke: rgba(255,255,255,0.13); stroke-width: 1; stroke-dasharray: 4 3; }
+    .sd-core { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.28); stroke-width: 1; }
+    .sd-lens { fill: rgba(255,255,255,0.05); stroke: rgba(255,255,255,0.16); stroke-width: 0.75; }
+    .sd-lens-planned { fill: rgba(255,255,255,0.03); stroke: rgba(255,255,255,0.13); stroke-width: 0.75; stroke-dasharray: 3 2; }
+    .sd-lbl { font-family: "SuperSansMono", monospace; fill: rgba(163,163,163,0.85); text-transform: uppercase; letter-spacing: 0.06em; }
+    .sd-sub { font-family: "SuperSansMono", monospace; fill: rgba(102,102,102,0.9); letter-spacing: 0.04em; }
+    .sd-core-lbl { font-family: "SuperSansMono", monospace; fill: #eaeaea; letter-spacing: 0.06em; }
+    .sd-lens-lbl { font-family: "SuperSansMono", monospace; fill: rgba(163,163,163,0.75); letter-spacing: 0.04em; }
+    .sd-dot { fill: rgba(255,255,255,0.6); }
+
+    /* ── Scrollable image frame ─────────────────────────── */
+    .cs-img-frame {
+      position: relative;
+      max-height: 500px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      border-radius: 8px;
+      background: #0d0c0b;
+      margin: 1.5rem 0;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.15) transparent;
+    }
+    .cs-img-frame img { width: 100%; display: block; opacity: .92; cursor: zoom-in; }
+    .cs-img-frame::after {
+      content: '';
+      position: sticky;
+      bottom: 0;
+      display: block;
+      height: 56px;
+      margin-top: -56px;
+      background: linear-gradient(to top, rgba(13,12,11,0.75), transparent);
+      pointer-events: none;
+    }
+
+    /* ── Lightbox ───────────────────────────────────────── */
+    img[data-lightbox] { cursor: zoom-in; }
+    #lb-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.88); z-index: 9999;
+      align-items: center; justify-content: center;
+      padding: 24px; cursor: zoom-out;
+    }
+    #lb-overlay.open { display: flex; }
+    #lb-overlay img {
+      max-width: 100%; max-height: 100%;
+      object-fit: contain; border-radius: 6px;
+      box-shadow: 0 8px 48px rgba(0,0,0,0.7);
+    }
+    /* ── About Modal ──────────────────────────────────── */
+    #about-modal {
+      position: fixed; inset: 0; z-index: 300;
+      background: var(--bg-base);
+      opacity: 0; pointer-events: none;
+      transition: opacity .28s ease;
+    }
+    #about-modal.open { opacity: 1; pointer-events: all; }
+
+    #about-modal-close {
+      position: fixed; top: 4rem; left: 4rem;
+      background: none; border: none; padding: 0;
+      color: var(--text-muted); cursor: pointer;
+      z-index: 500; line-height: 1;
+      transition: color var(--transition);
+    }
+    #about-modal-close:hover { color: var(--text-primary); }
+    #about-modal-close i { font-size: 64px; display: block; }
+
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr; height: 100vh; width: 100vw;
+    }
+
+    .about-quad { position: relative; overflow: hidden; background: var(--bg-surface); }
+
+    .about-quad-video video {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; filter: grayscale(1) brightness(0.7);
+      transition: filter .5s ease;
+    }
+
+    #leaflet-map { width: 100%; height: 100%; }
+
+    #map-reset {
+      position: absolute; bottom: 1.25rem; right: 1.25rem; z-index: 1000;
+      background: transparent; border: none;
+      color: var(--text-muted); font-size: 1.8rem; line-height: 1;
+      width: 3rem; height: 3rem; border-radius: 6px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity .2s ease, color var(--transition);
+    }
+    #map-reset.visible { opacity: 1; pointer-events: auto; }
+    #map-reset:hover { color: var(--text-primary); }
+
+    .quad-label {
+      position: absolute; bottom: 1.25rem; left: 1.25rem;
+      font-family: var(--font-mono); font-size: .68rem;
+      letter-spacing: .06em; text-transform: uppercase;
+      color: rgba(255,255,255,0.45); z-index: 1000; pointer-events: none;
+    }
+
+    .leaflet-tooltip {
+      background: var(--bg-elevated); border: 1px solid var(--border);
+      color: var(--text-secondary); font-family: var(--font-mono);
+      font-size: .65rem; letter-spacing: .04em; box-shadow: none;
+      border-radius: 4px; padding: .25rem .5rem;
+    }
+    .leaflet-tooltip::before { display: none; }
+
+  </style>
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+</head>
+
+<body>
+  <canvas id="cloud-bg" aria-hidden="true"></canvas>
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <p class="hero-intro">Bobby is a product and systems designer based in New York. 14 years between Grubhub, Grammarly, and Superhuman.</p>
+    </div>
+  </section>
+
+  <!-- Cards -->
+  <div id="card-canvas">
+    <div class="card-group">
+
+      <button class="s-card" data-pool="cookbook">
+        <div>
+          <div class="s-card__company">Grubhub</div>
+          <span class="s-card__title">Cookbook — one design system for three brands and every platform.</span>
+        </div>
+        <span class="s-card__glyph"><i class="ph-light ph-atom"></i></span>
+      </button>
+
+      <button class="s-card" data-pool="sunburst">
+        <div>
+          <div class="s-card__company">Grubhub</div>
+          <span class="s-card__title">Project Sunburst — the year Grubhub caught up on mobile.</span>
+        </div>
+        <span class="s-card__glyph"><i class="ph-light ph-flower-lotus"></i></span>
+      </button>
+
+      <button class="s-card" data-pool="gds">
+        <div>
+          <div class="s-card__company">Grammarly</div>
+          <span class="s-card__title">Grammarly Design System — making an invisible system accessible to the org.</span>
+        </div>
+        <span class="s-card__glyph"><i class="ph-light ph-blueprint"></i></span>
+      </button>
+
+      <button class="s-card" data-pool="trust">
+        <div>
+          <div class="s-card__company">Grammarly</div>
+          <span class="s-card__title">Privacy as a platform — consent, control, and enterprise data governance at 40M users.</span>
+        </div>
+        <span class="s-card__glyph"><i class="ph-light ph-hand-eye"></i></span>
+      </button>
+
+      <button class="s-card" data-pool="synthia">
+        <div>
+          <div class="s-card__company">Superhuman</div>
+          <span class="s-card__title">SYNTHIA — synthetic user evaluation, surfaced wherever designers work.</span>
+        </div>
+        <span class="s-card__glyph"><i class="ph-light ph-brain"></i></span>
+      </button>
+
+      <button class="s-card" data-pool="auth">
+        <div>
+          <div class="s-card__company">Superhuman</div>
+          <span class="s-card__title">One identity layer for three products in motion. id.superhuman.com.</span>
+        </div>
+        <span class="s-card__glyph"><i class="ph-light ph-fingerprint"></i></span>
+      </button>
+
+
+    </div>
+  </div>
+
+  <!-- About Modal -->
+  <div id="about-modal" aria-hidden="true">
+    <button id="about-modal-close" aria-label="Close">
+      <i class="ph-light ph-arrow-bend-up-left"></i>
+    </button>
+    <div class="about-grid">
+      <div class="about-quad" id="quad-map">
+        <div id="leaflet-map"></div>
+        <button id="map-reset" aria-label="Reset map view"><i class="ph-light ph-arrow-counter-clockwise"></i></button>
+      </div>
+      <div class="about-quad about-quad-video">
+        <video src="video/bobby-clip.mp4" muted playsinline preload="auto" style="object-fit: cover; object-position: center 40%; width: 100%; height: 100%;"></video>
+      </div>
+      <div class="about-quad about-quad-video">
+        <video src="video/sandra-matilda-clip.mp4" muted playsinline preload="auto"></video>
+      </div>
+      <div class="about-quad about-quad-video">
+        <video src="video/building-for-matilda-clip.mp4" muted playsinline preload="auto"></video>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <span class="footer-name">Bobby Kenner · <button id="card-about" style="background:none;border:none;padding:0;color:var(--text-muted);font:inherit;cursor:pointer;transition:color var(--transition)" onmouseover="this.style.color='var(--text-secondary)'" onmouseout="this.style.color='var(--text-muted)'">About</button></span>
+    <div class="footer-contact">
+      <a href="mailto:kennerdesign@gmail.com">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+        kennerdesign@gmail.com
+      </a>
+      <a href="tel:+14013017416">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.88 13.4a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.99 2.7h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        (401) 301-7416
+      </a>
+    </div>
+  </footer>
+
+  <!-- Project modal -->
+  <div id="modal" aria-hidden="true">
+    <button id="modal-close" aria-label="Close">
+      <i class="ph-light ph-arrow-bend-up-left"></i>
+    </button>
+    <div class="modal-inner">
+      <div class="modal-left">
+        <div>
+          <div id="modal-company" hidden></div>
+          <div id="modal-title"></div>
+        </div>
+      </div>
+      <div class="modal-right"><div id="modal-content"></div></div>
+    </div>
+  </div>
+
+
+  <!-- ── Content pools ──────────────────────────────────── -->
+
+  <div id="pool-synthia" hidden
+    data-title="SYNTHIA — synthetic user evaluation, surfaced wherever designers work."
+    data-company="Superhuman">
+
+    <p class="cs-body">The question I kept coming back to: what would it look like if the same knowledge that informs a senior design review — heuristics, accessibility standards, your actual design system — was available on demand, directly in the canvas, before anything went to engineering?</p>
+
+    <p class="cs-label">What it does</p>
+    <p class="cs-body">SYNTHIA runs five evaluation lenses: your actual design tokens and component library, WCAG accessibility checks, Nielsen's ten usability heuristics, a taxonomy of 26 UI traps and dark patterns, and synthetic users — personas built from real UXR behavioral data. A knowledge worker and a student reading your design, first-person, reacting to what they see. That last one tends to be the most interesting.</p>
+    <p class="cs-body">Two agentic modes, both grounded in the same idea: only automate what doesn't require judgment. Mechanical issues — wrong token, contrast fail, font size below threshold — get fixed directly in the document. One click per finding, or batch the whole lot. Judgment calls — heuristic violations, dark patterns, persona reactions — get posted as comments pinned to the exact node in the canvas. You shouldn't auto-fix what a human needs to review.</p>
+    <p class="cs-body">The Figma plugin is the primary surface, but the same evaluation engine also ships as a Claude skill for AI-native workflows and a Go agent for document contexts. Consistent command design across all three — one engine, wherever you're working.</p>
+
+    <div class="video-wrap">
+      <video src="video/synthia-figma.mp4" muted playsinline preload="metadata"></video>
+      <div class="play-btn"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
+    </div>
+
+    <p class="cs-label">Outcomes</p>
+    <p class="cs-body">Won "Most Innovative" at Superhuman's global hackathon — 200+ entries. Published to the org plugin library. First designer to demo a coded prototype org-wide.</p>
+
+
+    <hr class="cs-divider">
+
+    <p class="cs-label">What's next</p>
+    <p class="cs-body">The vision was a consistent evaluation layer across the entire product lifecycle — the same quality bar whether you're writing a spec, designing in Figma, reviewing code, or shipping to production. The Figma plugin was the proof of concept. The engine was always meant to go further.</p>
+
+  </div>
+
+  <div id="pool-auth" hidden
+    data-title="One identity layer for three products in motion. id.superhuman.com."
+    data-company="Superhuman">
+
+    <p class="cs-body">Right after the Coda acquisition, the identity team had one job: build id.superhuman.com — a single auth surface for all sign-in and sign-up traffic across Grammarly, Coda, and Superhuman Mail. We started before the brand existed.</p>
+
+    <p class="cs-label">Research + architecture</p>
+    <p class="cs-body">Before drawing anything I mapped how other multi-product platforms handle this — Disney, Microsoft, Meta, Atlassian. Disney was the clearest influence: one email field that routes to the right place, white-labeled across brands. Atlassian was the closest structural model — same auth UI, branding switch per product.</p>
+    <p class="cs-body">Grammarly had two separate modals that couldn't tell if you were new or returning. The goal was simpler: type your email once, the system figures out where you go.</p>
+
+    <div class="cs-img"><img src="img/superhuman-auth-research.jpg" alt="Competitive analysis — Disney, Microsoft, Meta, Atlassian multi-product auth patterns" loading="lazy"></div>
+
+    <p class="cs-body">The architecture we landed on was hub-and-spoke — id.superhuman.com routes and serves each product brand, but brands can't talk to each other. I pushed for something more integrated; most traffic was going to Grammarly and a direct Grammarly-to-Coda path seemed more natural than sending someone back up to the parent. Hub-and-spoke was the right call for where engineering was at the time.</p>
+
+    <div class="cs-img"><img src="img/superhuman-auth-definition-model.jpg" alt="Hub-and-spoke identity model — one auth surface, three branded products" loading="lazy"></div>
+
+    <p class="cs-label">Design</p>
+    <p class="cs-body">The only brand signal I had when I started was "it'll be purple." So the first visual direction came from the product itself — multi-turn interactions, chip-style controls, nothing stacked. Not standard sign-in UI. More like how Superhuman naturally behaves. I imagined those chip patterns eventually contributing back to the design system.</p>
+    <p class="cs-body">I built a clickable prototype with developer controls, test accounts, and milestone staging across four brand contexts: Genesis (the internal codename), Grammarly, Coda, and Superhuman Mail. Any email from any existing user database routed correctly. That prototype was the artifact that got engineering aligned.</p>
+
+    <div class="cs-img-pair">
+      <div class="cs-img"><img src="img/superhuman-auth-rev1.jpg" alt="Visual design rev 1 — net-new unified auth UI, before brand assets existed" loading="lazy"></div>
+      <div class="cs-img"><img src="img/superhuman-auth-rev2.jpg" alt="Visual design rev 2 — brand starting to land, gradients, more airy" loading="lazy"></div>
+    </div>
+
+    <p class="cs-body">As the brand got closer, the constraint became clear: don't disrupt the Grammarly funnel. We pulled back from the pure identifier-first model — separate sign-in and sign-up flows, brought closer together. I worked with Orr — who was connecting auth into the full Superhuman.com experience — to pull all our explorations into one view. That coordination ended up becoming the CUJ (Critical User Journeys) playbook, which the org eventually adopted as the standard for measuring experience quality.</p>
+
+    <div class="cs-img"><img src="img/superhuman-auth-converged.jpg" alt="Converged direction — familiar Grammarly UX carrying the Superhuman brand" loading="lazy"></div>
+
+    <p class="cs-body">The last piece was active session transfer. Old model: enter a Grammarly email, get sent to Grammarly to auth, come back to Superhuman. New model: detect the existing session on entry, transfer it, sign the user in directly. Recognized account — one tap. Returning session — auto-redirect, no UI at all.</p>
+
+    <div class="video-wrap">
+      <video src="video/superhuman-auth-interactions.mp4" muted playsinline preload="metadata"></video>
+      <div class="play-btn"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
+    </div>
+
+    <p class="cs-label">Outcomes</p>
+    <p class="cs-body">Launched October 2025. Engineering source of truth from first sketch through launch — every state mapped, every error path defined.</p>
+  </div>
+
+  <div id="pool-gds" hidden
+    data-title="GDS v1 — making an invisible design system accessible to the org."
+    data-company="Grammarly">
+
+    <p class="cs-body">Grammarly had a design system — it just lived entirely in code. The Lemma Design System was a robust set of tokens and components deeply integrated into SDUI, Grammarly's server-driven UI platform that delivered a consistent experience across browser extensions and its emerging desktop surfaces. It worked. But as Grammarly expanded to new platforms, the design decisions were entangled in SDUI in ways that made change expensive. The design org was small when we started — closer to ten people — but growing fast, and there was no Figma library, no documentation, no shared way to access or reason about what was already built.</p>
+    <p class="cs-body">Mark and I were brought in by Florian — the sole designer on the systems team at the time — to help scale it. We wanted to redesign things. Florian wanted to redesign things. But the risk of breaking changes in a system this tightly coupled was real. So we made a different call: put the creative ambitions aside and build the infrastructure around what already worked. Figma components that mapped to what was in code. Token naming conventions. Documentation. A way for designers and engineers to access the system without depending on the systems team for every decision. This was reactive work by necessity — the system was already load-bearing, and our job was to make it legible, not reinvent it.</p>
+
+    <p class="cs-label">Foundations</p>
+    <p class="cs-body">The approach was to build on what already had traction, not replace it. Foundations first. The color palette was consolidated — before, every product had accumulated its own sprawl of shades with no naming convention or hierarchy.</p>
+
+    <div class="cs-img-pair">
+      <div class="cs-img"><img src="img/gds-v1/color-palette-before.png" alt="Color palette before — fragmented, inconsistent across products" loading="lazy"></div>
+      <div class="cs-img"><img src="img/gds-v1/color-palette-after.png" alt="Color palette after — consolidated, organized by hue with consistent steps" loading="lazy"></div>
+    </div>
+    <span class="cs-caption">Before and after — palette consolidation from product sprawl to a structured core</span>
+
+    <p class="cs-body">Above the core palette: a semantic layer. Colors named by role, not value — Surface, Content, Boundaries — each mapped to a four-part token convention: Mode / Context / Role / Variant. Future-proofed for rebrands by design.</p>
+
+    <div class="cs-img"><img src="img/gds-v1/token-convention.png" alt="Four-part token naming convention — Mode / Context / Role / Variant" loading="lazy"></div>
+    <span class="cs-caption">Token naming convention — Light / Interface / Interactive Branded / Primary</span>
+
+    <div class="cs-img"><img src="img/gds-v1/semantic-palette.png" alt="Semantic color palette — Base context, Surface / Content / Boundaries" loading="lazy"></div>
+    <span class="cs-caption">Semantic palette — Base context mapped to Surface, Content, and Boundaries roles</span>
+
+    <p class="cs-body">Spacing and radius scales followed the same logic — named tokens, consistent steps, documented usage rules.</p>
+
+    <div class="cs-img-pair">
+      <div class="cs-img"><img src="img/gds-v1/spacing-scale.png" alt="Spacing scale — visual representation from space-quarter to space-20" loading="lazy"></div>
+      <div class="cs-img"><img src="img/gds-v1/spacing-tokens.png" alt="Spacing token names — space-quarter through space-20 with pixel values" loading="lazy"></div>
+    </div>
+    <span class="cs-caption">Spacing scale — visual and named tokens from 1px to 80px</span>
+
+    <p class="cs-label">Components</p>
+    <p class="cs-body">The Figma component library was restructured from the ground up — layer trees flattened, everything renamed for findability. Before: components buried under category group names that matched no one's mental model. After: flat, alphabetical, searchable.</p>
+
+    <div class="cs-img"><img src="img/gds-v1/component-discoverability.png" alt="Component naming — before nested hierarchy, after flat and discoverable" loading="lazy"></div>
+    <span class="cs-caption">Improved discoverability — flat naming over nested category groups</span>
+
+    <p class="cs-body">Accessibility was baked in. Color contrast was updated across the component set — buttons, banners, form controls — and documented so engineering could implement with confidence.</p>
+
+    <div class="cs-img"><img src="img/gds-v1/color-contrast.png" alt="Color contrast changes — before and after across buttons, chips, and text fields" loading="lazy"></div>
+    <span class="cs-caption">Color contrast updates — before and after across buttons, notification chips, and inputs</span>
+
+    <p class="cs-body">Variant matrices mapped 1:1 to what was in code. The docs site had standardized templates so contributors could add pages without involving the systems team.</p>
+
+    <div class="cs-img"><img src="img/gds-v1/docs-and-figma.png" alt="Docs site alongside Figma component library — Button page with usage, principles, and variants" loading="lazy"></div>
+    <span class="cs-caption">Documentation alongside components — usage guidelines, principles, and Figma variants in sync</span>
+
+    <p class="cs-label">Community + adoption</p>
+    <p class="cs-body">Governance mattered as much as the components. Formal contribution process, review criteria, and design standards. Friends of GDS embedded champions across product teams — designers who could answer questions locally and reduce dependence on the systems team for every decision.</p>
+
+    <div class="cs-img"><img src="img/gds-v1/gds-release-roadshow.jpg" alt="GDS v1 release roadshow" loading="lazy"></div>
+    <span class="cs-caption">Release roadshow — org-wide launch presentation for GDS v1</span>
+
+    <p class="cs-label">Outcomes</p>
+    <p class="cs-body">Adopted across the org. Fragmentation reduced. The system survived the Superhuman acquisition and a full brand overhaul — the token names held. That was the real test.</p>
+
+    <p class="cs-label">Card systematization</p>
+    <p class="cs-body">After shipping GDS v1, the next expansion was suggestion cards — Grammarly's most complex and most-seen component, grown independently across surfaces with no shared model. The work started with a knowledge-share session: which clients use which cards, what the differences were, and what the SDUI-to-SCA architecture transition meant for the component going forward.</p>
+
+    <div class="cs-img"><img src="img/card-systematization/cards-1-knowledge-share.jpg" alt="Knowledge share session — which clients use which cards and the SDUI to SCA transition" loading="lazy"></div>
+    <span class="cs-caption">Discovery — which clients use which cards, and the architecture context</span>
+
+    <p class="cs-body">From there, an inventory: every existing card state documented across surfaces — extension popover, desktop popover (two trigger modes), multi-suggestion variant, native editor sidebar, Google Docs sidebar. The same suggestion data, rendered differently depending on where you were.</p>
+
+    <div class="cs-img"><img src="img/card-systematization/cards-2-inventory.jpg" alt="Card inventory — every existing card state across all surfaces and trigger modes" loading="lazy"></div>
+    <span class="cs-caption">Inventory — every existing card state across surfaces</span>
+
+    <p class="cs-body">With the inventory done, we modeled the structural architecture. Four container types — contextual single-suggestion popover, fixed single-suggestion popover, multi-suggestion popover, multi-suggestion sidebar — each broken into layered sub-components: Nav Bar, Card (Header, Content, Action Bar), Footer. Visualized as both a flat diagram and an exploded layer stack.</p>
+
+    <div class="cs-img"><img src="img/card-systematization/cards-3-schematics.jpg" alt="Card schematics — four container types with exploded layer architecture" loading="lazy"></div>
+    <span class="cs-caption">Schematics — four container types, exploded layer architecture</span>
+
+    <p class="cs-body">The proposed direction: one unified design for all four delivery types, using the same component model and sub-component structure adapted to each context.</p>
+
+    <div class="cs-img"><img src="img/card-systematization/cards-4-proposed.jpg" alt="Proposed direction — unified card design across single-suggestion popover, multi-suggestion popover, and sidebar" loading="lazy"></div>
+    <span class="cs-caption">Proposed direction — unified design across all delivery types</span>
+
+    <p class="cs-body">The goal was to set a clear direction and break each delivery surface down into its generic sub-components — Nav Bar, Card, Action Bar, Header, Footer — so they could be documented into GDS and reused across the product. I left the team with the plan and the schematics and went on paternity leave. When I came back, I moved into a product design role on the Trust team — a lateral move to fill a business need — and stayed close to GDS as a contributor, eventually being featured in the Token Times for contributing the Verification Code component.</p>
+
+    <div class="cs-img"><img src="img/gds-v1/gds-adoption.jpg" alt="Token Times — Bobby Kenner featured for contributing the Verification Code component" loading="lazy"></div>
+    <span class="cs-caption">Token Times — featured for contributing the Verification Code component</span>
+
+  </div>
+
+  <div id="pool-trust" hidden
+    data-title="Privacy as a platform — consent, control, and enterprise data governance at 40M users."
+    data-company="Grammarly">
+
+    <div class="cs-img"><img src="ai-trust-framework.png" alt="Privacy throughout the Feature Lifecycle — ensure transparency, provide intuitive controls, honor consent, respect the right to be forgotten" loading="lazy"></div>
+
+    <p class="cs-body">As Grammarly moved upmarket and started shipping generative AI features fast, privacy went from being a legal checkbox to being a real product problem. Consent flows were inconsistent across teams. Settings were scattered and buried. Enterprise customers needed data sovereignty. And every new AI feature meant explaining to users what was being collected and why — in a way they'd actually trust.</p>
+    <p class="cs-body">The question wasn't how to add consent UI. It was how to make privacy a platform that the whole org could build on.</p>
+
+    <p class="cs-label">Three surfaces</p>
+
+    <div class="cs-img"><img src="img/privacy-hub/Home.png" alt="Privacy Hub home — data-first privacy controls" loading="lazy"></div>
+
+    <p class="cs-body"><strong>Privacy Hub</strong> — the idea was to flip the model. Instead of toggling features on and off, organize everything around data. What's collected, what it's used for, who has access. Features are downstream of data — turn off a data category and the features that depend on it respond. Activity journal, data download, granular deletion. "Right to be forgotten" made real.</p>
+    <div class="cs-img-pair">
+      <div class="cs-img"><img src="img/privacy-hub/Communication audience.png" alt="Privacy Hub — data category detail" loading="lazy"></div>
+      <div class="cs-img"><img src="img/privacy-hub/Activity journal.png" alt="Privacy Hub — activity journal" loading="lazy"></div>
+    </div>
+
+    <p class="cs-body"><strong>CMP (Consent Management Platform)</strong> — a plug-in framework for product teams. Give us a feature name, a data list, and a usage explanation. We render the consent modal, the opt-out flow, the in-product invitation, the admin controls — same trust pillars and data language every time. It survived a major pivot (tone personalization → AI training controls) and extended from individual users all the way to org admins.</p>
+    <div class="cs-img-pair">
+      <div class="cs-img"><img src="img/cmp/Component - Feature setting.png" alt="CMP — feature consent toggle" loading="lazy"></div>
+      <div class="cs-img"><img src="img/cmp/Component - Tailored assitance consent modal.png" alt="CMP — consent modal" loading="lazy"></div>
+    </div>
+    <div class="cs-img"><img src="img/cmp/admins/Settings.png" alt="CMP — enterprise admin view" loading="lazy"></div>
+
+    <p class="cs-body"><strong>BYOK (Bring Your Own Key)</strong> — enterprise key management. Customers control their own encryption keys, reducing Grammarly's access to data at rest. The design challenge was making a cryptographic control feel legible to a legal or IT buyer who doesn't think in encryption terms.</p>
+
+    <p class="cs-label">Outcomes</p>
+    <p class="cs-body">Privacy became a first-class surface — its own nav item, not a buried subsection. The CMP framework scaled across product teams without needing design on every feature. BYOK opened enterprise procurement conversations that wouldn't have happened otherwise. The patterns showed up again in the Genesis platform work at Superhuman.</p>
+  </div>
+
+  <div id="pool-cookbook" hidden
+    data-title="Cookbook — one design system for three brands and every platform."
+    data-company="Grubhub">
+
+    <p class="cs-body">Three brands, same product. Grubhub, Seamless, and Eat24 shared most of their UI but had no shared system. Components were duplicated, patterns drifted, every team solving the same problems independently. The first step: centralize into a living style guide that could serve all three brands without losing their identity.</p>
+    <p class="cs-body">Grubhub didn't have a systems-first design culture when we started. Cookbook helped create one. Over time the system became a driver of product and design strategy — not just a repository of decisions that had already been made elsewhere.</p>
+
+    <p class="cs-label">Foundation</p>
+    <p class="cs-body">The system hierarchy came from interviews — how designers and engineers actually started features, where they got stuck, what information they wished they had. Those conversations shaped every structural decision.</p>
+
+    <div class="cs-img" style="aspect-ratio: 2674 / 1504; border-radius: 8px 8px 0 0;"><img src="img/cookbook/stakeholder-interviews.png" alt="Stakeholder interview guide" loading="lazy" style="height: 100%; object-fit: cover; object-position: top;"></div>
+    <span class="cs-caption">Interview guide — mapping how teams build features and where they get stuck</span>
+
+    <div class="cs-img"><img src="img/cookbook/development-plan.png" alt="Living Style Guide 2.0 development plan" loading="lazy"></div>
+    <span class="cs-caption">Development plan — roadmap for building and documenting the living style guide</span>
+
+    <p class="cs-label">What it contained</p>
+    <p class="cs-body">Cookbook covered every layer of the stack. Style foundations: typography, semantic and perceptual color (light and dark), shape, dimension, line, icons, sound. Layout: device breakpoints, units and measurements, grid, spacing, page templates. Accessibility guides. 45+ cross-platform components.</p>
+
+    <div class="cs-img"><img src="img/cookbook/style-typography.png" alt="Typography scale — phone, tablet, and stand scales" loading="lazy"></div>
+    <span class="cs-caption">Type scale — phone, tablet, and stand contexts, each with distinct size, line-height, and letter-spacing specs</span>
+
+    <div class="cs-img"><img src="img/cookbook/layout-space.png" alt="Spacing system" loading="lazy"></div>
+    <span class="cs-caption">Spacing system — scale and usage rules across all platforms</span>
+
+    <p class="cs-body">Above the component layer: Strategies — six higher-order docs covering how components work together in real product scenarios. Navigation, Search Navigation, Sheets vs. Dialogs, Forms, Connectivity & Outages, Delight. Not just what to use — when and why.</p>
+
+    <div class="cs-img"><img src="img/cookbook/strategies-delight.png" alt="Delight strategy doc" loading="lazy"></div>
+    <span class="cs-caption">Delight strategy — conceptual frameworks from social science and product management applied to product design</span>
+
+    <div class="cs-img"><img src="img/cookbook/a11y-dynamic-type.png" alt="Dynamic Type accessibility guide" loading="lazy"></div>
+    <span class="cs-caption">Dynamic Type — accessibility guide for adapting type across iOS and Android size categories</span>
+
+    <p class="cs-body">Contribution had a formal five-stage process — Intro, Discover, Suggest, Support, Document — so any team could add patterns without bypassing quality standards or bottlenecking the systems team. We negotiated a 15% engineering tech debt budget with leadership to fund cross-platform delivery. Governance designed in, not bolted on.</p>
+
+    <p class="cs-label">Adoption</p>
+    <p class="cs-body">At 50+ designers, a system needs more than good components — it needs education. I structured onboarding around the questions people actually ask: what problem does this solve, what is it, how do I use it.</p>
+
+    <div class="cs-img"><img src="img/cookbook/inflection-point.png" alt="The case for a design system" loading="lazy"></div>
+    <span class="cs-caption">The case for a design system — the team scale inflection point where shared systems become critical</span>
+
+    <div class="cs-img"><img src="img/cookbook/what-can-i-use.png" alt="Getting started with Cookbook" loading="lazy"></div>
+    <span class="cs-caption">Getting started — three entry points: Figma libraries, component docs, and the Cookbook Figma project</span>
+
+    <p class="cs-body">Impact tracked through quarterly surveys — designer-to-engineer communication, documentation quality, development velocity. Scores improved every quarter.</p>
+
+    <div class="cs-img"><img src="img/cookbook/survey-1.png" alt="Quarterly survey results" loading="lazy"></div>
+    <span class="cs-caption">"The pattern library helps me communicate with the development team" — survey scores, quarter over quarter</span>
+
+    <p class="cs-label">Outcomes</p>
+    <p class="cs-body">Two years in: 39 cross-platform patterns, a full year of engineering time saved, conversion goals exceeded. Experiments informed by Cookbook standards drove +5,260 DAGs and +$57.6M in annual restaurant revenue.</p>
+
+    <div class="cs-img"><img src="img/cookbook/measuring impact 2 years.png" alt="Two-year impact scorecard" loading="lazy"></div>
+    <span class="cs-caption">Two-year scorecard — patterns, time savings, and conversion goals</span>
+
+    <p class="cs-body">Experiments informed by Cookbook standards contributed +5,260 daily active guests (DAGs) and +$57.6M in annual restaurant revenue — the largest experiment wins in Grubhub's history at the time.</p>
+
+    <p class="cs-label">Scale</p>
+    <p class="cs-body">Project Sunburst expanded Cookbook from the consumer app into the full three-sided marketplace — Diner, Restaurant, and Driver. The driver app lives in a car. The restaurant app lives in a busy kitchen. The system adapted: typography scales and control sizes tuned to each environment.</p>
+
+    <div class="cs-img"><img src="img/cookbook/flagship-products.png" alt="Three flagship products — Diner, Restaurant, Driver" loading="lazy"></div>
+    <span class="cs-caption">Three-sided marketplace — Diner, Restaurant, and Driver, each with their own product context</span>
+
+    <div class="cs-img"><img src="img/cookbook/environ-differences.png" alt="Environmental adaptation — car and kitchen contexts" loading="lazy"></div>
+    <span class="cs-caption">Environmental adaptation — type scales and control sizes adjusted for where the product is actually used</span>
+
+    <p class="cs-body">Product sub-libraries — Diner, Restaurant, Care, Driver — extended Core with app-level components. Not just overrides: a reorder card in the Diner library knew about ratings, ETAs, and delivery fees. The same structure in Care knew about case status and support context. Core components wired to real product data.</p>
+    <p class="cs-body">Web, iOS, and Android — all consistent. iOS and Android each had Storybook-style component libraries so engineering could test states and validate changes without opening Figma.</p>
+
+    <div class="cs-img"><img src="img/cookbook/diner-reorder-cards.png" alt="Diner reorder cards" loading="lazy"></div>
+    <span class="cs-caption">Diner reorder cards — two variants with documented guidance on when to use each</span>
+
+    <div class="cs-img"><img src="img/cookbook/diner-active-order-footer.png" alt="Diner active order footer" loading="lazy"></div>
+    <span class="cs-caption">Active order footer — persistent order status, follows the diner through the app</span>
+
+    <div class="cs-img"><img src="img/cookbook/care-data-capture.png" alt="Care data capture components" loading="lazy"></div>
+    <span class="cs-caption">Care data capture — Core input components wired to customer service context</span>
+
+    <p class="cs-label">Legacy</p>
+    <p class="cs-body">The system outlasted any single project. But the longer-lasting influence was the people. Every designer who worked on Cookbook went on to lead design systems at other companies — Spotify, Pinterest, Nike, Zendesk, and others. That's the kind of influence that doesn't show up in a component count.</p>
+  </div>
+
+  <div id="pool-sunburst" hidden
+    data-title="Project Sunburst — the year Grubhub caught up on mobile."
+    data-company="Grubhub">
+
+    <p class="cs-body">DoorDash and Uber Eats were pulling ahead — not just visually, but structurally. Grubhub's apps were organized around how the product worked, not how people order food. Navigation cluttered with tabs that didn't earn their place. Pickup buried. Reorder buried. Every action a full-page navigation push. The head of product made the call: two designers, shape the redesign. I'd never heard that mandate before.</p>
+
+    <div class="cs-img"><img src="img/sunburst/IMG_0583.JPG" alt="The room — aligning with Phil (head of product) on the Sunburst direction" loading="lazy"></div>
+
+    <p class="cs-label">The room</p>
+    <p class="cs-body">The systems team — designers who'd been at Grubhub long enough to know the product inside and out — spent two months working out the architectural direction. Full IA, full schematics, every pattern decided before anyone else touched it. Then we handed it to the team.</p>
+
+    <p class="cs-label">Navigation</p>
+    <p class="cs-body">The existing bottom nav had four permanent tabs: Restaurants, My Grubhub, Perks, Bag. The bag tab showed up even when it was empty. My Grubhub was an unfocused dump. New diners and returning diners landed in the same generic restaurant list with no personalization.</p>
+    <p class="cs-body">We collapsed it to Home, Perks, Orders, Account. The bag tab gone — replaced by a persistent order footer that follows the diner across the app, only appearing once a cart exists. Every tab had to earn its place. Home became a personalized landing: pickup and delivery exposed directly at the top, reorder favorites surfaced as one-tap cards — no longer buried in a separate tab or behind the address field.</p>
+
+    <div class="cs-img-pair">
+      <div class="cs-img"><img src="img/sunburst/slide-03-4.png" alt="Baseline — Restaurants tab, old nav: Restaurants / My Grubhub / Perks / Bag" loading="lazy"></div>
+      <div class="cs-img"><img src="img/sunburst/slide-03-2.png" alt="Sunburst — personalized Home, new nav: Home / Perks / Orders / Account" loading="lazy"></div>
+    </div>
+    <span class="cs-caption">Baseline vs. Sunburst — old Restaurants tab and unfocused nav replaced with a personalized Home and intent-based navigation</span>
+
+    <p class="cs-label">Sheet architecture</p>
+    <p class="cs-body">No sheet system in the baseline — every action pushed to a full new page. We designed a layered sheet system: filters, sorts, and the menu all slide up from the bottom. Fast, one-handed, interruptible. I prototyped the transitions in Principle before anything hit engineering.</p>
+    <p class="cs-body">Sorts and filters got rationalized at the same time. Six sort options that mattered — relevant, price, rating, distance, ETA, delivery fee. Deprecated the ones that didn't pull their weight: restaurant name sort, delivery minimum, rapid pickup filter, pickup distance slider. The filter panel simplified accordingly.</p>
+
+    <div class="cs-img-pair">
+      <div class="cs-img"><img src="img/sunburst/slide-07-5.png" alt="Sunburst sort sheet — layered sort options: Recommended, Fastest, Price, Rating, Delivery Fee, Distance" loading="lazy"></div>
+      <div class="cs-img"><img src="img/sunburst/slide-17-3.png" alt="Sunburst persistent order footer — bag follows the diner across the app" loading="lazy"></div>
+    </div>
+    <span class="cs-caption">Sheet architecture — sort as a layered bottom sheet; persistent order footer replaces the Bag tab</span>
+
+    <p class="cs-label">Reorder</p>
+    <p class="cs-body">In the baseline, reorder lived in the My Grubhub tab — a separate destination with extra steps between you and whatever you had last week. We moved favorites to one-tap cards on the Home screen. No tab switch, no decisions, one tap.</p>
+
+    <div class="cs-img-pair">
+      <div class="cs-img"><img src="img/sunburst/slide-19-4.png" alt="Baseline reorder — My Grubhub tab with past orders and extra steps" loading="lazy"></div>
+      <div class="cs-img"><img src="img/sunburst/slide-20-1.png" alt="Sunburst reorder — one-tap favorites surfaced directly on Home" loading="lazy"></div>
+    </div>
+    <span class="cs-caption">Baseline vs. Sunburst — reorder moved from a buried tab with extra decisions to one-tap favorites on Home</span>
+
+    <p class="cs-label">Menu + visual language</p>
+    <p class="cs-body">One design principle: Purposeful. Strip noise — fewer greys, tighter interactive color, better contrast. The menu went from a full-page push to a sheet that slides up from the bottom, covering the nav tabs. Same UX underneath, radically different feel.</p>
+
+    <div class="cs-img-pair">
+      <div class="cs-img"><img src="img/sunburst/slide-15-1.png" alt="Baseline menu — old color palette, standard navigation" loading="lazy"></div>
+      <div class="cs-img"><img src="img/sunburst/slide-15-2.png" alt="Sunburst menu — new color palette, presenting as a bottom sheet" loading="lazy"></div>
+    </div>
+    <span class="cs-caption">Menu before and after — updated palette and typography, now presenting as a sheet that covers the bottom tabs</span>
+
+    <p class="cs-label">The rollout</p>
+    <p class="cs-body">Before the wider launch, we stitched the full end-to-end flow and produced a sizzle reel with the help of a motion designer we called Sizzle. The CEO and founder of Grubhub saw it. It landed.</p>
+    <p class="cs-body">Rollout was phased — 5% smoke test scaling to 50% — with conversion, reorder rate, and launch time tracked at each gate. Grubhub was an experimentation company, but you can't A/B test a brand new experience the same way you gate a button color. The organizational trust to ship it was a metric in itself.</p>
+
+    <p class="cs-label">Outcomes</p>
+    <p class="cs-body">Navigation, search, filtering, and reskinned light and dark modes all shipped. The patterns ran in the driver app, restaurant app, and web. The most impactful experience push in Grubhub's history at that point — presented to the C-suite, extended across every major surface.</p>
+  </div>
+
+  <script>
+    /* ── WebGL ──────────────────────────────────────────── */
+    (function () {
+      const canvas = document.getElementById('cloud-bg');
+      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      if (!gl) { canvas.style.background = '#151413'; return; }
+      const VS = `attribute vec2 a_pos; void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }`;
+      const FS = `
+        precision mediump float; uniform float u_time; uniform vec2 u_res;
+        float hash(vec2 p){p=fract(p*vec2(127.1,311.7));p+=dot(p,p+19.19);return fract(p.x*p.y);}
+        float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
+        float fbm(vec2 p){float v=0.0,a=0.52;mat2 rot=mat2(1.6,1.2,-1.2,1.6);for(int i=0;i<7;i++){v+=a*noise(p);p=rot*p;a*=0.48;}return v;}
+        void main(){
+          vec2 uv=gl_FragCoord.xy/u_res;uv.y=1.0-uv.y;
+          float t=u_time*0.022,tw=u_time*0.07;
+          vec2 q=vec2(fbm(uv+vec2(cos(tw)*0.4,sin(tw)*0.3)),fbm(uv+vec2(-sin(tw)*0.4,cos(tw)*0.3)+1.7));
+          vec2 r=vec2(fbm(uv+1.1*q+vec2(1.7,9.2)+vec2(cos(tw*0.6),sin(tw*0.6))*0.3),fbm(uv+1.1*q+vec2(8.3,2.8)+vec2(-sin(tw*0.6),cos(tw*0.6))*0.3));
+          float f=fbm(uv+r+t);float vf=1.0-smoothstep(0.05,0.42,uv.y);f*=vf;
+          vec3 base=vec3(0.082,0.078,0.075),cloud=vec3(0.14,0.130,0.120),wisp=vec3(0.18,0.167,0.154),light=vec3(0.22,0.204,0.188);
+          float lf=smoothstep(0.82,0.97,f)*vf*0.22;
+          vec3 col=mix(base,cloud,smoothstep(0.15,0.60,f));col=mix(col,wisp,smoothstep(0.60,0.90,f)*vf);col=mix(col,light,lf);
+          gl_FragColor=vec4(col,1.0);}`;
+      function compile(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);return s;}
+      const prog=gl.createProgram();gl.attachShader(prog,compile(gl.VERTEX_SHADER,VS));gl.attachShader(prog,compile(gl.FRAGMENT_SHADER,FS));gl.linkProgram(prog);gl.useProgram(prog);
+      const buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+      const loc=gl.getAttribLocation(prog,'a_pos');gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+      const uTime=gl.getUniformLocation(prog,'u_time'),uRes=gl.getUniformLocation(prog,'u_res');
+      function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;gl.viewport(0,0,canvas.width,canvas.height);gl.uniform2f(uRes,canvas.width,canvas.height);}
+      window.addEventListener('resize',resize);resize();
+      function tick(t){gl.uniform1f(uTime,t*0.001);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);requestAnimationFrame(tick);}
+      requestAnimationFrame(tick);
+    })();
+
+    /* ── Modal ──────────────────────────────────────────── */
+    const modal     = document.getElementById('modal');
+    const content   = document.getElementById('modal-content');
+    const modalLeft = document.querySelector('.modal-left');
+
+    const scrollPositions = {};
+    const modalRight = document.querySelector('.modal-right');
+    let currentPoolId = null;
+
+    var VIS_KEY = 'bk_card_visited';
+
+    function markCardVisited(poolId) {
+      var visited = {};
+      try { visited = JSON.parse(localStorage.getItem(VIS_KEY) || '{}'); } catch(e) {}
+      visited[poolId] = true;
+      try { localStorage.setItem(VIS_KEY, JSON.stringify(visited)); } catch(e) {}
+      document.querySelectorAll('.s-card[data-pool="' + poolId + '"]').forEach(function (c) {
+        c.classList.add('s-card--visited');
+      });
+    }
+
+    function openModal(poolId, push) {
+      const pool = document.getElementById('pool-' + poolId);
+      if (!pool) return;
+      document.getElementById('modal-title').textContent   = pool.dataset.title;
+      document.getElementById('modal-company').textContent = pool.dataset.company || '';
+      content.innerHTML = pool.innerHTML;
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+      if (push !== false) history.pushState({ modal: poolId }, '', '#' + poolId);
+      currentPoolId = poolId;
+      modalRight.scrollTop = scrollPositions[poolId] || 0;
+      markCardVisited(poolId);
+      content.querySelectorAll('.video-wrap').forEach(wrap => {
+        const video = wrap.querySelector('video');
+        const btn   = wrap.querySelector('.play-btn');
+        if (!video || !btn) return;
+        wrap.addEventListener('click', () => {
+          if (video.paused) { video.play(); btn.classList.add('hidden'); }
+          else              { video.pause(); btn.classList.remove('hidden'); }
+        });
+      });
+    }
+
+    function closeModal(skipHistory) {
+      if (currentPoolId) scrollPositions[currentPoolId] = modalRight.scrollTop;
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+      if (!skipHistory) history.pushState({}, '', location.pathname);
+    }
+
+    /* ── Card drag canvas ───────────────────────────────── */
+    (function () {
+      var cards = Array.from(document.querySelectorAll('.s-card'));
+      var CLICK_THRESHOLD = 4;
+      var cardW = 300, cardH = 415;
+
+      var POS_KEY = 'bk_card_pos_v3';
+
+      function savePositions() {
+        var out = {};
+        cards.forEach(function (card) {
+          var key = card.dataset.pool || '';
+          if (key) out[key] = { x: parseFloat(card.style.left), y: parseFloat(card.style.top) };
+        });
+        try { localStorage.setItem(POS_KEY, JSON.stringify(out)); } catch(e) {}
+      }
+
+      function positionCards() {
+        var saved = {};
+        try { saved = JSON.parse(localStorage.getItem(POS_KEY) || '{}'); } catch(e) {}
+
+        // If we have saved positions for all cards, restore them
+        var allSaved = cards.every(function (c) { return saved[c.dataset.pool || '']; });
+        if (allSaved) {
+          cards.forEach(function (card) {
+            var pos = saved[card.dataset.pool];
+            card.style.left = pos.x + 'px';
+            card.style.top  = pos.y + 'px';
+          });
+          return;
+        }
+
+        // First visit — 3 company pairs, each pair clustered
+        var vw = window.innerWidth;
+        var padY = 20;
+        var yRange = Math.max(0, 580 - cardH - padY * 2);
+
+        // Group starts at ~12%, 39%, 66% of viewport; intra-pair offset ~15% vw
+        var gStarts    = [vw * 0.12, vw * 0.39, vw * 0.66];
+        var intraX     = vw * 0.15; // x offset for second card in pair
+        var intraY     = 80;        // y offset for second card in pair
+        var jitter     = 24;        // ±px randomness
+
+        cards.forEach(function (card, i) {
+          var g  = Math.floor(i / 2); // group 0–2
+          var c  = i % 2;             // card within group
+          var x  = gStarts[g] + (c === 1 ? intraX : 0) + (Math.random() - 0.5) * jitter;
+          var y  = padY + (c === 1 ? intraY : 0) + (Math.random() - 0.5) * jitter;
+          card.style.left = x + 'px';
+          card.style.top  = y + 'px';
+        });
+
+        savePositions(); // persist the initial placement too
+      }
+
+      positionCards();
+
+      // Clamp card positions on resize so nothing goes off-screen
+      window.addEventListener('resize', function () {
+        var maxX = window.innerWidth - cardW - 10;
+        cards.forEach(function (card) {
+          var x = parseFloat(card.style.left);
+          if (x > maxX) card.style.left = maxX + 'px';
+        });
+      });
+
+      // Initialize z-indices in DOM order so stacking is predictable
+      var zTop = cards.length;
+      cards.forEach(function (card, i) { card.style.zIndex = i + 1; });
+
+      var dragging = null, startX, startY, origX, origY, moved;
+
+      cards.forEach(function (card) {
+        card.addEventListener('mousedown', function (e) {
+          if (e.button !== 0) return;
+          dragging = card;
+          startX = e.clientX;
+          startY = e.clientY;
+          origX = parseFloat(card.style.left);
+          origY = parseFloat(card.style.top);
+          moved = false;
+          card.style.zIndex = '999'; // float above everything while held
+          window.addEventListener('mousemove', onMove);
+          window.addEventListener('mouseup', onUp);
+        });
+      });
+
+      function onMove(e) {
+        if (!dragging) return;
+        var dx = e.clientX - startX;
+        var dy = e.clientY - startY;
+        if (!moved && Math.sqrt(dx * dx + dy * dy) > CLICK_THRESHOLD) {
+          moved = true;
+          dragging.classList.add('dragging');
+        }
+        if (moved) {
+          dragging.style.left = (origX + dx) + 'px';
+          dragging.style.top  = (origY + dy) + 'px';
+        }
+      }
+
+      function onUp() {
+        window.removeEventListener('mousemove', onMove);
+        window.removeEventListener('mouseup', onUp);
+        if (!dragging) return;
+        var card = dragging;
+        dragging = null;
+        card.classList.remove('dragging');
+        zTop++;
+        card.style.zIndex = zTop; // always highest after drop
+        if (moved) {
+          savePositions();
+        } else {
+          var poolId = card.dataset.pool;
+          if (poolId) openModal(poolId);
+        }
+        moved = false;
+      }
+    })();
+
+    const cardAbout = document.getElementById('card-about');
+    if (cardAbout) cardAbout.addEventListener('click', openAboutModal);
+
+    document.getElementById('modal-close').addEventListener('click', () => closeModal());
+
+    /* ── About modal ────────────────────────────────────── */
+    const aboutModal = document.getElementById('about-modal');
+    let mapInitialized = false;
+
+    function openAboutModal(push) {
+      aboutModal.classList.add('open'); aboutModal.setAttribute('aria-hidden', 'false');
+      if (push !== false) history.pushState({ about: true }, '', '#about');
+      if (!mapInitialized) {
+        setTimeout(() => { initMap(); mapInitialized = true; }, 350);
+      }
+    }
+
+    function closeAboutModal(skipHistory) {
+      aboutModal.classList.remove('open'); aboutModal.setAttribute('aria-hidden', 'true');
+      if (!skipHistory) history.pushState({}, '', location.pathname);
+    }
+
+    function initMap() {
+      const map = L.map('leaflet-map', { zoomControl: false, attributionControl: false, renderer: L.svg() });
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 19 }).addTo(map);
+      const stops = [
+        { coords: [41.7798,-71.4373], label: 'Cranston, RI' },
+        { coords: [40.7465,-74.0020], label: 'Chelsea, NYC' },
+        { coords: [40.7549,-74.0020], label: 'Hudson Yards' },
+        { coords: [40.7870,-73.9754], label: 'Upper West Side' },
+        { coords: [41.0395,-73.8685], label: 'Irvington, NY' },
+      ];
+      const line = L.polyline(stops.map(s => s.coords), { color: 'rgba(255,255,255,0.25)', weight: 1.5 }).addTo(map);
+      stops.forEach((stop, i) => {
+        L.circleMarker(stop.coords, { radius: i===stops.length-1?6:4, fillColor: i===stops.length-1?'#eaeaea':'rgba(255,255,255,0.5)', color:'transparent', fillOpacity:1 })
+         .bindTooltip(stop.label, { permanent:false, direction:'top' }).addTo(map);
+      });
+      const initialBounds = line.getBounds();
+      map.invalidateSize();
+      map.fitBounds(initialBounds, { padding: [40, 40], maxZoom: 8 });
+
+      const resetBtn = document.getElementById('map-reset');
+      let mapReady = false;
+      map.once('moveend', () => { mapReady = true; });
+
+      map.on('zoomend moveend', () => {
+        if (mapReady) resetBtn.classList.add('visible');
+      });
+
+      resetBtn.addEventListener('click', () => {
+        resetBtn.classList.remove('visible');
+        mapReady = false;
+        map.fitBounds(initialBounds, { padding: [40, 40], maxZoom: 8, animate: true });
+        map.once('moveend', () => { mapReady = true; });
+      });
+    }
+
+    document.querySelectorAll('.about-quad-video').forEach(quad => {
+      const video = quad.querySelector('video');
+      video.loop = true;
+
+      quad.addEventListener('mouseenter', () => {
+        video.style.filter = 'grayscale(0) brightness(1)';
+        video.play();
+      });
+
+      quad.addEventListener('mouseleave', () => {
+        video.style.filter = '';
+        video.pause();
+      });
+    });
+
+    document.getElementById('about-modal-close').addEventListener('click', () => closeAboutModal());
+
+    window.addEventListener('popstate', e => {
+      if (e.state && e.state.modal) openModal(e.state.modal, false);
+      else if (e.state && e.state.about) openAboutModal(false);
+      else {
+        if (aboutModal.classList.contains('open')) closeAboutModal(true);
+        else closeModal(true);
+      }
+    });
+
+    /* ── Hash routing on load ───────────────────────────── */
+    (function () {
+      const hash = location.hash.slice(1);
+      if (!hash) return;
+      if (hash === 'about') {
+        openAboutModal(false);
+        history.replaceState({ about: true }, '', '#about');
+      } else if (document.getElementById('pool-' + hash)) {
+        openModal(hash, false);
+        history.replaceState({ modal: hash }, '', '#' + hash);
+      }
+    })();
+
+    // Restore visited card states
+    (function () {
+      var visited = {};
+      try { visited = JSON.parse(localStorage.getItem('bk_card_visited') || '{}'); } catch(e) {}
+      Object.keys(visited).forEach(function (poolId) {
+        document.querySelectorAll('.s-card[data-pool="' + poolId + '"]').forEach(function (c) {
+          c.classList.add('s-card--visited');
+        });
+      });
+    })();
+
+    // Lightbox
+    (function () {
+      var overlay = document.createElement('div');
+      overlay.id = 'lb-overlay';
+      var img = document.createElement('img');
+      img.alt = '';
+      overlay.appendChild(img);
+      document.body.appendChild(overlay);
+
+      document.addEventListener('click', function (e) {
+        var t = e.target;
+        if (t.matches('img[data-lightbox]')) {
+          img.src = t.src;
+          overlay.classList.add('open');
+          document.body.style.overflow = 'hidden';
+        }
+      });
+
+      function close() {
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+        img.src = '';
+      }
+      overlay.addEventListener('click', close);
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+    })();
+  </script>
+</body>
 </html>
