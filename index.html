@@ -340,6 +340,7 @@
 
   </style>
   <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+  <script defer src="/_vercel/insights/script.js"></script>
 </head>
 
 <body>
@@ -842,6 +843,10 @@
       });
     }
 
+    function track(name, data) {
+      if (typeof window.va === 'function') window.va('event', { name: name, data: data || {} });
+    }
+
     function openModal(poolId, push) {
       const pool = document.getElementById('pool-' + poolId);
       if (!pool) return;
@@ -854,6 +859,21 @@
       currentPoolId = poolId;
       modalRight.scrollTop = scrollPositions[poolId] || 0;
       markCardVisited(poolId);
+      track('card_open', { pool: poolId });
+
+      // Pool completion: observe a sentinel at the bottom of the content
+      var sentinel = document.createElement('div');
+      content.appendChild(sentinel);
+      var completionFired = false;
+      var completionObserver = new IntersectionObserver(function (entries) {
+        if (entries[0].isIntersecting && !completionFired) {
+          completionFired = true;
+          track('pool_complete', { pool: poolId });
+          completionObserver.disconnect();
+        }
+      }, { root: modalRight, threshold: 1.0 });
+      completionObserver.observe(sentinel);
+
       content.querySelectorAll('.video-wrap').forEach(wrap => {
         const video = wrap.querySelector('video');
         const btn   = wrap.querySelector('.play-btn');
@@ -995,7 +1015,10 @@
     const cardAbout = document.getElementById('card-about');
     if (cardAbout) cardAbout.addEventListener('click', openAboutModal);
 
-    document.getElementById('modal-close').addEventListener('click', () => closeModal());
+    document.getElementById('modal-close').addEventListener('click', () => {
+      track('back_click', { pool: currentPoolId });
+      closeModal();
+    });
 
     /* ── About modal ────────────────────────────────────── */
     const aboutModal = document.getElementById('about-modal');
