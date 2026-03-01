@@ -162,13 +162,14 @@
     }
 
     /* case study structure */
+    .cs-section { margin-top: 3rem; }
+    .cs-section:first-child { margin-top: 0; }
+
     .cs-label {
       font-family: var(--font-mono); font-size: .62rem;
       letter-spacing: .08em; text-transform: uppercase;
-      color: var(--text-muted); margin-bottom: .5rem;
-      margin-top: 2.25rem;
+      color: var(--text-muted); margin-bottom: .75rem;
     }
-    .cs-label:first-child { margin-top: 0; }
 
     .cs-body { font-size: .95rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: .25rem; }
 
@@ -622,32 +623,41 @@
     data-title="Privacy as a platform — consent, control, and enterprise data governance at 40M users."
     data-company="Grammarly">
 
-    <div class="cs-img"><img src="img/ai-trust-framework.png" alt="Privacy throughout the Feature Lifecycle — ensure transparency, provide intuitive controls, honor consent, respect the right to be forgotten" loading="lazy"></div>
-
-    <p class="cs-body">As Grammarly moved upmarket and started shipping generative AI features fast, privacy went from being a legal checkbox to being a real product problem. Consent flows were inconsistent across teams. Settings were scattered and buried. Enterprise customers needed data sovereignty. And every new AI feature meant explaining to users what was being collected and why — in a way they'd actually trust.</p>
-    <p class="cs-body">The question wasn't how to add consent UI. It was how to make privacy a platform that the whole org could build on.</p>
-
-    <p class="cs-label">Three surfaces</p>
-
-    <div class="cs-img"><img src="img/privacy-hub/Home.png" alt="Privacy Hub home — data-first privacy controls" loading="lazy"></div>
-
-    <p class="cs-body"><strong>Privacy Hub</strong> — the idea was to flip the model. Instead of toggling features on and off, organize everything around data. What's collected, what it's used for, who has access. Features are downstream of data — turn off a data category and the features that depend on it respond. Activity journal, data download, granular deletion. "Right to be forgotten" made real.</p>
-    <div class="cs-img-pair">
-      <div class="cs-img"><img src="img/privacy-hub/Communication audience.png" alt="Privacy Hub — data category detail" loading="lazy"></div>
-      <div class="cs-img"><img src="img/privacy-hub/Activity journal.png" alt="Privacy Hub — activity journal" loading="lazy"></div>
+    <div class="cs-section">
+      <p class="cs-body">As Grammarly moved upmarket and started shipping generative AI features fast, privacy went from being a legal checkbox to being a real product problem. Consent flows were inconsistent across teams. Settings were scattered and buried. Enterprise customers needed data sovereignty. And every new AI feature meant explaining to users what was being collected and why — in a way they'd actually trust.</p>
+      <p class="cs-body">The question wasn't how to add consent UI. It was how to make privacy a platform that the whole org could build on.</p>
+      <div class="cs-img"><img src="img/ai-trust-framework.png" alt="Privacy throughout the Feature Lifecycle — ensure transparency, provide intuitive controls, honor consent, respect the right to be forgotten" loading="lazy"></div>
     </div>
 
-    <p class="cs-body"><strong>CMP (Consent Management Platform)</strong> — a plug-in framework for product teams. Give us a feature name, a data list, and a usage explanation. We render the consent modal, the opt-out flow, the in-product invitation, the admin controls — same trust pillars and data language every time. It survived a major pivot (tone personalization → AI training controls) and extended from individual users all the way to org admins.</p>
-    <div class="cs-img-pair">
-      <div class="cs-img"><img src="img/cmp/Component - Feature setting.png" alt="CMP — feature consent toggle" loading="lazy"></div>
-      <div class="cs-img"><img src="img/cmp/Component - Tailored assitance consent modal.png" alt="CMP — consent modal" loading="lazy"></div>
+    <div class="cs-section">
+      <p class="cs-label">Privacy Hub</p>
+      <p class="cs-body">The idea was to flip the model. Instead of toggling features on and off, organize everything around data. What's collected, what it's used for, who has access. Features are downstream of data — turn off a data category and the features that depend on it respond. Activity journal, data download, granular deletion. "Right to be forgotten" made real.</p>
+      <div class="cs-img"><img src="img/privacy-hub/Home.png" alt="Privacy Hub home — data-first privacy controls" loading="lazy"></div>
+      <div class="cs-img-pair">
+        <div class="cs-img"><img src="img/privacy-hub/Communication audience.png" alt="Privacy Hub — data category detail" loading="lazy"></div>
+        <div class="cs-img"><img src="img/privacy-hub/Activity journal.png" alt="Privacy Hub — activity journal" loading="lazy"></div>
+      </div>
     </div>
-    <div class="cs-img"><img src="img/cmp/admins/Settings.png" alt="CMP — enterprise admin view" loading="lazy"></div>
 
-    <p class="cs-body"><strong>BYOK (Bring Your Own Key)</strong> — enterprise key management. Customers control their own encryption keys, reducing Grammarly's access to data at rest. The design challenge was making a cryptographic control feel legible to a legal or IT buyer who doesn't think in encryption terms.</p>
+    <div class="cs-section">
+      <p class="cs-label">CMP</p>
+      <p class="cs-body">A plug-in framework for product teams. Give us a feature name, a data list, and a usage explanation. We render the consent modal, the opt-out flow, the in-product invitation, the admin controls — same trust pillars and data language every time. It survived a major pivot (tone personalization → AI training controls) and extended from individual users all the way to org admins.</p>
+      <div class="cs-img-pair">
+        <div class="cs-img"><img src="img/cmp/Component - Feature setting.png" alt="CMP — feature consent toggle" loading="lazy"></div>
+        <div class="cs-img"><img src="img/cmp/Component - Tailored assitance consent modal.png" alt="CMP — consent modal" loading="lazy"></div>
+      </div>
+      <div class="cs-img"><img src="img/cmp/admins/Settings.png" alt="CMP — enterprise admin view" loading="lazy"></div>
+    </div>
 
-    <p class="cs-label">Outcomes</p>
-    <p class="cs-body">Privacy became a first-class surface — its own nav item, not a buried subsection. The CMP framework scaled across product teams without needing design on every feature. BYOK opened enterprise procurement conversations that wouldn't have happened otherwise. The patterns showed up again in the Genesis platform work at Superhuman.</p>
+    <div class="cs-section">
+      <p class="cs-label">BYOK</p>
+      <p class="cs-body">Enterprise key management. Customers control their own encryption keys, reducing Grammarly's access to data at rest. The design challenge was making a cryptographic control feel legible to a legal or IT buyer who doesn't think in encryption terms.</p>
+    </div>
+
+    <div class="cs-section">
+      <p class="cs-label">Outcomes</p>
+      <p class="cs-body">Privacy became a first-class surface — its own nav item, not a buried subsection. The CMP framework scaled across product teams without needing design on every feature. BYOK opened enterprise procurement conversations that wouldn't have happened otherwise. The patterns showed up again in the Genesis platform work at Superhuman.</p>
+    </div>
   </div>
 
   <div id="pool-cookbook" hidden
