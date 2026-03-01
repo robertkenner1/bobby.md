@@ -365,28 +365,12 @@
         <span class="s-card__glyph"><i class="ph-light ph-atom"></i></span>
       </button>
 
-      <button class="s-card" data-pool="sunburst">
-        <div>
-          <div class="s-card__company">Grubhub</div>
-          <span class="s-card__title">Project Sunburst — the year Grubhub caught up on mobile.</span>
-        </div>
-        <span class="s-card__glyph"><i class="ph-light ph-flower-lotus"></i></span>
-      </button>
-
       <button class="s-card" data-pool="gds">
         <div>
           <div class="s-card__company">Grammarly</div>
           <span class="s-card__title">Grammarly Design System — making an invisible system accessible to the org.</span>
         </div>
         <span class="s-card__glyph"><i class="ph-light ph-blueprint"></i></span>
-      </button>
-
-      <button class="s-card" data-pool="trust">
-        <div>
-          <div class="s-card__company">Grammarly</div>
-          <span class="s-card__title">Privacy as a platform — consent, control, and enterprise data governance at 40M users.</span>
-        </div>
-        <span class="s-card__glyph"><i class="ph-light ph-hand-eye"></i></span>
       </button>
 
       <button class="s-card" data-pool="synthia">
@@ -397,12 +381,28 @@
         <span class="s-card__glyph"><i class="ph-light ph-brain"></i></span>
       </button>
 
+      <button class="s-card" data-pool="trust">
+        <div>
+          <div class="s-card__company">Grammarly</div>
+          <span class="s-card__title">Privacy as a platform — consent, control, and enterprise data governance at 40M users.</span>
+        </div>
+        <span class="s-card__glyph"><i class="ph-light ph-hand-eye"></i></span>
+      </button>
+
       <button class="s-card" data-pool="auth">
         <div>
           <div class="s-card__company">Superhuman</div>
           <span class="s-card__title">One identity layer for three products in motion. id.superhuman.com.</span>
         </div>
         <span class="s-card__glyph"><i class="ph-light ph-fingerprint"></i></span>
+      </button>
+
+      <button class="s-card" data-pool="sunburst">
+        <div>
+          <div class="s-card__company">Grubhub</div>
+          <span class="s-card__title">Project Sunburst — the year Grubhub caught up on mobile.</span>
+        </div>
+        <span class="s-card__glyph"><i class="ph-light ph-flower-lotus"></i></span>
       </button>
 
 
@@ -517,7 +517,7 @@
       <div class="cs-img"><img src="img/superhuman-auth-rev2.jpg" alt="Visual design rev 2 — brand starting to land, gradients, more airy" loading="lazy"></div>
     </div>
 
-    <p class="cs-body">As the brand got closer, the constraint became clear: don't disrupt the Grammarly funnel. We pulled back from the pure identifier-first model — separate sign-in and sign-up flows, brought closer together. I worked with Orr — who was connecting auth into the full Superhuman.com experience — to pull all our explorations into one view. That coordination ended up becoming the CUJ (Critical User Journeys) playbook, which the org eventually adopted as the standard for measuring experience quality.</p>
+    <p class="cs-body">As the brand got closer, the constraint became clear: don't disrupt the Grammarly funnel. We pulled back from the pure identifier-first model — separate sign-in and sign-up flows, brought closer together. I worked with Orr — who was connecting auth into the full Superhuman.com experience — to consolidate every exploration into a single shared view. That work became the foundation for the CUJ (Critical User Journeys) playbook — a framework I built to map sign-up and sign-in quality across all products and brands. The org adopted it as the standard for measuring experience quality across the platform.</p>
 
     <div class="cs-img"><img src="img/superhuman-auth-converged.jpg" alt="Converged direction — familiar Grammarly UX carrying the Superhuman brand" loading="lazy"></div>
 
@@ -537,7 +537,7 @@
     data-company="Grammarly">
 
     <p class="cs-body">Grammarly had a design system — it just lived entirely in code. The Lemma Design System was a robust set of tokens and components deeply integrated into SDUI, Grammarly's server-driven UI platform that delivered a consistent experience across browser extensions and its emerging desktop surfaces. It worked. But as Grammarly expanded to new platforms, the design decisions were entangled in SDUI in ways that made change expensive. The design org was small when we started — closer to ten people — but growing fast, and there was no Figma library, no documentation, no shared way to access or reason about what was already built.</p>
-    <p class="cs-body">Mark and I were brought in by Florian — the sole designer on the systems team at the time — to help scale it. We wanted to redesign things. Florian wanted to redesign things. But the risk of breaking changes in a system this tightly coupled was real. So we made a different call: put the creative ambitions aside and build the infrastructure around what already worked. Figma components that mapped to what was in code. Token naming conventions. Documentation. A way for designers and engineers to access the system without depending on the systems team for every decision. This was reactive work by necessity — the system was already load-bearing, and our job was to make it legible, not reinvent it.</p>
+    <p class="cs-body">Mark and I were brought in by Florian — the sole designer on the systems team at the time — to help scale it. We wanted to redesign things. Florian wanted to redesign things. But the risk of breaking changes in a system this tightly coupled was real. So we made a different call: put the creative ambitions aside and build the infrastructure around what already worked. Figma components that mapped to what was in code. Token naming conventions. Documentation. A way for designers and engineers to access the system without depending on the systems team for every decision. The system was already load-bearing, tightly coupled to SDUI, and breaking changes carried real risk. We chose infrastructure over redesign — the right call when the foundation is already working and the org needs to scale around it.</p>
 
     <p class="cs-label">Foundations</p>
     <p class="cs-body">The approach was to build on what already had traction, not replace it. Foundations first. The color palette was consolidated — before, every product had accumulated its own sprawl of shades with no naming convention or hierarchy.</p>
@@ -706,6 +706,8 @@
 
     <p class="cs-body">Experiments informed by Cookbook standards contributed +5,260 daily active guests (DAGs) and +$57.6M in annual restaurant revenue — the largest experiment wins in Grubhub's history at the time.</p>
 
+    <p class="cs-body">The longer-lasting influence was the people. Every designer who worked on Cookbook went on to lead design systems at other companies — Spotify, Pinterest, Nike, Zendesk, and others. That's the kind of influence that doesn't show up in a component count.</p>
+
     <p class="cs-label">Scale</p>
     <p class="cs-body">Project Sunburst expanded Cookbook from the consumer app into the full three-sided marketplace — Diner, Restaurant, and Driver. The driver app lives in a car. The restaurant app lives in a busy kitchen. The system adapted: typography scales and control sizes tuned to each environment.</p>
 
@@ -727,8 +729,6 @@
     <div class="cs-img"><img src="img/cookbook/care-data-capture.png" alt="Care data capture components" loading="lazy"></div>
     <span class="cs-caption">Care data capture — Core input components wired to customer service context</span>
 
-    <p class="cs-label">Legacy</p>
-    <p class="cs-body">The system outlasted any single project. But the longer-lasting influence was the people. Every designer who worked on Cookbook went on to lead design systems at other companies — Spotify, Pinterest, Nike, Zendesk, and others. That's the kind of influence that doesn't show up in a component count.</p>
   </div>
 
   <div id="pool-sunburst" hidden
