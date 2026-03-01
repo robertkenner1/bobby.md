@@ -650,6 +650,28 @@
     </div>
 
     <div class="cs-section">
+      <p class="cs-label">CDTC — AI Training Control</p>
+      <p class="cs-body">People hear "AI training toggle" and picture a switch. This one took weeks to design — not the UI, the logic. Before a single pixel moved, I was in rooms with the PM, the privacy engineer, and the backend engineer working out the decision matrix: who sees a control at all, when is it editable, what does "locked" mean for a managed user versus an EU user, and what happens when someone moves between account types and their previous state needs to be restored.</p>
+      <p class="cs-body">The most important design decision wasn't a UI decision. It was a product stance: we will not train on EU or UK user data, full stop. No toggle. No opt-in. GDPR meant the answer was baked in, and the right interface for that wasn't a switch — it was an explanation. EU users see a message where the control would be, not a control they can't use.</p>
+      <div class="cs-img"><img src="img/cdtc/logic-design.png" alt="CDTC state matrix — five control states mapped across user geography, account type, and account history" loading="lazy"></div>
+      <span class="cs-caption">State matrix — who sees a control, who doesn't, and what happens when account context changes</span>
+      <p class="cs-body">The managed client case was the other hard one. Enterprise admins set the training policy for their org — their users have no control. But there are two locked states: locked and active (admin enabled training) and locked and deactivated (admin disabled it). Each communicates both the current status and the reason. A user shouldn't see a disabled switch and wonder if something is broken. They should know their org made the call.</p>
+      <div class="cs-img-pair">
+        <div class="cs-img"><img src="img/cdtc/state-editable-on.png" alt="CDTC — Editable & On: user has control, training active" loading="lazy"></div>
+        <div class="cs-img"><img src="img/cdtc/state-editable-off.png" alt="CDTC — Editable & Off: user has control, training off" loading="lazy"></div>
+      </div>
+      <span class="cs-caption">Editable states — user has control</span>
+      <div class="cs-img-pair">
+        <div class="cs-img"><img src="img/cdtc/state-locked-active.png" alt="CDTC — Locked & Active: admin has enabled training, user has no control" loading="lazy"></div>
+        <div class="cs-img"><img src="img/cdtc/state-locked-deactivated.png" alt="CDTC — Locked & Deactivated: admin has disabled training, user has no control" loading="lazy"></div>
+      </div>
+      <span class="cs-caption">Locked states — admin controls the setting, user sees attribution</span>
+      <div class="cs-img"><img src="img/cdtc/state-wont-train-eu.png" alt="CDTC — Won't Train: EU/UK users see an explanation instead of a control" loading="lazy"></div>
+      <span class="cs-caption">Won't Train — no toggle for EU/UK users. Grammarly doesn't train on that data. The UI reflects the stance.</span>
+      <p class="cs-body">Five states total. Each one communicating status, reason, and the right level of agency for that user's context. Launched June 20, 2024 — the same day Grammarly emailed 70 million users about the privacy policy update.</p>
+    </div>
+
+    <div class="cs-section">
       <p class="cs-label">BYOK</p>
       <p class="cs-body">Enterprise key management. Customers control their own encryption keys, reducing Grammarly's access to data at rest. The design challenge was making a cryptographic control feel legible to a legal or IT buyer who doesn't think in encryption terms.</p>
     </div>
