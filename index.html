@@ -1092,9 +1092,12 @@
         var padY = 20;
         var yRange = Math.max(0, 580 - cardH - padY * 2);
 
-        // Group starts at ~12%, 39%, 66% of viewport; intra-pair offset ~15% vw
-        var gStarts    = [vw * 0.12, vw * 0.39, vw * 0.66];
+        // Center the group in the viewport
         var intraX     = vw * 0.15; // x offset for second card in pair
+        var groupGap   = vw * 0.27; // spacing between group origins
+        var totalSpan  = groupGap * 2 + intraX + cardW;
+        var x0         = (vw - totalSpan) / 2;
+        var gStarts    = [x0, x0 + groupGap, x0 + groupGap * 2];
         var intraY     = 80;        // y offset for second card in pair
         var jitter     = 24;        // ±px randomness
 
