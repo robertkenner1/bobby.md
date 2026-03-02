@@ -45,13 +45,12 @@
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
 
     /* ── Hero ─────────────────────────────────────────── */
-    .hero { padding-top: 7rem; padding-bottom: 4rem; position: relative; z-index: 2; animation: fadeIn 1.4s ease .6s both; text-align: center; }
+    .hero { padding-top: 8rem; padding-bottom: 4rem; padding-left: 8rem; position: relative; z-index: 2; opacity: 0; transition: opacity 1.2s ease; }
 
     .hero-intro {
-      font-size: clamp(1.5rem, 2.4vw, 2.1rem);
+      font-size: 2.1rem;
       font-weight: 400; letter-spacing: -.03em; line-height: 1.4;
-      color: var(--text-secondary); max-width: 48ch; margin: 0 auto 2.5rem;
-      text-align: center;
+      color: var(--text-secondary); max-width: 35ch; margin: 0 0 2.5rem;
     }
 
     .hero-contact { display: flex; gap: 2rem; flex-wrap: wrap; }
@@ -64,7 +63,6 @@
 
     .card-group {
       position: relative; height: 580px; overflow: visible;
-      animation: fadeIn .8s ease 1.1s both;
     }
 
     .s-card {
@@ -75,8 +73,9 @@
       text-align: left; cursor: grab; font-family: var(--font-main);
       display: flex; flex-direction: column; justify-content: space-between;
       user-select: none;
-      transition: background .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease;
-      animation: fadeIn 1.2s ease both;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .5s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease;
     }
     .s-card.dragging { cursor: grabbing; transition: none; }
 
@@ -210,12 +209,12 @@
     .play-btn.hidden { opacity: 0; pointer-events: none; }
 
     /* ── Footer ───────────────────────────────────────── */
-    footer { position: fixed; bottom: 1.5rem; left: 1.5rem; right: 1.5rem; z-index: 2; display: flex; align-items: center; justify-content: space-between; animation: fadeIn 1s ease 2.6s both; }
+    footer { position: fixed; bottom: 1.5rem; left: 1.5rem; right: 1.5rem; z-index: 2; display: flex; align-items: center; justify-content: space-between; opacity: 0; transition: opacity .5s ease; }
     .footer-name, .footer-contact { font-family: var(--font-mono); font-size: .68rem; color: var(--text-muted); letter-spacing: .04em; }
-    .footer-contact { display: flex; gap: 1.5rem; }
-    .footer-contact a { display: flex; align-items: center; gap: .4rem; color: var(--text-muted); transition: color var(--transition); }
+    .footer-contact { display: flex; gap: .4rem; align-items: center; }
+    .footer-contact a { display: inline-flex; align-items: center; gap: .3rem; color: var(--text-muted); transition: color var(--transition); }
     .footer-contact a:hover { color: var(--text-secondary); }
-    .footer-contact svg { width: 12px; height: 12px; flex-shrink: 0; }
+    .footer-contact svg { width: 10px; height: 10px; flex-shrink: 0; }
 
     /* ── About modal ──────────────────────────────────── */
     #about-modal { position: fixed; inset: 0; z-index: 200; background: var(--bg-base); opacity: 0; pointer-events: none; transition: opacity .28s ease; }
@@ -368,9 +367,7 @@
 
   <!-- Hero -->
   <section class="hero">
-    <div class="container">
-      <p class="hero-intro">Bobby is a product and systems designer based in New York. 14 years between Grubhub, Grammarly, and Superhuman.</p>
-    </div>
+    <p class="hero-intro">Bobby is a product and systems designer based in New York. 14 years between Grubhub, Grammarly, and Superhuman.</p>
   </section>
 
   <!-- Cards -->
@@ -453,20 +450,13 @@
 
   <!-- Footer -->
   <footer>
-    <span class="footer-name">Bobby Kenner · <button id="card-about" style="background:none;border:none;padding:0;color:var(--text-muted);font:inherit;cursor:pointer;transition:color var(--transition)" onmouseover="this.style.color='var(--text-secondary)'" onmouseout="this.style.color='var(--text-muted)'">About</button></span>
+    <span class="footer-name">© 2026 Bobby Kenner</span>
     <div class="footer-contact">
-      <a href="mailto:kennerdesign@gmail.com">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
-        kennerdesign@gmail.com
-      </a>
-      <a href="tel:+14013017416">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.88 13.4a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.99 2.7h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-        (401) 301-7416
-      </a>
-      <a href="https://calendly.com/bobbykenner" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-        Schedule a call
-      </a>
+      <button id="card-about" style="background:none;border:none;padding:0;color:var(--text-muted);font:inherit;cursor:pointer;transition:color var(--transition)" onmouseover="this.style.color='var(--text-secondary)'" onmouseout="this.style.color='var(--text-muted)'">About</button>
+      <span>·</span>
+      <span id="copy-email" style="cursor:pointer" title="Copy email">kennerdesign@gmail.com</span>
+      <span>·</span>
+      <a href="https://calendly.com/bobbykenner" target="_blank" rel="noopener">Calendly <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></a>
     </div>
   </footer>
 
@@ -1065,7 +1055,7 @@
       var CLICK_THRESHOLD = 4;
       var cardW = 300, cardH = 415;
 
-      var POS_KEY = 'bk_card_pos_v3';
+      var POS_KEY = 'bk_card_pos_v4';
 
       function savePositions() {
         var out = {};
@@ -1118,6 +1108,32 @@
       }
 
       positionCards();
+
+      // Unified intro: hero → cards L→R → footer, all setTimeout-driven
+      var sorted = cards.slice().sort(function (a, b) {
+        return parseFloat(a.style.left) - parseFloat(b.style.left);
+      });
+
+      // Hero — slight delay before fade
+      setTimeout(function () {
+        var hero = document.querySelector('.hero');
+        if (hero) hero.style.opacity = '1';
+      }, 200);
+
+      // Cards staggered L→R: 400ms–1150ms
+      sorted.forEach(function (card, i) {
+        setTimeout(function () {
+          card.style.zIndex = cards.length + i;
+          card.style.visibility = 'visible';
+          card.style.opacity = '1';
+        }, 400 + i * 300);
+      });
+
+      // Footer: 1300ms
+      setTimeout(function () {
+        var footer = document.querySelector('footer');
+        if (footer) footer.style.opacity = '1';
+      }, 2400);
 
       // Clamp card positions on resize so nothing goes off-screen
       window.addEventListener('resize', function () {
@@ -1191,6 +1207,18 @@
 
     const cardAbout = document.getElementById('card-about');
     if (cardAbout) cardAbout.addEventListener('click', openAboutModal);
+
+    // Copy email on click
+    const copyEmail = document.getElementById('copy-email');
+    if (copyEmail) {
+      copyEmail.addEventListener('click', function () {
+        navigator.clipboard.writeText('kennerdesign@gmail.com').then(function () {
+          const orig = copyEmail.textContent;
+          copyEmail.textContent = 'Copied';
+          setTimeout(function () { copyEmail.textContent = orig; }, 1500);
+        });
+      });
+    }
 
     document.getElementById('modal-close').addEventListener('click', () => {
       track('back_click', { pool: currentPoolId });
