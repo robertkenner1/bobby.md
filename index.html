@@ -212,6 +212,7 @@
     footer { position: fixed; bottom: 1.5rem; left: 1.5rem; right: 1.5rem; z-index: 2; display: flex; align-items: center; justify-content: space-between; opacity: 0; transition: opacity .5s ease; }
     .footer-name, .footer-contact { font-family: var(--font-mono); font-size: .68rem; color: var(--text-muted); letter-spacing: .04em; }
     .footer-contact { display: flex; gap: .4rem; align-items: center; }
+
     .footer-contact a { display: inline-flex; align-items: center; gap: .3rem; color: var(--text-muted); transition: color var(--transition); }
     .footer-contact a:hover { color: var(--text-secondary); }
     .footer-contact svg { width: 10px; height: 10px; flex-shrink: 0; }
@@ -356,19 +357,6 @@
     }
     .leaflet-tooltip::before { display: none; }
 
-    /* ── Mobile ───────────────────────────────────────── */
-    @media (max-width: 640px) {
-      .hero { padding-top: 3rem; padding-left: 1.5rem; padding-bottom: 2rem; }
-      .hero-intro { font-size: 1.35rem; }
-
-      #card-canvas { background: none; }
-      .card-group { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 0 1.5rem 5rem; height: auto; position: static; background: none; overflow: visible; }
-      .s-card { position: relative; width: 100%; min-width: 0; height: auto; padding: 1.25rem; transform: none !important; }
-      .s-card__title { font-size: .95rem; }
-      .s-card__glyph { display: none; }
-
-      footer { bottom: 1rem; left: 1rem; right: 1rem; flex-direction: column; align-items: flex-start; gap: .4rem; }
-    }
 
   </style>
   <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
@@ -1153,7 +1141,7 @@
         if (hero) hero.style.opacity = '1';
       }, 200);
 
-      // Cards staggered L→R: 400ms–1150ms
+      // Cards staggered L→R: 400ms–1900ms
       sorted.forEach(function (card, i) {
         setTimeout(function () {
           card.style.zIndex = cards.length + i;
@@ -1162,7 +1150,7 @@
         }, 400 + i * 300);
       });
 
-      // Footer: 1300ms
+      // Footer
       setTimeout(function () {
         var footer = document.querySelector('footer');
         if (footer) footer.style.opacity = '1';
