@@ -67,7 +67,7 @@
 
     .s-card {
       position: absolute;
-      width: 300px; height: 415px;
+      width: 270px; height: 374px;
       background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, transparent 60%), var(--bg-surface); border: 1px solid var(--border);
       border-radius: var(--radius); padding: 1.75rem;
       text-align: left; cursor: grab; font-family: var(--font-main);
@@ -1056,10 +1056,10 @@
       var cards = Array.from(document.querySelectorAll('.s-card'));
       var CLICK_THRESHOLD = 4;
       var isMobile = window.innerWidth < 640;
-      var cardW = isMobile ? 180 : 300;
-      var cardH = isMobile ? 260 : 415;
+      var cardW = isMobile ? 180 : 270;
+      var cardH = isMobile ? 260 : 374;
 
-      var POS_KEY = isMobile ? 'bk_card_pos_mobile_v1' : 'bk_card_pos_v5';
+      var POS_KEY = isMobile ? 'bk_card_pos_mobile_v1' : 'bk_card_pos_v6';
 
       function savePositions() {
         var out = {};
