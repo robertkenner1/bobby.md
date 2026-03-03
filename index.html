@@ -356,6 +356,20 @@
     }
     .leaflet-tooltip::before { display: none; }
 
+    /* ── Mobile ───────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .hero { padding-top: 3rem; padding-left: 1.5rem; padding-bottom: 2rem; }
+      .hero-intro { font-size: 1.35rem; }
+
+      #card-canvas { background: none; }
+      .card-group { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 0 1.5rem 5rem; height: auto; position: static; background: none; overflow: visible; }
+      .s-card { position: relative; width: 100%; min-width: 0; height: 180px; padding: 1.25rem; transform: none !important; }
+      .s-card__title { font-size: .95rem; }
+      .s-card__glyph { display: none; }
+
+      footer { bottom: 1rem; left: 1rem; right: 1rem; flex-direction: column; align-items: flex-start; gap: .4rem; }
+    }
+
   </style>
   <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
   <script defer src="/_vercel/insights/script.js"></script>
@@ -1053,9 +1067,11 @@
     (function () {
       var cards = Array.from(document.querySelectorAll('.s-card'));
       var CLICK_THRESHOLD = 4;
-      var cardW = 300, cardH = 415;
+      var isMobile = window.innerWidth < 640;
+      var cardW = isMobile ? 180 : 300;
+      var cardH = isMobile ? 260 : 415;
 
-      var POS_KEY = 'bk_card_pos_v4';
+      var POS_KEY = isMobile ? 'bk_card_pos_mobile_v1' : 'bk_card_pos_v5';
 
       function savePositions() {
         var out = {};
@@ -1086,9 +1102,21 @@
         var padY = 20;
         var yRange = Math.max(0, 580 - cardH - padY * 2);
 
+        if (isMobile) {
+          // Mobile: centered deck stack with small per-card offsets
+          var stackX = (vw - cardW) / 2;
+          var stackY = 40;
+          cards.forEach(function (card, i) {
+            var x = stackX + (i - (cards.length - 1) / 2) * 6;
+            var y = stackY + i * 10;
+            card.style.left = x + 'px';
+            card.style.top  = y + 'px';
+          });
+        } else {
+
         // Center the group in the viewport
-        var intraX     = vw * 0.15; // x offset for second card in pair
-        var groupGap   = vw * 0.27; // spacing between group origins
+        var intraX     = vw * 0.15;
+        var groupGap   = vw * 0.27;
         var totalSpan  = groupGap * 2 + intraX + cardW;
         var x0         = (vw - totalSpan) / 2;
         var gStarts    = [x0, x0 + groupGap, x0 + groupGap * 2];
@@ -1104,15 +1132,20 @@
           card.style.top  = y + 'px';
         });
 
+        } // end desktop
+
         savePositions(); // persist the initial placement too
       }
 
-      positionCards();
+      if (!isMobile) positionCards();
 
-      // Unified intro: hero → cards L→R → footer, all setTimeout-driven
-      var sorted = cards.slice().sort(function (a, b) {
-        return parseFloat(a.style.left) - parseFloat(b.style.left);
-      });
+      // Unified intro: hero → cards → footer, all setTimeout-driven
+      // Mobile: DOM order. Desktop: left→right by position.
+      var sorted = isMobile
+        ? cards.slice()
+        : cards.slice().sort(function (a, b) {
+            return parseFloat(a.style.left) - parseFloat(b.style.left);
+          });
 
       // Hero — slight delay before fade
       setTimeout(function () {
@@ -1150,20 +1183,30 @@
 
       var dragging = null, startX, startY, origX, origY, moved;
 
-      cards.forEach(function (card) {
-        card.addEventListener('mousedown', function (e) {
-          if (e.button !== 0) return;
-          dragging = card;
-          startX = e.clientX;
-          startY = e.clientY;
-          origX = parseFloat(card.style.left);
-          origY = parseFloat(card.style.top);
-          moved = false;
-          card.style.zIndex = '999'; // float above everything while held
-          window.addEventListener('mousemove', onMove);
-          window.addEventListener('mouseup', onUp);
+      if (isMobile) {
+        // Mobile: tap to open, no drag
+        cards.forEach(function (card) {
+          card.addEventListener('click', function () {
+            var poolId = card.dataset.pool;
+            if (poolId) openModal(poolId);
+          });
         });
-      });
+      } else {
+        cards.forEach(function (card) {
+          card.addEventListener('mousedown', function (e) {
+            if (e.button !== 0) return;
+            dragging = card;
+            startX = e.clientX;
+            startY = e.clientY;
+            origX = parseFloat(card.style.left);
+            origY = parseFloat(card.style.top);
+            moved = false;
+            card.style.zIndex = '999';
+            window.addEventListener('mousemove', onMove);
+            window.addEventListener('mouseup', onUp);
+          });
+        });
+      }
 
       function onMove(e) {
         if (!dragging) return;
