@@ -49,7 +49,6 @@
 
     /* ── Hero ─────────────────────────────────────────── */
     .hero { position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 2rem; z-index: 5; background: var(--card-bg); }
-    .hero, footer { opacity: 0; transition: opacity .5s ease; }
 
     /* Letter-flip wave on hover */
     .letter { display: inline-block; transform-origin: center center; transition: transform .25s ease; }
@@ -1253,19 +1252,11 @@
       splitLetters(document.querySelector('.hero-logo'));
       document.querySelectorAll('.hero-nav > *').forEach(splitLetters);
 
-      // Intro: fade the hero + footer containers together, then cards drop
-      var fadeTargets = [
-        document.querySelector('.hero'),
-        document.querySelector('footer')
-      ];
-      setTimeout(function () {
-        fadeTargets.forEach(function (el) { if (el) el.style.opacity = '1'; });
-      }, 200);
 
-      // Cards: deal into place via CSS animation, staggered (after nav fades in)
+      // Cards: deal into place via CSS animation, staggered
       sorted.forEach(function (card, i) {
         card.style.zIndex = cards.length + i;
-        card.style.animationDelay = (0.9 + i * 0.12) + 's';
+        card.style.animationDelay = (0.3 + i * 0.12) + 's';
       });
 
 
