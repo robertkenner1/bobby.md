@@ -109,7 +109,7 @@
     /* Smart auto-contrast text + icons (always visible on any bg) */
     .hero-logo,
     .hero-nav, .hero-nav a, .hero-nav button, .hero-nav span,
-    .footer-name, .footer-contact, .footer-contact a,
+    .footer-name, .footer-contact, .footer-contact a, .now-playing,
     .s-card__company, .s-card__title, .s-card__glyph,
     .s-card__glyph i, .footer-contact svg, .hero-nav svg {
       color: #ffffff !important;
@@ -254,6 +254,8 @@
     /* ── Footer ───────────────────────────────────────── */
     footer { position: fixed; bottom: 1.5rem; left: 2rem; right: 2rem; display: flex; align-items: center; justify-content: space-between; background: var(--card-bg); }
     .footer-name, .footer-contact { font-family: var(--font-main); font-weight: 400; font-size: .85rem; color: var(--text-secondary); letter-spacing: -.03em; }
+    .now-playing { font-family: var(--font-main); font-weight: 400; font-size: .85rem; letter-spacing: -.03em; display: inline-flex; align-items: center; gap: .4rem; text-decoration: none; }
+    .now-playing::before { content: '♪'; display: inline-block; }
     .footer-contact { display: flex; gap: .4rem; align-items: center; }
 
     .footer-contact a { display: inline-flex; align-items: center; gap: .3rem; color: var(--text-secondary); transition: color var(--transition); font: inherit; }
@@ -433,11 +435,11 @@
 
   <!-- Hero -->
   <section class="hero">
-    <div class="hero-logo">Bobby Kenner designs software</div>
+    <div class="hero-logo">Bobby designs software</div>
     <div class="hero-nav">
-      <button id="card-about" style="background:none;border:none;padding:0;font:inherit;cursor:pointer">About</button>
-      <a id="copy-email" href="mailto:kennerdesign@gmail.com">Email</a>
-      <a href="https://calendly.com/bobbykenner" target="_blank" rel="noopener">Calendly <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:10px;height:10px;vertical-align:middle"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></a>
+      <button id="card-about" style="background:none;border:none;padding:0;font:inherit;cursor:pointer">About me</button>
+      <a id="copy-email" href="mailto:kennerdesign@gmail.com">Drop a note</a>
+      <a href="https://calendly.com/bobbykenner" target="_blank" rel="noopener">Book time <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:10px;height:10px;vertical-align:middle"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></a>
       <a href="/resume.pdf">Resume</a>
     </div>
   </section>
@@ -525,6 +527,7 @@
   <!-- Footer -->
   <footer>
     <span class="footer-name">© 2026 Bobby Kenner</span>
+    <a id="now-playing" class="now-playing" target="_blank" rel="noopener" hidden></a>
   </footer>
 
   <!-- Project modal -->
@@ -1170,7 +1173,7 @@
         // t: 0 = circular pile, 1 = horizontal line
         var t = Math.max(0, Math.min(1, (vw - 500) / 900));
 
-        var scale = 1 + t * 0.25;
+        var scale = Math.max(1, Math.min(3, vw / 1200));
 
         // Circle params
         var r       = Math.round(cardW * 0.5);
@@ -1192,9 +1195,7 @@
         // Hero left padding matches clamp(1.5rem, 8vw, 6rem) at 18px base
         var heroPad = Math.max(27, Math.min(108, 0.08 * vw));
         // Pile center x: centered at t=0, left-aligned with hero at t=1
-        var pileCenterCircle = vw / 2;
-        var pileCenterLine   = heroPad + (scale * lineW) / 2;
-        var pileCenterX = Math.round(pileCenterCircle + t * (pileCenterLine - pileCenterCircle));
+        var pileCenterX = Math.round(vw / 2);
 
         var pileEl = document.querySelector('.card-pile');
         pileEl.style.width     = pileW + 'px';
@@ -1430,6 +1431,31 @@
 
     const cardAbout = document.getElementById('card-about');
     if (cardAbout) cardAbout.addEventListener('click', openAboutModal);
+
+    // Spotify "now playing" pill in footer
+    (function () {
+      const el = document.getElementById('now-playing');
+      if (!el) return;
+      async function update() {
+        try {
+          const res = await fetch('/api/now-playing');
+          if (!res.ok) { el.hidden = true; return; }
+          const data = await res.json();
+          if (data && data.title) {
+            const prefix = data.isPlaying ? '' : 'Last played: ';
+            el.textContent = prefix + data.title + ' — ' + data.artist;
+            el.href = data.url || '#';
+            el.hidden = false;
+          } else {
+            el.hidden = true;
+          }
+        } catch (e) {
+          el.hidden = true;
+        }
+      }
+      update();
+      setInterval(update, 30000);
+    })();
 
     // Desktop: copy to clipboard. Mobile: mailto href handles it natively.
     const copyEmail = document.getElementById('copy-email');
