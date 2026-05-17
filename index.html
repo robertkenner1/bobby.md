@@ -49,7 +49,7 @@
 
     /* ── Hero ─────────────────────────────────────────── */
     .hero { position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 2rem; z-index: 5; background: var(--card-bg); }
-    .hero-logo, .hero-nav > *, footer { opacity: 0; transition: opacity .35s ease; }
+    .hero-logo, .hero-nav > *, footer { opacity: 0; transition: opacity .5s ease; }
 
     /* Letter-flip wave on hover */
     .letter { display: inline-block; transform-origin: center center; transition: transform .25s ease; }
@@ -171,6 +171,7 @@
 
     .hero-nav { display: flex; gap: 1.75rem; align-items: center; font-family: var(--font-main); font-weight: 400; letter-spacing: -.03em; font-size: clamp(.85rem, 1.8vw, 1.05rem); color: var(--text-secondary); flex-wrap: wrap; }
     .hero-nav a, .hero-nav button, .hero-nav span[id] { color: var(--text-secondary); transition: color var(--transition); font: inherit; }
+    #copy-email { display: inline-block; min-width: 4em; text-align: center; }
     .hero-nav a:hover, .hero-nav button:hover, .hero-nav span[id]:hover { color: var(--text-primary); }
 
     #modal-sticky-nav { display: none; }
@@ -1252,22 +1253,20 @@
       splitLetters(document.querySelector('.hero-logo'));
       document.querySelectorAll('.hero-nav > *').forEach(splitLetters);
 
-      // Stagger nav items in: logo → About → Email → Calendly → Resume → footer
-      var navItems = [
+      // Intro: fade nav + footer in together, then cards drop
+      var fadeTargets = [
         document.querySelector('.hero-logo'),
         ...document.querySelectorAll('.hero-nav > *'),
         document.querySelector('footer')
       ];
-      navItems.forEach(function (el, i) {
-        setTimeout(function () {
-          if (el) el.style.opacity = '1';
-        }, 200 + i * 80);
-      });
+      setTimeout(function () {
+        fadeTargets.forEach(function (el) { if (el) el.style.opacity = '1'; });
+      }, 200);
 
-      // Cards: deal into place via CSS animation, staggered
+      // Cards: deal into place via CSS animation, staggered (after nav fades in)
       sorted.forEach(function (card, i) {
         card.style.zIndex = cards.length + i;
-        card.style.animationDelay = (0.15 + i * 0.12) + 's';
+        card.style.animationDelay = (0.9 + i * 0.12) + 's';
       });
 
 
