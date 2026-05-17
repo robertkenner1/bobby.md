@@ -109,7 +109,7 @@
     /* Smart auto-contrast text + icons (always visible on any bg) */
     .hero-logo,
     .hero-nav, .hero-nav a, .hero-nav button, .hero-nav span,
-    .footer-name, .footer-contact, .footer-contact a, .now-playing,
+    .footer-name, .footer-contact, .footer-contact a,
     .s-card__company, .s-card__title, .s-card__glyph,
     .s-card__glyph i, .footer-contact svg, .hero-nav svg {
       color: #ffffff !important;
@@ -254,9 +254,6 @@
     /* ── Footer ───────────────────────────────────────── */
     footer { position: fixed; bottom: 1.5rem; left: 2rem; right: 2rem; display: flex; align-items: center; justify-content: space-between; background: var(--card-bg); }
     .footer-name, .footer-contact { font-family: var(--font-main); font-weight: 400; font-size: .85rem; color: var(--text-secondary); letter-spacing: -.03em; }
-    .now-playing { font-family: var(--font-main); font-weight: 400; font-size: .85rem; letter-spacing: -.03em; display: inline-flex; align-items: center; gap: .4rem; text-decoration: none; }
-    .now-playing[hidden] { display: none; }
-    .now-playing::before { content: '♪'; display: inline-block; }
     .footer-contact { display: flex; gap: .4rem; align-items: center; }
 
     .footer-contact a { display: inline-flex; align-items: center; gap: .3rem; color: var(--text-secondary); transition: color var(--transition); font: inherit; }
@@ -528,7 +525,6 @@
   <!-- Footer -->
   <footer>
     <span class="footer-name">© 2026 Bobby Kenner</span>
-    <a id="now-playing" class="now-playing" target="_blank" rel="noopener" hidden></a>
   </footer>
 
   <!-- Project modal -->
@@ -1432,31 +1428,6 @@
 
     const cardAbout = document.getElementById('card-about');
     if (cardAbout) cardAbout.addEventListener('click', openAboutModal);
-
-    // Spotify "now playing" pill in footer
-    (function () {
-      const el = document.getElementById('now-playing');
-      if (!el) return;
-      async function update() {
-        try {
-          const res = await fetch('/api/now-playing');
-          if (!res.ok) { el.hidden = true; return; }
-          const data = await res.json();
-          if (data && data.title) {
-            const prefix = data.isPlaying ? '' : 'Last played: ';
-            el.textContent = prefix + data.title + ' — ' + data.artist;
-            el.href = data.url || '#';
-            el.hidden = false;
-          } else {
-            el.hidden = true;
-          }
-        } catch (e) {
-          el.hidden = true;
-        }
-      }
-      update();
-      setInterval(update, 30000);
-    })();
 
     // Desktop: copy to clipboard. Mobile: mailto href handles it natively.
     const copyEmail = document.getElementById('copy-email');
