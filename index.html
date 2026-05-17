@@ -11,33 +11,33 @@
     @font-face { font-family: "SuperSans"; src: url("fonts/SuperSans-Regular.otf") format("opentype"); font-weight: 400; font-display: swap; }
     @font-face { font-family: "SuperSans"; src: url("fonts/SuperSans-Medium.otf") format("opentype"); font-weight: 500; font-display: swap; }
     @font-face { font-family: "SuperSans"; src: url("fonts/SuperSans-SemiBold.otf") format("opentype"); font-weight: 600; font-display: swap; }
-    @font-face { font-family: "SuperSansMono"; src: url("fonts/SuperSansMono-Regular.otf") format("opentype"); font-weight: 400; font-display: swap; }
-    @font-face { font-family: "SuperSansMono"; src: url("fonts/SuperSansMono-Medium.otf") format("opentype"); font-weight: 500; font-display: swap; }
 
     :root {
-      --bg-base:          #151413;
-      --bg-surface:       #1c1a18;
-      --bg-elevated:      #242220;
-      --text-primary:     #eaeaea;
-      --text-secondary:   #a3a3a3;
-      --text-muted:       #666;
-      --border:           #2e2a27;
-      --border-highlight: #4a4340;
+      --bg-base:          #ebe4d3;
+      --bg-surface:       #ebe4d3;
+      --card-bg:          #ebe4d3;
+      --bg-elevated:      #f0eada;
+      --text-primary:     #2c2620;
+      --text-secondary:   #5c554b;
+      --text-muted:       #98897a;
+      --border:           #d4cbb8;
+      --border-highlight: #b8a085;
+      --frame-bg:         #e2dbc8;
+      --frame-fade-end:   rgba(226,219,200,0.85);
+      --scrollbar-thumb:  rgba(0,0,0,0.18);
       --font-main:        "SuperSans", sans-serif;
-      --font-mono:        "SuperSansMono", monospace;
       --transition:       .3s cubic-bezier(.2, .8, .2, 1);
-      --radius:           12px;
+      --radius:           2px;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { font-size: 18px; -webkit-font-smoothing: antialiased; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 4px; }
-    * { scrollbar-color: rgba(255,255,255,.15) transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; }
+    * { scrollbar-color: var(--scrollbar-thumb) transparent; }
     body { font-family: var(--font-main); font-weight: 400; line-height: 1.6; color: var(--text-primary); background-color: var(--bg-base); overflow-x: hidden; }
 
-    #cloud-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; width: 100%; height: 100%; animation: fadeIn 2s ease .2s both; }
-    #cloud-bg + .grain { position: fixed; inset: -100%; z-index: 1; pointer-events: none; width: 300%; height: 300%; opacity: .06; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)'/%3E%3C/svg%3E"); background-size: 180px 180px; }
+    .grain { position: fixed; inset: -100%; z-index: 1; pointer-events: none; width: 300%; height: 300%; opacity: .045; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)'/%3E%3C/svg%3E"); background-size: 180px 180px; }
 
     section, footer { position: relative; z-index: 2; }
     a { color: inherit; text-decoration: none; }
@@ -48,7 +48,21 @@
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
 
     /* ── Hero ─────────────────────────────────────────── */
-    .hero { padding-top: clamp(1.33rem, 6.5vw, 3.5rem); padding-bottom: 4rem; padding-left: clamp(1.33rem, 6.5vw, 3.5rem); padding-right: clamp(1.33rem, 6.5vw, 3.5rem); max-width: 960px; position: relative; z-index: 2; opacity: 0; transition: opacity 1.2s ease; overflow: hidden; }
+    .hero { position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 2rem; z-index: 5; background: var(--card-bg); }
+    .hero-logo, .hero-nav > *, footer { opacity: 0; transition: opacity .35s ease; }
+
+    /* Letter-flip wave on hover */
+    .letter { display: inline-block; transform-origin: center center; transition: transform .25s ease; }
+    .hero-nav a:hover .letter,
+    .hero-nav button:hover .letter {
+      animation: letter-wave 0.32s ease-out 1;
+      animation-delay: calc(var(--i) * 0.03s);
+    }
+    @keyframes letter-wave {
+      0% { transform: rotateY(0deg); }
+      100% { transform: rotateY(360deg); }
+    }
+    .hero-logo { font-family: var(--font-main); font-weight: 400; font-size: clamp(.85rem, 1.8vw, 1.05rem); letter-spacing: -.03em; }
 
     .hero-intro {
       font-size: clamp(1.25rem, 3.375vw, 1.8rem);
@@ -57,47 +71,51 @@
     }
 
     .hero-contact { display: flex; gap: 2rem; flex-wrap: wrap; }
-    .hero-contact-item { display: flex; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .78rem; color: var(--text-muted); transition: color var(--transition); }
+    .hero-contact-item { display: flex; align-items: center; gap: .5rem; font-family: var(--font-main); font-size: .78rem; color: var(--text-muted); transition: color var(--transition); }
     .hero-contact-item:hover { color: var(--text-secondary); }
     .hero-contact-item svg { width: 15px; height: 15px; flex-shrink: 0; }
 
     /* ── Cards ────────────────────────────────────────── */
-    #card-canvas { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+    #card-canvas { position: fixed; inset: 0; z-index: 10; pointer-events: none; }
 
     .card-group {
       position: absolute; inset: 0; overflow: visible; pointer-events: none;
     }
-    .card-pile { position: absolute; top: 55%; }
+    .card-pile { position: absolute; top: 50%; }
 
     .s-card {
       position: absolute; pointer-events: all;
       width: 175px; height: 250px;
-      background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, transparent 60%), var(--bg-surface); border: 1px solid var(--border);
+      background: var(--card-bg); border: 1px solid transparent;
       border-radius: var(--radius); padding: 1rem;
       text-align: left; cursor: grab; font-family: var(--font-main);
       display: flex; flex-direction: column; justify-content: space-between;
       user-select: none;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity .5s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+      transition: background .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+      animation: card-drop 0.7s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+    }
+    @keyframes card-drop {
+      from { transform: translateY(120vh) rotate(0deg); }
     }
     .s-card.dragging { cursor: grabbing; transition: none; }
-
-    .s-card::before {
-      content: '';
-      position: absolute; inset: 0;
-      border-radius: inherit;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      background-size: 180px 180px;
-      opacity: 0.08;
-      pointer-events: none;
-    }
     .s-card::after {
-      content: ''; position: absolute; inset: 5px;
-      border: 0.5px solid rgba(0,0,0,0.35);
-      border-radius: calc(var(--radius) - 5px);
+      content: ''; position: absolute; inset: 0;
+      border: 0.5px solid #ffffff;
+      border-radius: inherit;
+      mix-blend-mode: difference;
       pointer-events: none;
     }
+
+    /* Smart auto-contrast text + icons (always visible on any bg) */
+    .hero-logo,
+    .hero-nav, .hero-nav a, .hero-nav button, .hero-nav span,
+    .footer-name, .footer-contact, .footer-contact a,
+    .s-card__company, .s-card__title, .s-card__glyph,
+    .s-card__glyph i, .footer-contact svg, .hero-nav svg {
+      color: #ffffff !important;
+      mix-blend-mode: difference;
+    }
+
     .s-card:nth-child(1) { transform: rotate(-2deg);   animation-delay: 1.4s; }
     .s-card:nth-child(2) { transform: rotate(1.5deg);  animation-delay: 1.55s; }
     .s-card:nth-child(3) { transform: rotate(-1deg);   animation-delay: 1.7s; }
@@ -106,17 +124,10 @@
     .s-card:nth-child(6) { transform: rotate(2deg);    animation-delay: 2.15s; }
     .s-card:nth-child(7) { transform: rotate(-2.5deg); animation-delay: 2.3s; }
 
-    .s-card:hover {
-      background: linear-gradient(145deg, rgba(255,255,255,0.07) 0%, transparent 60%), var(--bg-surface);
-      z-index: 10;
-    }
-
-    .s-card--visited { opacity: 0.55; }
-    .s-card--visited:hover { opacity: 0.75; }
 
     .s-card__company {
-      font-family: var(--font-mono); font-size: .48rem;
-      letter-spacing: .08em; text-transform: uppercase;
+      font-family: var(--font-main); font-size: .58rem;
+      font-weight: 400; letter-spacing: -.01em;
       color: var(--text-muted); margin-bottom: .6rem;
     }
 
@@ -153,14 +164,14 @@
     }
 
     #modal-title { font-size: clamp(1.1rem, 2.5vw, 2.5rem); font-weight: 500; letter-spacing: -.03em; line-height: 1.2; color: var(--text-primary); }
-    #modal-company { font-family: var(--font-mono); font-size: .65rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1rem; }
+    #modal-company { font-family: var(--font-main); font-size: .65rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1rem; }
 
     .modal-right { flex: 1; padding: 5rem 4rem; overflow-y: auto; display: flex; align-items: flex-start; }
     #modal-content { width: 100%; }
 
-    .hero-nav { display: flex; gap: .5rem; align-items: center; font-family: var(--font-mono); font-size: clamp(.65rem, 1.594vw, .85rem); color: var(--text-muted); margin-top: 0.75rem; flex-wrap: wrap; }
-    .hero-nav a, .hero-nav button, .hero-nav span[id] { color: var(--text-muted); transition: color var(--transition); }
-    .hero-nav a:hover, .hero-nav button:hover, .hero-nav span[id]:hover { color: var(--text-secondary); }
+    .hero-nav { display: flex; gap: 1.75rem; align-items: center; font-family: var(--font-main); font-weight: 400; letter-spacing: -.03em; font-size: clamp(.85rem, 1.8vw, 1.05rem); color: var(--text-secondary); flex-wrap: wrap; }
+    .hero-nav a, .hero-nav button, .hero-nav span[id] { color: var(--text-secondary); transition: color var(--transition); font: inherit; }
+    .hero-nav a:hover, .hero-nav button:hover, .hero-nav span[id]:hover { color: var(--text-primary); }
 
     #modal-sticky-nav { display: none; }
 
@@ -185,6 +196,11 @@
       .modal-right { padding: 2rem 1.5rem; overflow-y: visible; }
 
       footer { position: fixed; bottom: 0; left: 0; right: 0; z-index: 1; }
+
+      /* Stack hero: logo row 1, nav row 2 */
+      .hero { flex-direction: column; align-items: flex-start; gap: .5rem; padding: 1rem 1.25rem; }
+      .hero-nav { gap: 1.25rem; }
+      .card-pile { top: 60%; }
     }
 
     /* case study structure */
@@ -207,7 +223,7 @@
     }
 
     .cs-label {
-      font-family: var(--font-mono); font-size: .62rem;
+      font-family: var(--font-main); font-size: .62rem;
       letter-spacing: .08em; text-transform: uppercase;
       color: var(--text-muted); margin-bottom: .75rem;
     }
@@ -221,13 +237,13 @@
 
     .cs-divider { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
 
-    .cs-img { border-radius: 8px; overflow: hidden; margin: 1.5rem 0; background: #0d0c0b; }
+    .cs-img { border-radius: 8px; overflow: hidden; margin: 1.5rem 0; background: var(--frame-bg); }
     .cs-img img { width: 100%; display: block; opacity: .92; }
     .cs-img-pair { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin: 1.5rem 0 .5rem; }
     .cs-img-pair .cs-img { margin: 0; }
-    .cs-caption { font-family: var(--font-mono); font-size: .62rem; color: var(--text-muted); display: block; margin-bottom: 1.5rem; line-height: 1.55; }
+    .cs-caption { font-family: var(--font-main); font-size: .62rem; color: var(--text-muted); display: block; margin-bottom: 1.5rem; line-height: 1.55; }
 
-    .video-wrap { position: relative; cursor: pointer; background: #0d0c0b; border-radius: 8px; overflow: hidden; margin: 1.5rem 0; }
+    .video-wrap { position: relative; cursor: pointer; background: var(--frame-bg); border-radius: 8px; overflow: hidden; margin: 1.5rem 0; }
     .video-wrap video { width: 100%; display: block; aspect-ratio: 16 / 9; object-fit: cover; opacity: .9; }
     .play-btn { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); transition: background var(--transition), opacity .2s ease; }
     .play-btn svg { width: 52px; height: 52px; filter: drop-shadow(0 2px 12px rgba(0,0,0,0.6)); transition: transform .15s ease-out; }
@@ -236,12 +252,12 @@
     .play-btn.hidden { opacity: 0; pointer-events: none; }
 
     /* ── Footer ───────────────────────────────────────── */
-    footer { position: fixed; bottom: 1.5rem; left: 1.5rem; right: 1.5rem; z-index: 2; display: flex; align-items: center; justify-content: space-between; opacity: 0; transition: opacity .5s ease; }
-    .footer-name, .footer-contact { font-family: var(--font-mono); font-size: .68rem; color: var(--text-muted); letter-spacing: .04em; }
+    footer { position: fixed; bottom: 1.5rem; left: 2rem; right: 2rem; display: flex; align-items: center; justify-content: space-between; background: var(--card-bg); }
+    .footer-name, .footer-contact { font-family: var(--font-main); font-weight: 400; font-size: .85rem; color: var(--text-secondary); letter-spacing: -.03em; }
     .footer-contact { display: flex; gap: .4rem; align-items: center; }
 
-    .footer-contact a { display: inline-flex; align-items: center; gap: .3rem; color: var(--text-muted); transition: color var(--transition); }
-    .footer-contact a:hover { color: var(--text-secondary); }
+    .footer-contact a { display: inline-flex; align-items: center; gap: .3rem; color: var(--text-secondary); transition: color var(--transition); font: inherit; }
+    .footer-contact a:hover { color: var(--text-primary); }
     .footer-contact svg { width: 10px; height: 10px; flex-shrink: 0; }
 
     /* ── About modal ──────────────────────────────────── */
@@ -255,21 +271,21 @@
     .about-quad { position: relative; overflow: hidden; background: var(--bg-surface); }
     .about-quad-video video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) brightness(0.7); transition: filter .5s ease; }
     #leaflet-map { width: 100%; height: 100%; }
-    .quad-label { position: absolute; bottom: 1.25rem; left: 1.25rem; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255,0.45); z-index: 1000; pointer-events: none; }
-    .leaflet-tooltip { background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-secondary); font-family: var(--font-mono); font-size: .65rem; letter-spacing: .04em; box-shadow: none; border-radius: 4px; padding: .25rem .5rem; }
+    .quad-label { position: absolute; bottom: 1.25rem; left: 1.25rem; font-family: var(--font-main); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255,0.45); z-index: 1000; pointer-events: none; }
+    .leaflet-tooltip { background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-secondary); font-family: var(--font-main); font-size: .65rem; letter-spacing: .04em; box-shadow: none; border-radius: 4px; padding: .25rem .5rem; }
     .leaflet-tooltip::before { display: none; }
 
     /* ── SYNTHIA Diagram ─────────────────────────────── */
     .synthia-diagram { margin: 1.75rem 0; display: flex; flex-direction: column; align-items: flex-start; }
     .sd-connector { color: rgba(255,255,255,0.25); font-size: 12px; padding-left: 18px; margin: 4px 0; line-height: 1; }
     .sd-journey { display: flex; align-items: center; gap: 7px; }
-    .sd-journey-step { display: flex; flex-direction: column; gap: 4px; font-family: "SuperSansMono", monospace; color: rgba(163,163,163,0.75); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; border: 1px solid rgba(255,255,255,0.18); border-radius: 8px; padding: 8px 12px; background: rgba(255,255,255,0.04); }
-    .sd-journey-sublabel { font-family: "SuperSansMono", monospace; color: rgba(163,163,163,0.45); font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .sd-journey-step { display: flex; flex-direction: column; gap: 4px; font-family: var(--font-main); color: rgba(163,163,163,0.75); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; border: 1px solid rgba(255,255,255,0.18); border-radius: 8px; padding: 8px 12px; background: rgba(255,255,255,0.04); }
+    .sd-journey-sublabel { font-family: var(--font-main); color: rgba(163,163,163,0.45); font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.06em; }
     .sd-journey-arrow { font-size: 9px; opacity: 0.35; color: rgba(255,255,255,0.8); align-self: center; }
     .sd-card { display: inline-block; border: 1px solid rgba(255,255,255,0.18); border-radius: 16px; padding: 16px 20px; background: rgba(255,255,255,0.04); }
-    .sd-card-title { font-family: "SuperSansMono", monospace; color: #eaeaea; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; display: block; margin-bottom: 10px; }
+    .sd-card-title { font-family: var(--font-main); color: #eaeaea; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; display: block; margin-bottom: 10px; }
     .sd-card-list { list-style: none; padding: 0; margin: 0; }
-    .sd-card-list li { font-family: "SuperSansMono", monospace; color: rgba(163,163,163,0.85); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.06em; display: flex; align-items: center; gap: 5px; margin-bottom: 5px; }
+    .sd-card-list li { font-family: var(--font-main); color: rgba(163,163,163,0.85); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.06em; display: flex; align-items: center; gap: 5px; margin-bottom: 5px; }
     .sd-card-list li:last-child { margin-bottom: 0; }
     .sd-card-list i { font-size: 11px; opacity: 0.5; flex-shrink: 0; }
     .sd-line { stroke: rgba(255,255,255,0.12); stroke-width: 1; fill: none; }
@@ -278,10 +294,10 @@
     .sd-core { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.28); stroke-width: 1; }
     .sd-lens { fill: rgba(255,255,255,0.05); stroke: rgba(255,255,255,0.16); stroke-width: 0.75; }
     .sd-lens-planned { fill: rgba(255,255,255,0.03); stroke: rgba(255,255,255,0.13); stroke-width: 0.75; stroke-dasharray: 3 2; }
-    .sd-lbl { font-family: "SuperSansMono", monospace; fill: rgba(163,163,163,0.85); text-transform: uppercase; letter-spacing: 0.06em; }
-    .sd-sub { font-family: "SuperSansMono", monospace; fill: rgba(102,102,102,0.9); letter-spacing: 0.04em; }
-    .sd-core-lbl { font-family: "SuperSansMono", monospace; fill: #eaeaea; letter-spacing: 0.06em; }
-    .sd-lens-lbl { font-family: "SuperSansMono", monospace; fill: rgba(163,163,163,0.75); letter-spacing: 0.04em; }
+    .sd-lbl { font-family: var(--font-main); fill: rgba(163,163,163,0.85); text-transform: uppercase; letter-spacing: 0.06em; }
+    .sd-sub { font-family: var(--font-main); fill: rgba(102,102,102,0.9); letter-spacing: 0.04em; }
+    .sd-core-lbl { font-family: var(--font-main); fill: #eaeaea; letter-spacing: 0.06em; }
+    .sd-lens-lbl { font-family: var(--font-main); fill: rgba(163,163,163,0.75); letter-spacing: 0.04em; }
     .sd-dot { fill: rgba(255,255,255,0.6); }
 
     /* ── Scrollable image frame ─────────────────────────── */
@@ -291,11 +307,11 @@
       overflow-y: auto;
       overflow-x: hidden;
       border-radius: 8px;
-      background: #0d0c0b;
+      background: var(--frame-bg);
       margin: 1.5rem 0;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: thin;
-      scrollbar-color: rgba(255,255,255,0.15) transparent;
+      scrollbar-color: var(--scrollbar-thumb) transparent;
     }
     .cs-img-frame img { width: 100%; display: block; opacity: .92; cursor: zoom-in; }
     .cs-img-frame::after {
@@ -305,7 +321,7 @@
       display: block;
       height: 56px;
       margin-top: -56px;
-      background: linear-gradient(to top, rgba(13,12,11,0.75), transparent);
+      background: linear-gradient(to top, var(--frame-fade-end), transparent);
       pointer-events: none;
     }
 
@@ -368,18 +384,38 @@
 
     .quad-label {
       position: absolute; bottom: 1.25rem; left: 1.25rem;
-      font-family: var(--font-mono); font-size: .68rem;
+      font-family: var(--font-main); font-size: .68rem;
       letter-spacing: .06em; text-transform: uppercase;
       color: rgba(255,255,255,0.45); z-index: 1000; pointer-events: none;
     }
 
     .leaflet-tooltip {
       background: var(--bg-elevated); border: 1px solid var(--border);
-      color: var(--text-secondary); font-family: var(--font-mono);
+      color: var(--text-secondary); font-family: var(--font-main);
       font-size: .65rem; letter-spacing: .04em; box-shadow: none;
       border-radius: 4px; padding: .25rem .5rem;
     }
     .leaflet-tooltip::before { display: none; }
+
+    /* ── UI wrapper: holds bg so mix-blend-mode text has a backdrop to blend against ─── */
+    #ui {
+      position: fixed; inset: 0;
+      z-index: 2;
+      overflow: visible;
+      isolation: isolate;
+      transition: background .2s ease;
+    }
+
+    /* BG cycler */
+    #bg-cycle {
+      position: fixed; top: 1.5rem; right: 1.5rem; z-index: 50;
+      background: none; border: 1px solid var(--border);
+      border-radius: 4px; padding: .35rem .7rem; cursor: pointer;
+      color: var(--text-secondary); font-family: var(--font-main);
+      font-weight: 400; font-size: .75rem; letter-spacing: -.02em;
+      transition: color var(--transition), border-color var(--transition);
+    }
+    #bg-cycle:hover { color: var(--text-primary); border-color: var(--border-highlight); }
 
 
   </style>
@@ -387,19 +423,22 @@
   <script defer src="/_vercel/insights/script.js"></script>
 </head>
 
-<body>
-  <canvas id="cloud-bg" aria-hidden="true"></canvas>
+<body class="calm">
   <div class="grain" aria-hidden="true"></div>
+
+  <div id="ui">
+  <button id="bg-cycle" aria-label="Cycle background" title="Cycle background">
+    <span id="bg-label">sky</span>
+  </button>
 
   <!-- Hero -->
   <section class="hero">
-    <p class="hero-intro">Bobby is a product and systems designer based in New York. 14 years between Grubhub, Grammarly, and Superhuman.</p>
+    <div class="hero-logo">Bobby Kenner designs software</div>
     <div class="hero-nav">
       <button id="card-about" style="background:none;border:none;padding:0;font:inherit;cursor:pointer">About</button>
-      <span>·</span>
-      <a id="copy-email" href="mailto:kennerdesign@gmail.com">kennerdesign@gmail.com</a>
-      <span>·</span>
+      <a id="copy-email" href="mailto:kennerdesign@gmail.com">Email</a>
       <a href="https://calendly.com/bobbykenner" target="_blank" rel="noopener">Calendly <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:10px;height:10px;vertical-align:middle"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></a>
+      <a href="/resume.pdf">Resume</a>
     </div>
   </section>
 
@@ -411,7 +450,7 @@
       <button class="s-card" data-pool="cookbook">
         <div>
           <div class="s-card__company">Grubhub</div>
-          <span class="s-card__title">Cookbook — one design system for three brands and every platform.</span>
+          <span class="s-card__title">Cookbook, one design system for three brands and every platform.</span>
         </div>
         <span class="s-card__glyph"><i class="ph-light ph-atom"></i></span>
       </button>
@@ -419,7 +458,7 @@
       <button class="s-card" data-pool="gds">
         <div>
           <div class="s-card__company">Grammarly</div>
-          <span class="s-card__title">Grammarly Design System — making an invisible system accessible to the org.</span>
+          <span class="s-card__title">Grammarly Design System, making an invisible system accessible to the org.</span>
         </div>
         <span class="s-card__glyph"><i class="ph-light ph-blueprint"></i></span>
       </button>
@@ -427,7 +466,7 @@
       <button class="s-card" data-pool="synthia">
         <div>
           <div class="s-card__company">Superhuman</div>
-          <span class="s-card__title">SYNTHIA — synthetic user evaluation, surfaced wherever designers work.</span>
+          <span class="s-card__title">SYNTHIA, synthetic user evaluation, surfaced wherever designers work.</span>
         </div>
         <span class="s-card__glyph"><i class="ph-light ph-brain"></i></span>
       </button>
@@ -435,7 +474,7 @@
       <button class="s-card" data-pool="trust">
         <div>
           <div class="s-card__company">Grammarly</div>
-          <span class="s-card__title">Privacy as a platform — consent, control, and enterprise data governance at 40M users.</span>
+          <span class="s-card__title">Privacy as a platform, consent, control, and enterprise data governance at 40M users.</span>
         </div>
         <span class="s-card__glyph"><i class="ph-light ph-hand-eye"></i></span>
       </button>
@@ -451,7 +490,7 @@
       <button class="s-card" data-pool="sunburst">
         <div>
           <div class="s-card__company">Grubhub</div>
-          <span class="s-card__title">Project Sunburst — the year Grubhub caught up on mobile.</span>
+          <span class="s-card__title">Project Sunburst, the year Grubhub caught up on mobile.</span>
         </div>
         <span class="s-card__glyph"><i class="ph-light ph-flower-lotus"></i></span>
       </button>
@@ -519,14 +558,14 @@
 
     <div class="cs-section">
       <p class="cs-section-header">Background</p>
-      <p class="cs-body">The question I kept coming back to: what would it look like if the same knowledge that informs a senior design review — heuristics, accessibility standards, your actual design system — was available on demand, directly in the canvas, before anything went to engineering?</p>
+      <p class="cs-body">The question I kept coming back to: what would it look like if the same knowledge that informs a senior design review, heuristics, accessibility standards, your actual design system, was available on demand, directly in the canvas, before anything went to engineering?</p>
     </div>
 
     <div class="cs-section">
       <p class="cs-section-header">What it does</p>
-      <p class="cs-body">SYNTHIA runs five evaluation lenses: your actual design tokens and component library, WCAG accessibility checks, Nielsen's ten usability heuristics, a taxonomy of 26 UI traps and dark patterns, and synthetic users — personas built from real UXR behavioral data. A knowledge worker and a student reading your design, first-person, reacting to what they see. That last one tends to be the most interesting.</p>
-      <p class="cs-body">Two agentic modes, both grounded in the same idea: only automate what doesn't require judgment. Mechanical issues — wrong token, contrast fail, font size below threshold — get fixed directly in the document. One click per finding, or batch the whole lot. Judgment calls — heuristic violations, dark patterns, persona reactions — get posted as comments pinned to the exact node in the canvas. You shouldn't auto-fix what a human needs to review.</p>
-      <p class="cs-body">The Figma plugin is the primary surface, but the same evaluation engine also ships as a Claude skill for AI-native workflows and a Go agent for document contexts. Consistent command design across all three — one engine, wherever you're working.</p>
+      <p class="cs-body">SYNTHIA runs five evaluation lenses: your actual design tokens and component library, WCAG accessibility checks, Nielsen's ten usability heuristics, a taxonomy of 26 UI traps and dark patterns, and synthetic users, personas built from real UXR behavioral data. A knowledge worker and a student reading your design, first-person, reacting to what they see. That last one tends to be the most interesting.</p>
+      <p class="cs-body">Two agentic modes, both grounded in the same idea: only automate what doesn't require judgment. Mechanical issues, wrong token, contrast fail, font size below threshold, get fixed directly in the document. One click per finding, or batch the whole lot. Judgment calls, heuristic violations, dark patterns, persona reactions, get posted as comments pinned to the exact node in the canvas. You shouldn't auto-fix what a human needs to review.</p>
+      <p class="cs-body">The Figma plugin is the primary surface, but the same evaluation engine also ships as a Claude skill for AI-native workflows and a Go agent for document contexts. Consistent command design across all three, one engine, wherever you're working.</p>
       <div class="video-wrap">
         <video src="video/synthia-figma.mp4" muted playsinline preload="metadata"></video>
         <div class="play-btn"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
@@ -535,12 +574,12 @@
 
     <div class="cs-section">
       <p class="cs-section-header">Outcomes</p>
-      <p class="cs-body">Won "Most Innovative" at Superhuman's global hackathon — 200+ entries. Published to the org plugin library. First designer to demo a coded prototype org-wide.</p>
+      <p class="cs-body">Won "Most Innovative" at Superhuman's global hackathon, 200+ entries. Published to the org plugin library. First designer to demo a coded prototype org-wide.</p>
     </div>
 
     <div class="cs-section">
       <p class="cs-section-header">What's next</p>
-      <p class="cs-body">The vision was a consistent evaluation layer across the entire product lifecycle — the same quality bar whether you're writing a spec, designing in Figma, reviewing code, or shipping to production. The Figma plugin was the proof of concept. The engine was always meant to go further.</p>
+      <p class="cs-body">The vision was a consistent evaluation layer across the entire product lifecycle, the same quality bar whether you're writing a spec, designing in Figma, reviewing code, or shipping to production. The Figma plugin was the proof of concept. The engine was always meant to go further.</p>
     </div>
 
   </div>
@@ -551,29 +590,29 @@
 
     <div class="cs-section">
       <p class="cs-section-header">Background</p>
-      <p class="cs-body">Right after the Coda acquisition, the identity team had one job: build id.superhuman.com — a single auth surface for all sign-in and sign-up traffic across Grammarly, Coda, and Superhuman Mail. We started before the brand existed.</p>
+      <p class="cs-body">Right after the Coda acquisition, the identity team had one job: build id.superhuman.com, a single auth surface for all sign-in and sign-up traffic across Grammarly, Coda, and Superhuman Mail. We started before the brand existed.</p>
     </div>
 
     <div class="cs-section">
       <p class="cs-section-header">Research + architecture</p>
-      <p class="cs-body">Before drawing anything I mapped how other multi-product platforms handle this — Disney, Microsoft, Meta, Atlassian. Disney was the clearest influence: one email field that routes to the right place, white-labeled across brands. Atlassian was the closest structural model — same auth UI, branding switch per product.</p>
+      <p class="cs-body">Before drawing anything I mapped how other multi-product platforms handle this, Disney, Microsoft, Meta, and Atlassian. Disney was the clearest influence: one email field that routes to the right place, white-labeled across brands. Atlassian was the closest structural model, same auth UI, branding switch per product.</p>
       <p class="cs-body">Grammarly had two separate modals that couldn't tell if you were new or returning. The goal was simpler: type your email once, the system figures out where you go.</p>
       <div class="cs-img"><img src="img/superhuman-auth-research.jpg" alt="Competitive analysis — Disney, Microsoft, Meta, Atlassian multi-product auth patterns" loading="lazy"></div>
-      <p class="cs-body">The architecture we landed on was hub-and-spoke — id.superhuman.com routes and serves each product brand, but brands can't talk to each other. I pushed for something more integrated; most traffic was going to Grammarly and a direct Grammarly-to-Coda path seemed more natural than sending someone back up to the parent. Hub-and-spoke was the right call for where engineering was at the time.</p>
+      <p class="cs-body">The architecture we landed on was hub-and-spoke, id.superhuman.com routes and serves each product brand, but brands can't talk to each other. I pushed for something more integrated; most traffic was going to Grammarly and a direct Grammarly-to-Coda path seemed more natural than sending someone back up to the parent. Hub-and-spoke was the right call for where engineering was at the time.</p>
       <div class="cs-img"><img src="img/superhuman-auth-definition-model.jpg" alt="Hub-and-spoke identity model — one auth surface, three branded products" loading="lazy"></div>
     </div>
 
     <div class="cs-section">
       <p class="cs-section-header">Design</p>
-      <p class="cs-body">The only brand signal I had when I started was "it'll be purple." So the first visual direction came from the product itself — multi-turn interactions, chip-style controls, nothing stacked. Not standard sign-in UI. More like how Superhuman naturally behaves. I imagined those chip patterns eventually contributing back to the design system.</p>
+      <p class="cs-body">The only brand signal I had when I started was "it'll be purple." So the first visual direction came from the product itself, multi-turn interactions, chip-style controls, nothing stacked. Not standard sign-in UI. More like how Superhuman naturally behaves. I imagined those chip patterns eventually contributing back to the design system.</p>
       <p class="cs-body">I built a clickable prototype with developer controls, test accounts, and milestone staging across four brand contexts: Genesis (the internal codename), Grammarly, Coda, and Superhuman Mail. Any email from any existing user database routed correctly. That prototype was the artifact that got engineering aligned.</p>
       <div class="cs-img-pair">
         <div class="cs-img"><img src="img/superhuman-auth-rev1.jpg" alt="Visual design rev 1 — net-new unified auth UI, before brand assets existed" loading="lazy"></div>
         <div class="cs-img"><img src="img/superhuman-auth-rev2.jpg" alt="Visual design rev 2 — brand starting to land, gradients, more airy" loading="lazy"></div>
       </div>
-      <p class="cs-body">As the brand got closer, the constraint became clear: don't disrupt the Grammarly funnel. We pulled back from the pure identifier-first model — separate sign-in and sign-up flows, brought closer together. I worked with Orr — who was connecting auth into the full Superhuman.com experience — to consolidate every exploration into a single shared view. That work became the foundation for the CUJ (Critical User Journeys) playbook — a framework I built to map sign-up and sign-in quality across all products and brands. The org adopted it as the standard for measuring experience quality across the platform.</p>
+      <p class="cs-body">As the brand got closer, the constraint became clear: don't disrupt the Grammarly funnel. We pulled back from the pure identifier-first model, separate sign-in and sign-up flows, brought closer together. I worked with Orr, who was connecting auth into the full Superhuman.com experience, to consolidate every exploration into a single shared view. That work became the foundation for the CUJ (Critical User Journeys) playbook, a framework I built to map sign-up and sign-in quality across all products and brands. The org adopted it as the standard for measuring experience quality across the platform.</p>
       <div class="cs-img"><img src="img/superhuman-auth-converged.jpg" alt="Converged direction — familiar Grammarly UX carrying the Superhuman brand" loading="lazy"></div>
-      <p class="cs-body">The last piece was active session transfer. Old model: enter a Grammarly email, get sent to Grammarly to auth, come back to Superhuman. New model: detect the existing session on entry, transfer it, sign the user in directly. Recognized account — one tap. Returning session — auto-redirect, no UI at all.</p>
+      <p class="cs-body">The last piece was active session transfer. Old model: enter a Grammarly email, get sent to Grammarly to auth, come back to Superhuman. New model: detect the existing session on entry, transfer it, sign the user in directly. Recognized account, one tap. Returning session, auto-redirect, no UI at all.</p>
       <div class="video-wrap">
         <video src="video/superhuman-auth-interactions.mp4" muted playsinline preload="metadata"></video>
         <div class="play-btn"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
@@ -582,7 +621,7 @@
 
     <div class="cs-section">
       <p class="cs-section-header">Outcomes</p>
-      <p class="cs-body">Launched October 2025. Engineering source of truth from first sketch through launch — every state mapped, every error path defined.</p>
+      <p class="cs-body">Launched October 2025. Engineering source of truth from first sketch through launch, every state mapped, every error path defined.</p>
     </div>
   </div>
 
@@ -592,73 +631,73 @@
 
     <div class="cs-section">
       <p class="cs-section-header">Background</p>
-      <p class="cs-body">Grammarly had a design system — it just lived entirely in code. The Lemma Design System was a robust set of tokens and components deeply integrated into SDUI, Grammarly's server-driven UI platform that delivered a consistent experience across browser extensions and its emerging desktop surfaces. It worked. But as Grammarly expanded to new platforms, the design decisions were entangled in SDUI in ways that made change expensive. The design org was small when we started — closer to ten people — but growing fast, and there was no Figma library, no documentation, no shared way to access or reason about what was already built.</p>
-      <p class="cs-body">Mark and I were brought in by Florian — the sole designer on the systems team at the time — to help scale it. We wanted to redesign things. Florian wanted to redesign things. But the risk of breaking changes in a system this tightly coupled was real. So we made a different call: put the creative ambitions aside and build the infrastructure around what already worked. Figma components that mapped to what was in code. Token naming conventions. Documentation. A way for designers and engineers to access the system without depending on the systems team for every decision. The system was already load-bearing, tightly coupled to SDUI, and breaking changes carried real risk. We chose infrastructure over redesign — the right call when the foundation is already working and the org needs to scale around it.</p>
+      <p class="cs-body">Grammarly had a design system, it just lived entirely in code. The Lemma Design System was a robust set of tokens and components deeply integrated into SDUI, Grammarly's server-driven UI platform that delivered a consistent experience across browser extensions and its emerging desktop surfaces. It worked. But as Grammarly expanded to new platforms, the design decisions were entangled in SDUI in ways that made change expensive. The design org was small when we started, closer to ten people, but growing fast, and there was no Figma library, no documentation, no shared way to access or reason about what was already built.</p>
+      <p class="cs-body">Mark and I were brought in by Florian, the sole designer on the systems team at the time, to help scale it. We wanted to redesign things. Florian wanted to redesign things. But the risk of breaking changes in a system this tightly coupled was real. So we made a different call: put the creative ambitions aside and build the infrastructure around what already worked. Figma components that mapped to what was in code. Token naming conventions. Documentation. A way for designers and engineers to access the system without depending on the systems team for every decision. The system was already load-bearing, tightly coupled to SDUI, and breaking changes carried real risk. We chose infrastructure over redesign, the right call when the foundation is already working and the org needs to scale around it.</p>
     </div>
 
     <div class="cs-section">
       <p class="cs-section-header">Foundations</p>
-      <p class="cs-body">The approach was to build on what already had traction, not replace it. Foundations first. The color palette was consolidated — before, every product had accumulated its own sprawl of shades with no naming convention or hierarchy.</p>
+      <p class="cs-body">The approach was to build on what already had traction, not replace it. Foundations first. The color palette was consolidated, and before, every product had accumulated its own sprawl of shades with no naming convention or hierarchy.</p>
       <div class="cs-img-pair">
         <div class="cs-img"><img src="img/gds-v1/color-palette-before.png" alt="Color palette before — fragmented, inconsistent across products" loading="lazy"></div>
         <div class="cs-img"><img src="img/gds-v1/color-palette-after.png" alt="Color palette after — consolidated, organized by hue with consistent steps" loading="lazy"></div>
       </div>
-      <span class="cs-caption">Before and after — palette consolidation from product sprawl to a structured core</span>
-      <p class="cs-body">Above the core palette: a semantic layer. Colors named by role, not value — Surface, Content, Boundaries — each mapped to a four-part token convention: Mode / Context / Role / Variant. Future-proofed for rebrands by design.</p>
+      <span class="cs-caption">Before and after, palette consolidation from product sprawl to a structured core</span>
+      <p class="cs-body">Above the core palette: a semantic layer. Colors named by role, not value, Surface, Content, and Boundaries, each mapped to a four-part token convention: Mode / Context / Role / Variant. Future-proofed for rebrands by design.</p>
       <div class="cs-img"><img src="img/gds-v1/token-convention.png" alt="Four-part token naming convention — Mode / Context / Role / Variant" loading="lazy"></div>
-      <span class="cs-caption">Token naming convention — Light / Interface / Interactive Branded / Primary</span>
+      <span class="cs-caption">Token naming convention, Light / Interface / Interactive Branded / Primary</span>
       <div class="cs-img"><img src="img/gds-v1/semantic-palette.png" alt="Semantic color palette — Base context, Surface / Content / Boundaries" loading="lazy"></div>
-      <span class="cs-caption">Semantic palette — Base context mapped to Surface, Content, and Boundaries roles</span>
-      <p class="cs-body">Spacing and radius scales followed the same logic — named tokens, consistent steps, documented usage rules.</p>
+      <span class="cs-caption">Semantic palette, Base context mapped to Surface, Content, and Boundaries roles</span>
+      <p class="cs-body">Spacing and radius scales followed the same logic, named tokens, consistent steps, documented usage rules.</p>
       <div class="cs-img-pair">
         <div class="cs-img"><img src="img/gds-v1/spacing-scale.png" alt="Spacing scale — visual representation from space-quarter to space-20" loading="lazy"></div>
         <div class="cs-img"><img src="img/gds-v1/spacing-tokens.png" alt="Spacing token names — space-quarter through space-20 with pixel values" loading="lazy"></div>
       </div>
-      <span class="cs-caption">Spacing scale — visual and named tokens from 1px to 80px</span>
+      <span class="cs-caption">Spacing scale, visual and named tokens from 1px to 80px</span>
     </div>
 
     <div class="cs-section">
       <p class="cs-section-header">Components</p>
-      <p class="cs-body">The Figma component library was restructured from the ground up — layer trees flattened, everything renamed for findability. Before: components buried under category group names that matched no one's mental model. After: flat, alphabetical, searchable.</p>
+      <p class="cs-body">The Figma component library was restructured from the ground up, layer trees flattened, everything renamed for findability. Before: components buried under category group names that matched no one's mental model. After: flat, alphabetical, searchable.</p>
       <div class="cs-img"><img src="img/gds-v1/component-discoverability.png" alt="Component naming — before nested hierarchy, after flat and discoverable" loading="lazy"></div>
-      <span class="cs-caption">Improved discoverability — flat naming over nested category groups</span>
-      <p class="cs-body">Accessibility was baked in. Color contrast was updated across the component set — buttons, banners, form controls — and documented so engineering could implement with confidence.</p>
+      <span class="cs-caption">Improved discoverability, flat naming over nested category groups</span>
+      <p class="cs-body">Accessibility was baked in. Color contrast was updated across the component set, buttons, banners, and form controls, and documented so engineering could implement with confidence.</p>
       <div class="cs-img"><img src="img/gds-v1/color-contrast.png" alt="Color contrast changes — before and after across buttons, chips, and text fields" loading="lazy"></div>
-      <span class="cs-caption">Color contrast updates — before and after across buttons, notification chips, and inputs</span>
+      <span class="cs-caption">Color contrast updates, before and after across buttons, notification chips, and inputs</span>
       <p class="cs-body">Variant matrices mapped 1:1 to what was in code. The docs site had standardized templates so contributors could add pages without involving the systems team.</p>
       <div class="cs-img"><img src="img/gds-v1/docs-and-figma.png" alt="Docs site alongside Figma component library — Button page with usage, principles, and variants" loading="lazy"></div>
-      <span class="cs-caption">Documentation alongside components — usage guidelines, principles, and Figma variants in sync</span>
+      <span class="cs-caption">Documentation alongside components, usage guidelines, principles, and Figma variants in sync</span>
     </div>
 
     <div class="cs-section">
       <p class="cs-section-header">Community + adoption</p>
-      <p class="cs-body">Governance mattered as much as the components. Formal contribution process, review criteria, and design standards. Friends of GDS embedded champions across product teams — designers who could answer questions locally and reduce dependence on the systems team for every decision.</p>
+      <p class="cs-body">Governance mattered as much as the components. Formal contribution process, review criteria, and design standards. Friends of GDS embedded champions across product teams, designers who could answer questions locally and reduce dependence on the systems team for every decision.</p>
       <div class="cs-img"><img src="img/gds-v1/gds-release-roadshow.jpg" alt="GDS v1 release roadshow" loading="lazy"></div>
-      <span class="cs-caption">Release roadshow — org-wide launch presentation for GDS v1</span>
+      <span class="cs-caption">Release roadshow, org-wide launch presentation for GDS v1</span>
     </div>
 
     <div class="cs-section">
       <p class="cs-section-header">Outcomes</p>
-      <p class="cs-body">Adopted across the org. Fragmentation reduced. The system survived the Superhuman acquisition and a full brand overhaul — the token names held. That was the real test.</p>
+      <p class="cs-body">Adopted across the org. Fragmentation reduced. The system survived the Superhuman acquisition and a full brand overhaul, and the token names held. That was the real test.</p>
     </div>
 
     <div class="cs-section">
       <p class="cs-section-header">Card systematization</p>
-      <p class="cs-body">After shipping GDS v1, the next expansion was suggestion cards — Grammarly's most complex and most-seen component, grown independently across surfaces with no shared model. The work started with a knowledge-share session: which clients use which cards, what the differences were, and what the SDUI-to-SCA architecture transition meant for the component going forward.</p>
+      <p class="cs-body">After shipping GDS v1, the next expansion was suggestion cards, Grammarly's most complex and most-seen component, grown independently across surfaces with no shared model. The work started with a knowledge-share session: which clients use which cards, what the differences were, and what the SDUI-to-SCA architecture transition meant for the component going forward.</p>
       <div class="cs-img"><img src="img/card-systematization/cards-1-knowledge-share.jpg" alt="Knowledge share session — which clients use which cards and the SDUI to SCA transition" loading="lazy"></div>
-      <span class="cs-caption">Discovery — which clients use which cards, and the architecture context</span>
-      <p class="cs-body">From there, an inventory: every existing card state documented across surfaces — extension popover, desktop popover (two trigger modes), multi-suggestion variant, native editor sidebar, Google Docs sidebar. The same suggestion data, rendered differently depending on where you were.</p>
+      <span class="cs-caption">Discovery, which clients use which cards, and the architecture context</span>
+      <p class="cs-body">From there, an inventory: every existing card state documented across surfaces, extension popover, desktop popover (two trigger modes), multi-suggestion variant, native editor sidebar, and Google Docs sidebar. The same suggestion data, rendered differently depending on where you were.</p>
       <div class="cs-img"><img src="img/card-systematization/cards-2-inventory.jpg" alt="Card inventory — every existing card state across all surfaces and trigger modes" loading="lazy"></div>
-      <span class="cs-caption">Inventory — every existing card state across surfaces</span>
-      <p class="cs-body">With the inventory done, we modeled the structural architecture. Four container types — contextual single-suggestion popover, fixed single-suggestion popover, multi-suggestion popover, multi-suggestion sidebar — each broken into layered sub-components: Nav Bar, Card (Header, Content, Action Bar), Footer. Visualized as both a flat diagram and an exploded layer stack.</p>
+      <span class="cs-caption">Inventory, every existing card state across surfaces</span>
+      <p class="cs-body">With the inventory done, we modeled the structural architecture. Four container types, contextual single-suggestion popover, fixed single-suggestion popover, multi-suggestion popover, and multi-suggestion sidebar, each broken into layered sub-components: Nav Bar, Card (Header, Content, Action Bar), Footer. Visualized as both a flat diagram and an exploded layer stack.</p>
       <div class="cs-img"><img src="img/card-systematization/cards-3-schematics.jpg" alt="Card schematics — four container types with exploded layer architecture" loading="lazy"></div>
-      <span class="cs-caption">Schematics — four container types, exploded layer architecture</span>
+      <span class="cs-caption">Schematics, four container types, exploded layer architecture</span>
       <p class="cs-body">The proposed direction: one unified design for all four delivery types, using the same component model and sub-component structure adapted to each context.</p>
       <div class="cs-img"><img src="img/card-systematization/cards-4-proposed.jpg" alt="Proposed direction — unified card design across single-suggestion popover, multi-suggestion popover, and sidebar" loading="lazy"></div>
-      <span class="cs-caption">Proposed direction — unified design across all delivery types</span>
-      <p class="cs-body">The goal was to set a clear direction and break each delivery surface down into its generic sub-components — Nav Bar, Card, Action Bar, Header, Footer — so they could be documented into GDS and reused across the product. I left the team with the plan and the schematics and went on paternity leave. When I came back, I moved into a product design role on the Trust team — a lateral move to fill a business need — and stayed close to GDS as a contributor, eventually being featured in the Token Times for contributing the Verification Code component.</p>
+      <span class="cs-caption">Proposed direction, unified design across all delivery types</span>
+      <p class="cs-body">The goal was to set a clear direction and break each delivery surface down into its generic sub-components, Nav Bar, Card, Action Bar, Header, and Footer, so they could be documented into GDS and reused across the product. I left the team with the plan and the schematics and went on paternity leave. When I came back, I moved into a product design role on the Trust team, a lateral move to fill a business need, and stayed close to GDS as a contributor, eventually being featured in the Token Times for contributing the Verification Code component.</p>
       <div class="cs-img"><img src="img/gds-v1/gds-adoption.jpg" alt="Token Times — Bobby Kenner featured for contributing the Verification Code component" loading="lazy"></div>
-      <span class="cs-caption">Token Times — featured for contributing the Verification Code component</span>
+      <span class="cs-caption">Token Times, featured for contributing the Verification Code component</span>
     </div>
 
   </div>
@@ -669,37 +708,37 @@
 
     <div class="cs-section">
       <p class="cs-section-header">The problem</p>
-      <p class="cs-body">As Grammarly moved upmarket and started shipping generative AI features fast, privacy went from being a legal checkbox to being a real product problem. Consent flows were inconsistent across teams. Settings were scattered and buried. Enterprise customers needed data sovereignty. And every new AI feature meant explaining to users what was being collected and why — in a way they'd actually trust.</p>
+      <p class="cs-body">As Grammarly moved upmarket and started shipping generative AI features fast, privacy went from being a legal checkbox to being a real product problem. Consent flows were inconsistent across teams. Settings were scattered and buried. Enterprise customers needed data sovereignty. And every new AI feature meant explaining to users what was being collected and why, in a way they'd actually trust.</p>
       <p class="cs-body">The question wasn't how to add consent UI. It was how to make privacy a platform that the whole org could build on.</p>
       <div class="cs-img"><img src="img/ai-trust-framework.png" alt="Privacy throughout the Feature Lifecycle — ensure transparency, provide intuitive controls, honor consent, respect the right to be forgotten" loading="lazy"></div>
-      <span class="cs-caption">A framework I developed with the Trust team — four principles that governed every privacy surface we shipped: transparency, intuitive controls, honored consent, and the right to be forgotten. CDTC, CMP, and Privacy Hub all operate under it.</span>
+      <span class="cs-caption">A framework I developed with the Trust team, four principles that governed every privacy surface we shipped: transparency, intuitive controls, honored consent, and the right to be forgotten. CDTC, CMP, and Privacy Hub all operate under it.</span>
     </div>
 
     <div class="cs-section">
-      <p class="cs-section-header">CDTC — AI Training Control</p>
-      <p class="cs-body">People hear "AI training toggle" and picture a switch. This one took weeks to design — not the UI, the logic. Before a single pixel moved, I was in rooms with the PM, the privacy engineer, and the backend engineer working out the decision matrix: who sees a control at all, when is it editable, what does "locked" mean for a managed user versus an EU user, and what happens when someone moves between account types and their previous state needs to be restored.</p>
-      <p class="cs-body">The most important design decision wasn't a UI decision. It was a product stance: we will not train on EU or UK user data, full stop. No toggle. No opt-in. GDPR meant the answer was baked in, and the right interface for that wasn't a switch — it was an explanation. EU users see a message where the control would be, not a control they can't use.</p>
+      <p class="cs-section-header">CDTC, AI Training Control</p>
+      <p class="cs-body">People hear "AI training toggle" and picture a switch. This one took weeks to design, not the UI, the logic. Before a single pixel moved, I was in rooms with the PM, the privacy engineer, and the backend engineer working out the decision matrix: who sees a control at all, when is it editable, what does "locked" mean for a managed user versus an EU user, and what happens when someone moves between account types and their previous state needs to be restored.</p>
+      <p class="cs-body">The most important design decision wasn't a UI decision. It was a product stance: we will not train on EU or UK user data, full stop. No toggle. No opt-in. GDPR meant the answer was baked in, and the right interface for that wasn't a switch, it was an explanation. EU users see a message where the control would be, not a control they can't use.</p>
       <div class="cs-img"><img src="img/cdtc/logic-design.png" alt="CDTC state matrix — five control states mapped across user geography, account type, and account history" loading="lazy"></div>
-      <span class="cs-caption">State matrix — who sees a control, who doesn't, and what happens when account context changes</span>
-      <p class="cs-body">The managed client case was the other hard one. Enterprise admins set the training policy for their org — their users have no control. But there are two locked states: locked and active (admin enabled training) and locked and deactivated (admin disabled it). Each communicates both the current status and the reason. A user shouldn't see a disabled switch and wonder if something is broken. They should know their org made the call.</p>
+      <span class="cs-caption">State matrix, who sees a control, who doesn't, and what happens when account context changes</span>
+      <p class="cs-body">The managed client case was the other hard one. Enterprise admins set the training policy for their org, and their users have no control. But there are two locked states: locked and active (admin enabled training) and locked and deactivated (admin disabled it). Each communicates both the current status and the reason. A user shouldn't see a disabled switch and wonder if something is broken. They should know their org made the call.</p>
       <div class="cs-img-pair">
         <div class="cs-img"><img src="img/cdtc/state-editable-on.png" alt="CDTC — Editable & On: user has control, training active" loading="lazy"></div>
         <div class="cs-img"><img src="img/cdtc/state-editable-off.png" alt="CDTC — Editable & Off: user has control, training off" loading="lazy"></div>
       </div>
-      <span class="cs-caption">Editable states — user has control</span>
+      <span class="cs-caption">Editable states, user has control</span>
       <div class="cs-img-pair">
         <div class="cs-img"><img src="img/cdtc/state-locked-active.png" alt="CDTC — Locked & Active: admin has enabled training, user has no control" loading="lazy"></div>
         <div class="cs-img"><img src="img/cdtc/state-locked-deactivated.png" alt="CDTC — Locked & Deactivated: admin has disabled training, user has no control" loading="lazy"></div>
       </div>
-      <span class="cs-caption">Locked states — admin controls the setting, user sees attribution</span>
+      <span class="cs-caption">Locked states, admin controls the setting, user sees attribution</span>
       <div class="cs-img"><img src="img/cdtc/state-wont-train-eu.png" alt="CDTC — Won't Train: EU/UK users see an explanation instead of a control" loading="lazy"></div>
-      <span class="cs-caption">Won't Train — no toggle for EU/UK users. Grammarly doesn't train on that data. The UI reflects the stance.</span>
-      <p class="cs-body">Five states total. Each one communicating status, reason, and the right level of agency for that user's context. Launched June 20, 2024 — the same day Grammarly emailed 70 million users about the privacy policy update.</p>
+      <span class="cs-caption">Won't Train, no toggle for EU/UK users. Grammarly doesn't train on that data. The UI reflects the stance.</span>
+      <p class="cs-body">Five states total. Each one communicating status, reason, and the right level of agency for that user's context. Launched June 20, 2024, the same day Grammarly emailed 70 million users about the privacy policy update.</p>
     </div>
 
     <div class="cs-section">
       <p class="cs-section-header">CMP</p>
-      <p class="cs-body">A plug-in framework for product teams. Give us a feature name, a data list, and a usage explanation. We render the consent modal, the opt-out flow, the in-product invitation, the admin controls — same trust pillars and data language every time. It survived a major pivot (tone personalization → AI training controls) and extended from individual users all the way to org admins.</p>
+      <p class="cs-body">A plug-in framework for product teams. Give us a feature name, a data list, and a usage explanation. We render the consent modal, the opt-out flow, the in-product invitation, and the admin controls, with the same trust pillars and data language every time. It survived a major pivot (tone personalization → AI training controls) and extended from individual users all the way to org admins.</p>
       <div class="cs-img-pair">
         <div class="cs-img"><img src="img/cmp/Component - Feature setting.png" alt="CMP — feature consent toggle" loading="lazy"></div>
         <div class="cs-img"><img src="img/cmp/Component - Tailored assitance consent modal.png" alt="CMP — consent modal" loading="lazy"></div>
@@ -711,105 +750,105 @@
     <div class="cs-section-group">
       <div class="cs-section">
         <p class="cs-subsection-header">The word "tailored"</p>
-        <p class="cs-body">Not picked by accident. Before settling on a term, I audited how 17 competitors named their data consent features. Most default to "personalization" — safe, familiar, but vague. We wanted something that was relational to the user and honest about what the feature actually does. "Tailored" landed in the right quadrant: candid about data, but framed around value — not compliance. Grammarly learns your specific writing style, not just aggregate preferences. The word earns that.</p>
+        <p class="cs-body">Not picked by accident. Before settling on a term, I audited how 17 competitors named their data consent features. Most default to "personalization," safe, familiar, but vague. We wanted something that was relational to the user and honest about what the feature actually does. "Tailored" landed in the right quadrant: candid about data, but framed around value, not compliance. Grammarly learns your specific writing style, not just aggregate preferences. The word earns that.</p>
         <div class="cs-img"><img src="img/cmp/content-strategy-radar.png" alt="Competitor landscape — tailored positioned in the relational and value-forward quadrant vs. personalization, activity, training, and data sharing" loading="lazy"></div>
-        <span class="cs-caption">Competitive landscape — most companies use "personalization." We wanted to be relational to the user and invitingly value-forward. "Tailored" hit both.</span>
-        <p class="cs-body">We validated "tailored" through user research, including with ESL audiences. It tested as understandable, descriptive, and compelling — users intuitively connected it to something made specifically for them.</p>
+        <span class="cs-caption">Competitive landscape, most companies use "personalization." We wanted to be relational to the user and invitingly value-forward. "Tailored" hit both.</span>
+        <p class="cs-body">We validated "tailored" through user research, including with ESL audiences. It tested as understandable, descriptive, and compelling, and users intuitively connected it to something made specifically for them.</p>
         <div class="cs-img"><img src="img/cmp/content-strategy-tailored-quote.png" alt="User research quote — tailored is like going to a tailor, a suit made specifically for your measurements" loading="lazy"></div>
-        <span class="cs-caption">User quote from research — the tailor analogy surfaced unprompted across multiple participants.</span>
+        <span class="cs-caption">User quote from research, the tailor analogy surfaced unprompted across multiple participants.</span>
       </div>
 
       <div class="cs-section">
         <p class="cs-subsection-header">Every phrase chosen</p>
-        <p class="cs-body">The headline is a question: "Want Grammarly to be tailored to you?" Not a statement, not a pitch. Framing it as a question was deliberate — we didn't want to nudge users toward consent. We also rejected "tailored assistance" as the headline: too clinical, sounds like a feature name rather than a benefit. The Yes/No options sit directly below it, aligned — no visual hierarchy pushing toward one answer.</p>
-        <p class="cs-body">The body text was word-by-word. "Grammarly will collect and store some information about your writing" — transparent about what we take, nothing buried. "Understand what you're working on" — plain language for context collection, no jargon like "natural language processing." "Learn your style" — personalization framed as individual, not algorithmic.</p>
+        <p class="cs-body">The headline is a question: "Want Grammarly to be tailored to you?" Not a statement, not a pitch. Framing it as a question was deliberate, we didn't want to nudge users toward consent. We also rejected "tailored assistance" as the headline: too clinical, sounds like a feature name rather than a benefit. The Yes/No options sit directly below it, aligned, with no visual hierarchy pushing toward one answer.</p>
+        <p class="cs-body">The body text was word-by-word. "Grammarly will collect and store some information about your writing," transparent about what we take, nothing buried. "Understand what you're working on," plain language for context collection, no jargon like "natural language processing." "Learn your style," personalization framed as individual, not algorithmic.</p>
         <div class="cs-img"><img src="img/cmp/content-strategy-body-text.png" alt="Body text breakdown — each phrase annotated: collect and store, understand context, learn your style" loading="lazy"></div>
-        <span class="cs-caption">Body text annotated — three phrases, each carrying specific trust and transparency intent.</span>
+        <span class="cs-caption">Body text annotated, three phrases, each carrying specific trust and transparency intent.</span>
       </div>
 
       <div class="cs-section">
         <p class="cs-subsection-header">The consent moment</p>
-        <p class="cs-body">People make an experience-convenience tradeoff when they see a consent screen. We designed for that: lead with the feature benefit, make the data implications explicit, give people the detail they want without forcing it on them. The accordions carry the depth — most users won't open them, but the act of making them available is part of the trust signal. No jargon anywhere. Tested extensively, including with ESL audiences.</p>
+        <p class="cs-body">People make an experience-convenience tradeoff when they see a consent screen. We designed for that: lead with the feature benefit, make the data implications explicit, give people the detail they want without forcing it on them. The accordions carry the depth, and most users won't open them, but the act of making them available is part of the trust signal. No jargon anywhere. Tested extensively, including with ESL audiences.</p>
         <div class="cs-img"><img src="img/cmp/content-strategy-consent-annotated.png" alt="Consent modal annotated — proactively addresses concerns, accordion detail, privacy policy link, data implications clear" loading="lazy"></div>
-        <span class="cs-caption">Every element annotated — proactive concern addressing, accordion depth for those who want it, explicit data implications, Privacy Policy link for those who need it.</span>
+        <span class="cs-caption">Every element annotated, proactive concern addressing, accordion depth for those who want it, explicit data implications, and a Privacy Policy link for those who need it.</span>
       </div>
     </div>
 
     <div class="cs-section">
-      <p class="cs-section-header">BYOK — three quarters, one arc</p>
-      <p class="cs-body">Bring Your Own Key lets enterprise customers encrypt their Grammarly data with keys they control in their own AWS account. Grammarly never touches the key. The design challenge wasn't the cryptography — it was making a feature built for security teams legible to the IT or legal buyer who evaluates it, without dumbing it down for the engineer who sets it up.</p>
+      <p class="cs-section-header">BYOK, three quarters, one arc</p>
+      <p class="cs-body">Bring Your Own Key lets enterprise customers encrypt their Grammarly data with keys they control in their own AWS account. Grammarly never touches the key. The design challenge wasn't the cryptography, it was making a feature built for security teams legible to the IT or legal buyer who evaluates it, without dumbing it down for the engineer who sets it up.</p>
     </div>
 
     <div class="cs-section-group">
       <div class="cs-section">
-        <p class="cs-subsection-header">Q2 — Read-only</p>
-        <p class="cs-body">The MVP shipped BYOK as a status display only. Active or Inactive. To change it, contact your customer success manager. No self-serve, no controls. That was intentional — BYOK needed to exist in the admin panel before it could influence procurement decisions. Enterprise IT teams evaluate features before they buy. If it doesn't show up, it doesn't count.</p>
+        <p class="cs-subsection-header">Q2, Read-only</p>
+        <p class="cs-body">The MVP shipped BYOK as a status display only. Active or Inactive. To change it, contact your customer success manager. No self-serve, no controls. That was intentional, BYOK needed to exist in the admin panel before it could influence procurement decisions. Enterprise IT teams evaluate features before they buy. If it doesn't show up, it doesn't count.</p>
         <div class="cs-img-pair">
           <div class="cs-img"><img src="img/ekm/q2-active.png" alt="Q2 BYOK — Active status, managed by CSM" loading="lazy"></div>
           <div class="cs-img"><img src="img/ekm/q2-inactive.png" alt="Q2 BYOK — Inactive status, managed by CSM" loading="lazy"></div>
         </div>
-        <span class="cs-caption">Q2 MVP — BYOK as a read-only status. Active or Inactive. To change it, contact your CSM.</span>
+        <span class="cs-caption">Q2 MVP, BYOK as a read-only status. Active or Inactive. To change it, contact your CSM.</span>
       </div>
 
       <div class="cs-section">
-        <p class="cs-subsection-header">Q3 — Make encryption legible</p>
-        <p class="cs-body">Before you can ask someone to replace their encryption key, you have to make the current one visible. Q3 introduced the Grammarly-managed key as a named entity — surfacing the key ID, the last-updated date, and a clear path to BYOK. Encryption went from invisible infrastructure to something admins could actually see and reason about.</p>
+        <p class="cs-subsection-header">Q3, Make encryption legible</p>
+        <p class="cs-body">Before you can ask someone to replace their encryption key, you have to make the current one visible. Q3 introduced the Grammarly-managed key as a named entity, surfacing the key ID, the last-updated date, and a clear path to BYOK. Encryption went from invisible infrastructure to something admins could actually see and reason about.</p>
         <div class="cs-img-pair">
           <div class="cs-img"><img src="img/ekm/q3-managed-key.png" alt="Q3 — Grammarly Managed Key introduced, key ID visible, BYOK path surfaced" loading="lazy"></div>
           <div class="cs-img"><img src="img/ekm/q3-byok-active.png" alt="Q3 — BYOK active state, data encrypted with customer-hosted key" loading="lazy"></div>
         </div>
-        <span class="cs-caption">Q3 — Named the Grammarly-managed key, surfaced the key ID, added a path to BYOK. Made the default state legible before asking anyone to change it.</span>
+        <span class="cs-caption">Q3, named the Grammarly-managed key, surfaced the key ID, added a path to BYOK. Made the default state legible before asking anyone to change it.</span>
       </div>
 
       <div class="cs-section">
-        <p class="cs-subsection-header">Q4 — Self-serve</p>
-        <p class="cs-body">The self-serve flow started with an early concept I brought to drive alignment — a file-upload model to get the team's eyes on the experience before we locked scope. That design did its job: it quickly surfaced the real constraint — BYOK users need to provision a key in AWS KMS first, before handing anything to Grammarly. The concept got us to that discovery early. What shipped was a Key ARN entry form with a persistent link to the implementation guide.</p>
+        <p class="cs-subsection-header">Q4, Self-serve</p>
+        <p class="cs-body">The self-serve flow started with an early concept I brought to drive alignment, a file-upload model to get the team's eyes on the experience before we locked scope. That design did its job: it quickly surfaced the real constraint, BYOK users need to provision a key in AWS KMS first, before handing anything to Grammarly. The concept got us to that discovery early. What shipped was a Key ARN entry form with a persistent link to the implementation guide.</p>
         <div class="cs-img-pair">
           <div class="cs-img"><img src="img/ekm/q4-early-upload.png" alt="Early concept — file upload model used to drive alignment and surface scope questions" loading="lazy"></div>
           <div class="cs-img"><img src="img/ekm/q4-entry.png" alt="Q4 entry state — Grammarly-managed key active, Set up BYOK CTA" loading="lazy"></div>
         </div>
         <span class="cs-caption">Early concept used to drive the alignment conversation. The upload model surfaced the provisioning question before it became a build problem.</span>
-        <p class="cs-body">The entry point shows the Grammarly-managed key active, with a "Set up BYOK now" CTA. Before asking for any credentials, an explainer walks through how the process works and keeps the Grammarly-managed key active as a safety net until setup completes — no gap in data protection during the transition.</p>
+        <p class="cs-body">The entry point shows the Grammarly-managed key active, with a "Set up BYOK now" CTA. Before asking for any credentials, an explainer walks through how the process works and keeps the Grammarly-managed key active as a safety net until setup completes, no gap in data protection during the transition.</p>
         <div class="cs-img-pair">
           <div class="cs-img"><img src="img/ekm/q4-explainer.png" alt="Q4 — BYOK explainer modal: how it works, implementation guide link" loading="lazy"></div>
           <div class="cs-img"><img src="img/ekm/q4-form.png" alt="Q4 — Key ARN entry form with optional CloudWatch logs, IAM Role, Log Group" loading="lazy"></div>
         </div>
-        <span class="cs-caption">Explainer before the form — how it works, what you'll need, where to get it. Then: Key ARN, optional CloudWatch logs, IAM Role, Log Group.</span>
+        <span class="cs-caption">Explainer before the form, how it works, what you'll need, where to get it. Then: Key ARN, optional CloudWatch logs, IAM Role, Log Group.</span>
         <div class="cs-img"><img src="img/ekm/q4-cancel-guard.png" alt="Cancel guard — leaving mid-setup discards progress, Grammarly-managed key stays active" loading="lazy"></div>
-        <span class="cs-caption">Cancel guard — if you exit mid-setup, your Grammarly-managed key stays active. No ambiguity about what's protecting your data.</span>
+        <span class="cs-caption">Cancel guard, if you exit mid-setup, your Grammarly-managed key stays active. No ambiguity about what's protecting your data.</span>
       </div>
 
       <div class="cs-section">
         <p class="cs-subsection-header">The active state</p>
-        <p class="cs-body">These explorations pushed toward full transparency once BYOK was running — key details, IAM role, log group, an in-progress encryption status, a per-feature manifest. The assumption was that the key would change states and users would need to track it. That assumption didn't hold up. The key doesn't change states — so surfacing all that status was over-engineered. The team moved away from it on feasibility grounds.</p>
+        <p class="cs-body">These explorations pushed toward full transparency once BYOK was running, key details, IAM role, log group, an in-progress encryption status, and a per-feature manifest. The assumption was that the key would change states and users would need to track it. That assumption didn't hold up. The key doesn't change states, so surfacing all that status was over-engineered. The team moved away from it on feasibility grounds.</p>
         <div class="cs-img-pair">
           <div class="cs-img"><img src="img/ekm/active-encrypting.png" alt="Active state exploration — in-progress encryption status" loading="lazy"></div>
           <div class="cs-img"><img src="img/ekm/active-details.png" alt="Active state exploration — full key details and per-feature encryption coverage" loading="lazy"></div>
         </div>
-        <span class="cs-caption">Active state explorations — cut on feasibility. The key doesn't change states, so the status layer wasn't needed.</span>
+        <span class="cs-caption">Active state explorations, cut on feasibility. The key doesn't change states, so the status layer wasn't needed.</span>
       </div>
     </div>
 
     <div class="cs-section">
       <p class="cs-section-header">Privacy Hub</p>
-      <p class="cs-body">A concept that didn't ship. The existing privacy controls were organized around features — toggles scattered across settings, each owned by the team that shipped the feature. If you wanted to understand what Grammarly knew about you, there was no single place to look. The question we started with: what would it look like to organize privacy around data instead of features?</p>
-      <p class="cs-body">Before designing anything, I mapped how competitors handle data transparency — entry points, report request flows, download mechanics, deletion. The pattern: most companies bolt a "Download my data" link onto their settings page and call it done. The user flow is long, often opaque, and disconnected from the controls that actually matter.</p>
+      <p class="cs-body">A concept that didn't ship. The existing privacy controls were organized around features, toggles scattered across settings, each owned by the team that shipped the feature. If you wanted to understand what Grammarly knew about you, there was no single place to look. The question we started with: what would it look like to organize privacy around data instead of features?</p>
+      <p class="cs-body">Before designing anything, I mapped how competitors handle data transparency, entry points, report request flows, download mechanics, and deletion. The pattern: most companies bolt a "Download my data" link onto their settings page and call it done. The user flow is long, often opaque, and disconnected from the controls that actually matter.</p>
       <div class="cs-img"><img src="img/privacy-hub/competitor-review.png" alt="Competitor review — user flow from entry point through report request, generation, download, and management; entry point examples from Amazon and LinkedIn" loading="lazy"></div>
-      <span class="cs-caption">Competitor review — mapping the data download flow across major products. Most treat it as a legal checkbox, not a product surface.</span>
-      <p class="cs-body">The reframe: make data the first-class entity. Not "turn off Writing Suggestions" — but "here's what's collected about your writing, here's what it's used for, here's how to limit or delete it." Features become downstream of data. Turn off a data category and the features that depend on it respond. That organizational logic changes what a privacy setting even means.</p>
+      <span class="cs-caption">Competitor review, mapping the data download flow across major products. Most treat it as a legal checkbox, not a product surface.</span>
+      <p class="cs-body">The reframe: make data the first-class entity. Not "turn off Writing Suggestions," but "here's what's collected about your writing, here's what it's used for, here's how to limit or delete it." Features become downstream of data. Turn off a data category and the features that depend on it respond. That organizational logic changes what a privacy setting even means.</p>
       <div class="cs-img"><img src="img/privacy-hub/Home.png" alt="Privacy Hub home — data categories as the organizing principle" loading="lazy"></div>
-      <span class="cs-caption">Home — organized by data category, not by feature. Each entry shows what's collected and what controls you have.</span>
+      <span class="cs-caption">Home, organized by data category, not by feature. Each entry shows what's collected and what controls you have.</span>
       <div class="cs-img-pair">
         <div class="cs-img"><img src="img/privacy-hub/Communication audience.png" alt="Privacy Hub — data category detail view" loading="lazy"></div>
         <div class="cs-img"><img src="img/privacy-hub/Activity journal.png" alt="Privacy Hub — activity journal, right to be forgotten made tangible" loading="lazy"></div>
       </div>
-      <span class="cs-caption">Data category detail and activity journal — "right to be forgotten" as a real product surface, not a legal footnote.</span>
+      <span class="cs-caption">Data category detail and activity journal, "right to be forgotten" as a real product surface, not a legal footnote.</span>
     </div>
 
     <div class="cs-section">
       <p class="cs-section-header">Outcomes</p>
-      <p class="cs-body">CDTC launched June 20, 2024 — the same day Grammarly emailed 70 million users about the privacy policy update. A few months later, a random LinkedIn post about Grammarly's data practices surfaced in the comments with a screenshot of exactly the EU state we'd designed: "Since you created your account in the EU or UK, Grammarly will not use your content to train its models." The reply: "Ah, brilliant." The design was working in the wild, legible to people who weren't looking for it.</p>
-      <p class="cs-body">The CMP framework scaled across product teams without needing design on every feature. Privacy became a first-class surface — its own nav item, not a buried subsection. BYOK opened enterprise procurement conversations that wouldn't have happened otherwise.</p>
+      <p class="cs-body">CDTC launched June 20, 2024, the same day Grammarly emailed 70 million users about the privacy policy update. A few months later, a random LinkedIn post about Grammarly's data practices surfaced in the comments with a screenshot of exactly the EU state we'd designed: "Since you created your account in the EU or UK, Grammarly will not use your content to train its models." The reply: "Ah, brilliant." The design was working in the wild, legible to people who weren't looking for it.</p>
+      <p class="cs-body">The CMP framework scaled across product teams without needing design on every feature. Privacy became a first-class surface, its own nav item, not a buried subsection. BYOK opened enterprise procurement conversations that wouldn't have happened otherwise.</p>
     </div>
   </div>
 
@@ -820,18 +859,18 @@
     <div class="cs-section">
       <p class="cs-section-header">Background</p>
       <p class="cs-body">Three brands, same product. Grubhub, Seamless, and Eat24 shared most of their UI but had no shared system. Components were duplicated, patterns drifted, every team solving the same problems independently. The first step: centralize into a living style guide that could serve all three brands without losing their identity.</p>
-      <p class="cs-body">Grubhub didn't have a systems-first design culture when we started. Cookbook helped create one. Over time the system became a driver of product and design strategy — not just a repository of decisions that had already been made elsewhere.</p>
+      <p class="cs-body">Grubhub didn't have a systems-first design culture when we started. Cookbook helped create one. Over time the system became a driver of product and design strategy, not just a repository of decisions that had already been made elsewhere.</p>
     </div>
 
     <div class="cs-section">
     <p class="cs-section-header">Foundation</p>
-    <p class="cs-body">The system hierarchy came from interviews — how designers and engineers actually started features, where they got stuck, what information they wished they had. Those conversations shaped every structural decision.</p>
+    <p class="cs-body">The system hierarchy came from interviews, how designers and engineers actually started features, where they got stuck, and what information they wished they had. Those conversations shaped every structural decision.</p>
 
     <div class="cs-img" style="aspect-ratio: 2674 / 1504; border-radius: 8px 8px 0 0;"><img src="img/cookbook/stakeholder-interviews.png" alt="Stakeholder interview guide" loading="lazy" style="height: 100%; object-fit: cover; object-position: top;"></div>
-    <span class="cs-caption">Interview guide — mapping how teams build features and where they get stuck</span>
+    <span class="cs-caption">Interview guide, mapping how teams build features and where they get stuck</span>
 
     <div class="cs-img"><img src="img/cookbook/development-plan.png" alt="Living Style Guide 2.0 development plan" loading="lazy"></div>
-    <span class="cs-caption">Development plan — roadmap for building and documenting the living style guide</span>
+    <span class="cs-caption">Development plan, roadmap for building and documenting the living style guide</span>
     </div>
 
     <div class="cs-section">
@@ -839,35 +878,35 @@
     <p class="cs-body">Cookbook covered every layer of the stack. Style foundations: typography, semantic and perceptual color (light and dark), shape, dimension, line, icons, sound. Layout: device breakpoints, units and measurements, grid, spacing, page templates. Accessibility guides. 45+ cross-platform components.</p>
 
     <div class="cs-img"><img src="img/cookbook/style-typography.png" alt="Typography scale — phone, tablet, and stand scales" loading="lazy"></div>
-    <span class="cs-caption">Type scale — phone, tablet, and stand contexts, each with distinct size, line-height, and letter-spacing specs</span>
+    <span class="cs-caption">Type scale, phone, tablet, and stand contexts, each with distinct size, line-height, and letter-spacing specs</span>
 
     <div class="cs-img"><img src="img/cookbook/layout-space.png" alt="Spacing system" loading="lazy"></div>
-    <span class="cs-caption">Spacing system — scale and usage rules across all platforms</span>
+    <span class="cs-caption">Spacing system, scale and usage rules across all platforms</span>
 
-    <p class="cs-body">Above the component layer: Strategies — six higher-order docs covering how components work together in real product scenarios. Navigation, Search Navigation, Sheets vs. Dialogs, Forms, Connectivity & Outages, Delight. Not just what to use — when and why.</p>
+    <p class="cs-body">Above the component layer: Strategies, six higher-order docs covering how components work together in real product scenarios. Navigation, Search Navigation, Sheets vs. Dialogs, Forms, Connectivity & Outages, and Delight. Not just what to use, but when and why.</p>
 
     <div class="cs-img"><img src="img/cookbook/strategies-delight.png" alt="Delight strategy doc" loading="lazy"></div>
-    <span class="cs-caption">Delight strategy — conceptual frameworks from social science and product management applied to product design</span>
+    <span class="cs-caption">Delight strategy, conceptual frameworks from social science and product management applied to product design</span>
 
     <div class="cs-img"><img src="img/cookbook/a11y-dynamic-type.png" alt="Dynamic Type accessibility guide" loading="lazy"></div>
-    <span class="cs-caption">Dynamic Type — accessibility guide for adapting type across iOS and Android size categories</span>
-    <p class="cs-body">Contribution had a formal five-stage process — Intro, Discover, Suggest, Support, Document — so any team could add patterns without bypassing quality standards or bottlenecking the systems team. We negotiated a 15% engineering tech debt budget with leadership to fund cross-platform delivery. Governance designed in, not bolted on.</p>
+    <span class="cs-caption">Dynamic Type, accessibility guide for adapting type across iOS and Android size categories</span>
+    <p class="cs-body">Contribution had a formal five-stage process, Intro, Discover, Suggest, Support, and Document, so any team could add patterns without bypassing quality standards or bottlenecking the systems team. We negotiated a 15% engineering tech debt budget with leadership to fund cross-platform delivery. Governance designed in, not bolted on.</p>
     </div>
 
     <div class="cs-section">
     <p class="cs-section-header">Adoption</p>
-    <p class="cs-body">At 50+ designers, a system needs more than good components — it needs education. I structured onboarding around the questions people actually ask: what problem does this solve, what is it, how do I use it.</p>
+    <p class="cs-body">At 50+ designers, a system needs more than good components, it needs education. I structured onboarding around the questions people actually ask: what problem does this solve, what is it, how do I use it.</p>
 
     <div class="cs-img"><img src="img/cookbook/inflection-point.png" alt="The case for a design system" loading="lazy"></div>
-    <span class="cs-caption">The case for a design system — the team scale inflection point where shared systems become critical</span>
+    <span class="cs-caption">The case for a design system, the team scale inflection point where shared systems become critical</span>
 
     <div class="cs-img"><img src="img/cookbook/what-can-i-use.png" alt="Getting started with Cookbook" loading="lazy"></div>
-    <span class="cs-caption">Getting started — three entry points: Figma libraries, component docs, and the Cookbook Figma project</span>
+    <span class="cs-caption">Getting started, three entry points: Figma libraries, component docs, and the Cookbook Figma project</span>
 
-    <p class="cs-body">Impact tracked through quarterly surveys — designer-to-engineer communication, documentation quality, development velocity. Scores improved every quarter.</p>
+    <p class="cs-body">Impact tracked through quarterly surveys, designer-to-engineer communication, documentation quality, and development velocity. Scores improved every quarter.</p>
 
     <div class="cs-img"><img src="img/cookbook/survey-1.png" alt="Quarterly survey results" loading="lazy"></div>
-    <span class="cs-caption">"The pattern library helps me communicate with the development team" — survey scores, quarter over quarter</span>
+    <span class="cs-caption">"The pattern library helps me communicate with the development team," survey scores, quarter over quarter</span>
     </div>
 
     <div class="cs-section">
@@ -875,34 +914,34 @@
     <p class="cs-body">Two years in: 39 cross-platform patterns, a full year of engineering time saved, conversion goals exceeded. Experiments informed by Cookbook standards drove +5,260 DAGs and +$57.6M in annual restaurant revenue.</p>
 
     <div class="cs-img"><img src="img/cookbook/measuring impact 2 years.png" alt="Two-year impact scorecard" loading="lazy"></div>
-    <span class="cs-caption">Two-year scorecard — patterns, time savings, and conversion goals</span>
+    <span class="cs-caption">Two-year scorecard, patterns, time savings, and conversion goals</span>
 
-    <p class="cs-body">Experiments informed by Cookbook standards contributed +5,260 daily active guests (DAGs) and +$57.6M in annual restaurant revenue — the largest experiment wins in Grubhub's history at the time.</p>
+    <p class="cs-body">Experiments informed by Cookbook standards contributed +5,260 daily active guests (DAGs) and +$57.6M in annual restaurant revenue, the largest experiment wins in Grubhub's history at the time.</p>
 
-    <p class="cs-body">The longer-lasting influence was the people. Every designer who worked on Cookbook went on to lead design systems at other companies — Spotify, Pinterest, Nike, Zendesk, and others. That's the kind of influence that doesn't show up in a component count.</p>
+    <p class="cs-body">The longer-lasting influence was the people. Every designer who worked on Cookbook went on to lead design systems at other companies, Spotify, Pinterest, Nike, Zendesk, and others. That's the kind of influence that doesn't show up in a component count.</p>
     </div>
 
     <div class="cs-section">
     <p class="cs-section-header">Scale</p>
-    <p class="cs-body">Project Sunburst expanded Cookbook from the consumer app into the full three-sided marketplace — Diner, Restaurant, and Driver. The driver app lives in a car. The restaurant app lives in a busy kitchen. The system adapted: typography scales and control sizes tuned to each environment.</p>
+    <p class="cs-body">Project Sunburst expanded Cookbook from the consumer app into the full three-sided marketplace, Diner, Restaurant, and Driver. The driver app lives in a car. The restaurant app lives in a busy kitchen. The system adapted: typography scales and control sizes tuned to each environment.</p>
 
     <div class="cs-img"><img src="img/cookbook/flagship-products.png" alt="Three flagship products — Diner, Restaurant, Driver" loading="lazy"></div>
-    <span class="cs-caption">Three-sided marketplace — Diner, Restaurant, and Driver, each with their own product context</span>
+    <span class="cs-caption">Three-sided marketplace, Diner, Restaurant, and Driver, each with their own product context</span>
 
     <div class="cs-img"><img src="img/cookbook/environ-differences.png" alt="Environmental adaptation — car and kitchen contexts" loading="lazy"></div>
-    <span class="cs-caption">Environmental adaptation — type scales and control sizes adjusted for where the product is actually used</span>
+    <span class="cs-caption">Environmental adaptation, type scales and control sizes adjusted for where the product is actually used</span>
 
-    <p class="cs-body">Product sub-libraries — Diner, Restaurant, Care, Driver — extended Core with app-level components. Not just overrides: a reorder card in the Diner library knew about ratings, ETAs, and delivery fees. The same structure in Care knew about case status and support context. Core components wired to real product data.</p>
-    <p class="cs-body">Web, iOS, and Android — all consistent. iOS and Android each had Storybook-style component libraries so engineering could test states and validate changes without opening Figma.</p>
+    <p class="cs-body">Product sub-libraries, Diner, Restaurant, Care, and Driver, extended Core with app-level components. Not just overrides: a reorder card in the Diner library knew about ratings, ETAs, and delivery fees. The same structure in Care knew about case status and support context. Core components wired to real product data.</p>
+    <p class="cs-body">Web, iOS, and Android, all consistent. iOS and Android each had Storybook-style component libraries so engineering could test states and validate changes without opening Figma.</p>
 
     <div class="cs-img"><img src="img/cookbook/diner-reorder-cards.png" alt="Diner reorder cards" loading="lazy"></div>
-    <span class="cs-caption">Diner reorder cards — two variants with documented guidance on when to use each</span>
+    <span class="cs-caption">Diner reorder cards, two variants with documented guidance on when to use each</span>
 
     <div class="cs-img"><img src="img/cookbook/diner-active-order-footer.png" alt="Diner active order footer" loading="lazy"></div>
-    <span class="cs-caption">Active order footer — persistent order status, follows the diner through the app</span>
+    <span class="cs-caption">Active order footer, persistent order status, follows the diner through the app</span>
 
     <div class="cs-img"><img src="img/cookbook/care-data-capture.png" alt="Care data capture components" loading="lazy"></div>
-    <span class="cs-caption">Care data capture — Core input components wired to customer service context</span>
+    <span class="cs-caption">Care data capture, Core input components wired to customer service context</span>
     </div>
 
   </div>
@@ -913,103 +952,123 @@
 
     <div class="cs-section">
       <p class="cs-section-header">Background</p>
-      <p class="cs-body">DoorDash and Uber Eats were pulling ahead — not just visually, but structurally. Grubhub's apps were organized around how the product worked, not how people order food. Navigation cluttered with tabs that didn't earn their place. Pickup buried. Reorder buried. Every action a full-page navigation push. The head of product made the call: two designers, shape the redesign. I'd never heard that mandate before.</p>
+      <p class="cs-body">DoorDash and Uber Eats were pulling ahead, not just visually, but structurally. Grubhub's apps were organized around how the product worked, not how people order food. Navigation cluttered with tabs that didn't earn their place. Pickup buried. Reorder buried. Every action a full-page navigation push. The head of product made the call: two designers, shape the redesign. I'd never heard that mandate before.</p>
       <div class="cs-img"><img src="img/sunburst/IMG_0583.JPG" alt="The room — aligning with Phil (head of product) on the Sunburst direction" loading="lazy"></div>
     </div>
 
     <div class="cs-section">
       <p class="cs-section-header">The room</p>
-      <p class="cs-body">The systems team — designers who'd been at Grubhub long enough to know the product inside and out — spent two months working out the architectural direction. Full IA, full schematics, every pattern decided before anyone else touched it. Then we handed it to the team.</p>
+      <p class="cs-body">The systems team, designers who'd been at Grubhub long enough to know the product inside and out, spent two months working out the architectural direction. Full IA, full schematics, every pattern decided before anyone else touched it. Then we handed it to the team.</p>
     </div>
 
     <div class="cs-section">
     <p class="cs-section-header">Navigation</p>
     <p class="cs-body">The existing bottom nav had four permanent tabs: Restaurants, My Grubhub, Perks, Bag. The bag tab showed up even when it was empty. My Grubhub was an unfocused dump. New diners and returning diners landed in the same generic restaurant list with no personalization.</p>
-    <p class="cs-body">We collapsed it to Home, Perks, Orders, Account. The bag tab gone — replaced by a persistent order footer that follows the diner across the app, only appearing once a cart exists. Every tab had to earn its place. Home became a personalized landing: pickup and delivery exposed directly at the top, reorder favorites surfaced as one-tap cards — no longer buried in a separate tab or behind the address field.</p>
+    <p class="cs-body">We collapsed it to Home, Perks, Orders, Account. The bag tab gone, replaced by a persistent order footer that follows the diner across the app, only appearing once a cart exists. Every tab had to earn its place. Home became a personalized landing: pickup and delivery exposed directly at the top, reorder favorites surfaced as one-tap cards, no longer buried in a separate tab or behind the address field.</p>
 
     <div class="cs-img-pair">
       <div class="cs-img"><img src="img/sunburst/slide-03-4.png" alt="Baseline — Restaurants tab, old nav: Restaurants / My Grubhub / Perks / Bag" loading="lazy"></div>
       <div class="cs-img"><img src="img/sunburst/slide-03-2.png" alt="Sunburst — personalized Home, new nav: Home / Perks / Orders / Account" loading="lazy"></div>
     </div>
-    <span class="cs-caption">Baseline vs. Sunburst — old Restaurants tab and unfocused nav replaced with a personalized Home and intent-based navigation</span>
+    <span class="cs-caption">Baseline vs. Sunburst, old Restaurants tab and unfocused nav replaced with a personalized Home and intent-based navigation</span>
     </div>
 
     <div class="cs-section">
     <p class="cs-section-header">Sheet architecture</p>
-    <p class="cs-body">No sheet system in the baseline — every action pushed to a full new page. We designed a layered sheet system: filters, sorts, and the menu all slide up from the bottom. Fast, one-handed, interruptible. I prototyped the transitions in Principle before anything hit engineering.</p>
-    <p class="cs-body">Sorts and filters got rationalized at the same time. Six sort options that mattered — relevant, price, rating, distance, ETA, delivery fee. Deprecated the ones that didn't pull their weight: restaurant name sort, delivery minimum, rapid pickup filter, pickup distance slider. The filter panel simplified accordingly.</p>
+    <p class="cs-body">No sheet system in the baseline, and every action pushed to a full new page. We designed a layered sheet system: filters, sorts, and the menu all slide up from the bottom. Fast, one-handed, interruptible. I prototyped the transitions in Principle before anything hit engineering.</p>
+    <p class="cs-body">Sorts and filters got rationalized at the same time. Six sort options that mattered, relevant, price, rating, distance, ETA, and delivery fee. Deprecated the ones that didn't pull their weight: restaurant name sort, delivery minimum, rapid pickup filter, pickup distance slider. The filter panel simplified accordingly.</p>
 
     <div class="cs-img-pair">
       <div class="cs-img"><img src="img/sunburst/slide-07-5.png" alt="Sunburst sort sheet — layered sort options: Recommended, Fastest, Price, Rating, Delivery Fee, Distance" loading="lazy"></div>
       <div class="cs-img"><img src="img/sunburst/slide-17-3.png" alt="Sunburst persistent order footer — bag follows the diner across the app" loading="lazy"></div>
     </div>
-    <span class="cs-caption">Sheet architecture — sort as a layered bottom sheet; persistent order footer replaces the Bag tab</span>
+    <span class="cs-caption">Sheet architecture, sort as a layered bottom sheet; persistent order footer replaces the Bag tab</span>
     </div>
 
     <div class="cs-section">
     <p class="cs-section-header">Reorder</p>
-    <p class="cs-body">In the baseline, reorder lived in the My Grubhub tab — a separate destination with extra steps between you and whatever you had last week. We moved favorites to one-tap cards on the Home screen. No tab switch, no decisions, one tap.</p>
+    <p class="cs-body">In the baseline, reorder lived in the My Grubhub tab, a separate destination with extra steps between you and whatever you had last week. We moved favorites to one-tap cards on the Home screen. No tab switch, no decisions, one tap.</p>
 
     <div class="cs-img-pair">
       <div class="cs-img"><img src="img/sunburst/slide-19-4.png" alt="Baseline reorder — My Grubhub tab with past orders and extra steps" loading="lazy"></div>
       <div class="cs-img"><img src="img/sunburst/slide-20-1.png" alt="Sunburst reorder — one-tap favorites surfaced directly on Home" loading="lazy"></div>
     </div>
-    <span class="cs-caption">Baseline vs. Sunburst — reorder moved from a buried tab with extra decisions to one-tap favorites on Home</span>
+    <span class="cs-caption">Baseline vs. Sunburst, reorder moved from a buried tab with extra decisions to one-tap favorites on Home</span>
     </div>
 
     <div class="cs-section">
     <p class="cs-section-header">Menu + visual language</p>
-    <p class="cs-body">One design principle: Purposeful. Strip noise — fewer greys, tighter interactive color, better contrast. The menu went from a full-page push to a sheet that slides up from the bottom, covering the nav tabs. Same UX underneath, radically different feel.</p>
+    <p class="cs-body">One design principle: Purposeful. Strip noise, fewer greys, tighter interactive color, and better contrast. The menu went from a full-page push to a sheet that slides up from the bottom, covering the nav tabs. Same UX underneath, radically different feel.</p>
 
     <div class="cs-img-pair">
       <div class="cs-img"><img src="img/sunburst/slide-15-1.png" alt="Baseline menu — old color palette, standard navigation" loading="lazy"></div>
       <div class="cs-img"><img src="img/sunburst/slide-15-2.png" alt="Sunburst menu — new color palette, presenting as a bottom sheet" loading="lazy"></div>
     </div>
-    <span class="cs-caption">Menu before and after — updated palette and typography, now presenting as a sheet that covers the bottom tabs</span>
+    <span class="cs-caption">Menu before and after, updated palette and typography, now presenting as a sheet that covers the bottom tabs</span>
     </div>
 
     <div class="cs-section">
     <p class="cs-section-header">The rollout</p>
     <p class="cs-body">Before the wider launch, we stitched the full end-to-end flow and produced a sizzle reel with the help of a motion designer we called Sizzle. The CEO and founder of Grubhub saw it. It landed.</p>
-    <p class="cs-body">Rollout was phased — 5% smoke test scaling to 50% — with conversion, reorder rate, and launch time tracked at each gate. Grubhub was an experimentation company, but you can't A/B test a brand new experience the same way you gate a button color. The organizational trust to ship it was a metric in itself.</p>
+    <p class="cs-body">Rollout was phased, 5% smoke test scaling to 50%, with conversion, reorder rate, and launch time tracked at each gate. Grubhub was an experimentation company, but you can't A/B test a brand new experience the same way you gate a button color. The organizational trust to ship it was a metric in itself.</p>
     </div>
 
     <div class="cs-section">
     <p class="cs-section-header">Outcomes</p>
-    <p class="cs-body">Navigation, search, filtering, and reskinned light and dark modes all shipped. The patterns ran in the driver app, restaurant app, and web. The most impactful experience push in Grubhub's history at that point — presented to the C-suite, extended across every major surface.</p>
+    <p class="cs-body">Navigation, search, filtering, and reskinned light and dark modes all shipped. The patterns ran in the driver app, restaurant app, and web. The most impactful experience push in Grubhub's history at that point, presented to the C-suite, extended across every major surface.</p>
     </div>
   </div>
+  </div><!-- /#ui -->
 
   <script>
-    /* ── WebGL ──────────────────────────────────────────── */
+    /* ── BG animator: 50 warm-light colors, slowly cross-fading forever ─── */
     (function () {
-      const canvas = document.getElementById('cloud-bg');
-      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-      if (!gl) { canvas.style.background = '#151413'; return; }
-      const VS = `attribute vec2 a_pos; void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }`;
-      const FS = `
-        precision mediump float; uniform float u_time; uniform vec2 u_res;
-        float hash(vec2 p){p=fract(p*vec2(127.1,311.7));p+=dot(p,p+19.19);return fract(p.x*p.y);}
-        float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
-        float fbm(vec2 p){float v=0.0,a=0.52;mat2 rot=mat2(1.6,1.2,-1.2,1.6);for(int i=0;i<7;i++){v+=a*noise(p);p=rot*p;a*=0.48;}return v;}
-        void main(){
-          vec2 uv=gl_FragCoord.xy/u_res;uv.y=1.0-uv.y;
-          float t=u_time*0.022,tw=u_time*0.07;
-          vec2 q=vec2(fbm(uv+vec2(cos(tw)*0.4,sin(tw)*0.3)),fbm(uv+vec2(-sin(tw)*0.4,cos(tw)*0.3)+1.7));
-          vec2 r=vec2(fbm(uv+1.1*q+vec2(1.7,9.2)+vec2(cos(tw*0.6),sin(tw*0.6))*0.3),fbm(uv+1.1*q+vec2(8.3,2.8)+vec2(-sin(tw*0.6),cos(tw*0.6))*0.3));
-          float f=fbm(uv+r+t);float vf=1.0-smoothstep(0.05,0.42,uv.y);f*=vf;
-          vec3 base=vec3(0.082,0.078,0.075),cloud=vec3(0.14,0.130,0.120),wisp=vec3(0.18,0.167,0.154),light=vec3(0.22,0.204,0.188);
-          float lf=smoothstep(0.82,0.97,f)*vf*0.22;
-          vec3 col=mix(base,cloud,smoothstep(0.15,0.60,f));col=mix(col,wisp,smoothstep(0.60,0.90,f)*vf);col=mix(col,light,lf);
-          gl_FragColor=vec4(col,1.0);}`;
-      function compile(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);return s;}
-      const prog=gl.createProgram();gl.attachShader(prog,compile(gl.VERTEX_SHADER,VS));gl.attachShader(prog,compile(gl.FRAGMENT_SHADER,FS));gl.linkProgram(prog);gl.useProgram(prog);
-      const buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
-      const loc=gl.getAttribLocation(prog,'a_pos');gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
-      const uTime=gl.getUniformLocation(prog,'u_time'),uRes=gl.getUniformLocation(prog,'u_res');
-      function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;gl.viewport(0,0,canvas.width,canvas.height);gl.uniform2f(uRes,canvas.width,canvas.height);}
-      window.addEventListener('resize',resize);resize();
-      function tick(t){gl.uniform1f(uTime,t*0.001);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);requestAnimationFrame(tick);}
+      function hslToHex(h, s, l) {
+        s /= 100; l /= 100;
+        const c = (1 - Math.abs(2*l - 1)) * s;
+        const x = c * (1 - Math.abs((h/60) % 2 - 1));
+        const m = l - c/2;
+        let r, g, b;
+        if (h < 60)      { r=c; g=x; b=0; }
+        else if (h < 120){ r=x; g=c; b=0; }
+        else if (h < 180){ r=0; g=c; b=x; }
+        else if (h < 240){ r=0; g=x; b=c; }
+        else if (h < 300){ r=x; g=0; b=c; }
+        else             { r=c; g=0; b=x; }
+        const toHex = v => Math.round((v+m) * 255).toString(16).padStart(2,'0');
+        return '#' + toHex(r) + toHex(g) + toHex(b);
+      }
+      // 50 muted/sand-tone colors — narrow hue 25-55° (tan→honey), low sat, high lightness
+      const colors = [];
+      for (let i = 0; i < 50; i++) {
+        const h = 25 + (i / 50) * 30 + Math.sin(i * 0.5) * 4;
+        const s = 28 + Math.sin(i * 0.31) * 8;
+        const l = 81 + Math.cos(i * 0.42) * 4;
+        colors.push(hslToHex(h, s, l));
+      }
+      function rgb(hex) {
+        return [parseInt(hex.substr(1,2),16), parseInt(hex.substr(3,2),16), parseInt(hex.substr(5,2),16)];
+      }
+      function lerpHex(c1, c2, t) {
+        const a = rgb(c1), b = rgb(c2);
+        const lerp = (x, y) => Math.round(x + (y - x) * t);
+        return 'rgb(' + lerp(a[0],b[0]) + ',' + lerp(a[1],b[1]) + ',' + lerp(a[2],b[2]) + ')';
+      }
+      const ui = document.getElementById('ui');
+      const btn = document.getElementById('bg-cycle');
+      if (btn) btn.style.display = 'none';
+      const MS_PER_COLOR = 2500;
+      const start = performance.now();
+      function tick(now) {
+        const pos = ((now - start) / MS_PER_COLOR) % colors.length;
+        const i = Math.floor(pos);
+        const next = (i + 1) % colors.length;
+        const color = lerpHex(colors[i], colors[next], pos - i);
+        document.body.style.background = color;
+        if (ui) ui.style.background = color;
+        document.body.style.setProperty('--card-bg', color);
+        requestAnimationFrame(tick);
+      }
       requestAnimationFrame(tick);
     })();
 
@@ -1171,26 +1230,48 @@
 
       var sorted = cards.slice();
 
-      // Hero — slight delay before fade
-      setTimeout(function () {
-        var hero = document.querySelector('.hero');
-        if (hero) hero.style.opacity = '1';
-      }, 200);
+      // Wrap each letter of nav items in <span class="letter"> for the hover wave
+      function splitLetters(el) {
+        if (!el) return;
+        var counter = 0;
+        function walk(node) {
+          if (node.nodeType === Node.TEXT_NODE) {
+            var frag = document.createDocumentFragment();
+            var chars = node.textContent.split('');
+            chars.forEach(function (ch) {
+              var span = document.createElement('span');
+              span.className = 'letter';
+              span.style.setProperty('--i', counter++);
+              span.textContent = ch === ' ' ? ' ' : ch;
+              frag.appendChild(span);
+            });
+            node.parentNode.replaceChild(frag, node);
+          } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'svg' && node.tagName !== 'SVG') {
+            Array.from(node.childNodes).forEach(walk);
+          }
+        }
+        Array.from(el.childNodes).forEach(walk);
+      }
+      splitLetters(document.querySelector('.hero-logo'));
+      document.querySelectorAll('.hero-nav > *').forEach(splitLetters);
 
-      // Cards staggered L→R: 400ms–1900ms
-      sorted.forEach(function (card, i) {
+      // Stagger nav items in: logo → About → Email → Calendly → Resume → footer
+      var navItems = [
+        document.querySelector('.hero-logo'),
+        ...document.querySelectorAll('.hero-nav > *'),
+        document.querySelector('footer')
+      ];
+      navItems.forEach(function (el, i) {
         setTimeout(function () {
-          card.style.zIndex = cards.length + i;
-          card.style.visibility = 'visible';
-          card.style.opacity = '1';
-        }, 400 + i * 300);
+          if (el) el.style.opacity = '1';
+        }, 200 + i * 80);
       });
 
-      // Footer
-      setTimeout(function () {
-        var footer = document.querySelector('footer');
-        if (footer) footer.style.opacity = '1';
-      }, 2400);
+      // Cards: deal into place via CSS animation, staggered
+      sorted.forEach(function (card, i) {
+        card.style.zIndex = cards.length + i;
+        card.style.animationDelay = (0.15 + i * 0.12) + 's';
+      });
 
 
       // Initialize z-indices in DOM order so stacking is predictable
@@ -1198,6 +1279,18 @@
       cards.forEach(function (card, i) { card.style.zIndex = i + 1; });
 
       var dragging = null, startX, startY, origX, origY, origTransform, moved;
+      var isRotating = false, rotCenterX, rotCenterY, rotStartAngle, rotInitialDeg;
+      var ROTATE_CURSOR = "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='23 4 23 10 17 10'/><path d='M20.49 15a9 9 0 1 1-2.12-9.36L23 10'/></svg>\") 12 12, alias";
+      function isOnCorner(card, cx, cy) {
+        var r = card.getBoundingClientRect();
+        var x = cx - r.left, y = cy - r.top;
+        var CORNER = 30;
+        return (x < CORNER || x > r.width - CORNER) && (y < CORNER || y > r.height - CORNER);
+      }
+      function parseRot(t) {
+        var m = /rotate\(([-\d.]+)deg\)/.exec(t || '');
+        return m ? parseFloat(m[1]) : 0;
+      }
 
       document.addEventListener('touchmove', function(e) {
         if (e.target.closest && e.target.closest('.modal-inner')) return;
@@ -1225,8 +1318,23 @@
           origTransform = card.style.transform;
           moved = false;
           card.style.zIndex = '999';
+          isRotating = isOnCorner(card, e.clientX, e.clientY);
+          if (isRotating) {
+            var r = card.getBoundingClientRect();
+            rotCenterX = r.left + r.width / 2;
+            rotCenterY = r.top + r.height / 2;
+            rotStartAngle = Math.atan2(e.clientY - rotCenterY, e.clientX - rotCenterX);
+            rotInitialDeg = parseRot(origTransform);
+          }
           window.addEventListener('mousemove', onMove);
           window.addEventListener('mouseup', onUp);
+        });
+        card.addEventListener('mousemove', function (e) {
+          if (dragging) return;
+          card.style.cursor = isOnCorner(card, e.clientX, e.clientY) ? ROTATE_CURSOR : 'grab';
+        });
+        card.addEventListener('mouseleave', function () {
+          if (!dragging) card.style.cursor = '';
         });
       });
 
@@ -1281,15 +1389,21 @@
           dragging.classList.add('dragging');
         }
         if (moved) {
-          var parentRect = dragging.parentElement.getBoundingClientRect();
-          var minX = -parentRect.left;
-          var maxX = window.innerWidth - parentRect.left - cardW;
-          var minY = -parentRect.top;
-          var maxY = window.innerHeight - parentRect.top - cardH;
-          var newX = Math.max(minX, Math.min(maxX, origX + dx));
-          var newY = Math.max(minY, Math.min(maxY, origY + dy));
-          dragging.style.left = newX + 'px';
-          dragging.style.top  = newY + 'px';
+          if (isRotating) {
+            var curAngle = Math.atan2(e.clientY - rotCenterY, e.clientX - rotCenterX);
+            var deltaDeg = (curAngle - rotStartAngle) * 180 / Math.PI;
+            dragging.style.transform = 'rotate(' + (rotInitialDeg + deltaDeg).toFixed(1) + 'deg)';
+          } else {
+            var parentRect = dragging.parentElement.getBoundingClientRect();
+            var minX = -parentRect.left;
+            var maxX = window.innerWidth - parentRect.left - cardW;
+            var minY = -parentRect.top;
+            var maxY = window.innerHeight - parentRect.top - cardH;
+            var newX = Math.max(minX, Math.min(maxX, origX + dx));
+            var newY = Math.max(minY, Math.min(maxY, origY + dy));
+            dragging.style.left = newX + 'px';
+            dragging.style.top  = newY + 'px';
+          }
         }
       }
 
@@ -1300,14 +1414,16 @@
         var card = dragging;
         dragging = null;
         card.classList.remove('dragging');
-        card.style.transform = origTransform;
+        if (!isRotating && !moved) {
+          card.style.transform = origTransform;
+        }
         zTop++;
         card.style.zIndex = zTop;
-        if (moved) {
-        } else {
+        if (!moved) {
           var poolId = card.dataset.pool;
           if (poolId) openModal(poolId);
         }
+        isRotating = false;
         moved = false;
       }
     })();
