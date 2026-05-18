@@ -371,12 +371,16 @@
     #now-playing[hidden] { display: none; }
     #now-playing .np-text { color: #ffffff !important; mix-blend-mode: difference; display: inline-block; white-space: nowrap; }
     .np-text-wrap {
+      position: relative;
       display: inline-block; max-width: 18em; overflow: hidden;
     }
-    .np-text-wrap.overflowing {
-      -webkit-mask-image: linear-gradient(to right, black 82%, transparent 100%);
-      mask-image: linear-gradient(to right, black 82%, transparent 100%);
+    .np-text-wrap::after {
+      content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 3em;
+      background: linear-gradient(to right, transparent, var(--card-bg));
+      pointer-events: none; opacity: 0;
+      transition: opacity .2s ease;
     }
+    .np-text-wrap.overflowing::after { opacity: 1; }
     .np-text-wrap.overflowing:hover .np-text {
       animation: np-marquee 7s ease-in-out infinite alternate;
     }
@@ -1487,10 +1491,10 @@
         function tick() {
           fetch('/api/spotify').then(function (r) { return r.json(); }).then(function (d) {
             if (d && d.playing) show(d.title + ' by ' + d.artist);
-            else if (isLocal)  show('Track title by Artist');
+            else if (isLocal)  show('An Extremely Long Track Title That Definitely Overflows by The Long-Named Artist');
             else               np.hidden = true;
           }).catch(function () {
-            if (isLocal) show('Track title by Artist');
+            if (isLocal) show('An Extremely Long Track Title That Definitely Overflows by The Long-Named Artist');
             else         np.hidden = true;
           });
         }
