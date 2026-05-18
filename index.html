@@ -44,8 +44,6 @@
     ]
   }
   </script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <style>
     @font-face { font-family: "SuperSans"; src: url("fonts/SuperSans-Regular.otf") format("opentype"); font-weight: 400; font-display: swap; }
@@ -78,7 +76,6 @@
     body { font-family: var(--font-main); font-weight: 400; line-height: 1.6; color: var(--text-primary); background-color: var(--bg-base); overflow-x: hidden; }
 
 
-    .grain { position: fixed; inset: -100%; z-index: 1; pointer-events: none; width: 300%; height: 300%; opacity: .045; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)'/%3E%3C/svg%3E"); background-size: 180px 180px; }
 
     section, footer { position: relative; z-index: 2; }
     a { color: inherit; text-decoration: none; }
@@ -314,7 +311,6 @@
 
     @media (max-width: 640px) {
       html, body { overflow: hidden; height: 100%; max-width: 100vw; }
-      #map-reset { display: none; }
       .modal-inner { flex-direction: column; overflow-y: auto; }
       .modal-left { width: 100%; border-right: none; padding: 1.5rem; align-items: flex-start; justify-content: flex-start; }
       .modal-right { padding: 2rem 1.5rem; overflow-y: visible; }
@@ -420,10 +416,7 @@
     .about-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; height: 100vh; width: 100vw; }
     .about-quad { position: relative; overflow: hidden; background: var(--bg-surface); }
     .about-quad-video video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) sepia(0.55) brightness(1.05); transition: filter .5s ease; }
-    #leaflet-map { width: 100%; height: 100%; }
     .quad-label { position: absolute; bottom: 1.25rem; left: 1.25rem; font-family: var(--font-main); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; opacity: 0.55; z-index: 1000; pointer-events: none; }
-    .leaflet-tooltip { background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-secondary); font-family: var(--font-main); font-size: .65rem; letter-spacing: .04em; box-shadow: none; border-radius: 4px; padding: .25rem .5rem; }
-    .leaflet-tooltip::before { display: none; }
 
     /* ── SYNTHIA Diagram ─────────────────────────────── */
     .synthia-diagram { margin: 1.75rem 0; display: flex; flex-direction: column; align-items: flex-start; }
@@ -500,35 +493,6 @@
       transition: filter .5s ease;
     }
 
-    #leaflet-map { width: 100%; height: 100%; }
-
-    #map-reset {
-      position: absolute; bottom: 1.25rem; right: 1.25rem; z-index: 1000;
-      background: transparent; border: none;
-      color: var(--text-muted); font-size: 1.8rem; line-height: 1;
-      width: 3rem; height: 3rem; border-radius: 6px;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      opacity: 0; pointer-events: none;
-      transition: opacity .2s ease, color var(--transition);
-    }
-    #map-reset.visible { opacity: 1; pointer-events: auto; }
-    #map-reset:hover { color: var(--text-primary); }
-
-    .quad-label {
-      position: absolute; bottom: 1.25rem; left: 1.25rem;
-      font-family: var(--font-main); font-size: .68rem;
-      letter-spacing: .06em; text-transform: uppercase;
-      opacity: 0.55; z-index: 1000; pointer-events: none;
-    }
-
-    .leaflet-tooltip {
-      background: var(--bg-elevated); border: 1px solid var(--border);
-      color: var(--text-secondary); font-family: var(--font-main);
-      font-size: .65rem; letter-spacing: .04em; box-shadow: none;
-      border-radius: 4px; padding: .25rem .5rem;
-    }
-    .leaflet-tooltip::before { display: none; }
-
     /* ── UI wrapper: holds bg so mix-blend-mode text has a backdrop to blend against ─── */
     #ui {
       position: fixed; inset: 0;
@@ -568,7 +532,6 @@
       </filter>
     </defs>
   </svg>
-  <div class="grain" aria-hidden="true"></div>
 
   <div id="ui">
   <button id="bg-cycle" aria-label="Cycle background" title="Cycle background">
@@ -601,8 +564,8 @@
           <span class="s-card__glyph"><i class="ph-light ph-atom"></i></span>
         </div>
         <div class="s-card__face s-card__face--life">
-          <img class="life-draw" src="pics/IMG_0995.JPG" alt="">
-          <img class="life-real" src="pics/IMG_0995.JPG" alt="">
+          <img loading="lazy" decoding="async" fetchpriority="low" class="life-draw" src="pics/IMG_0995.JPG" alt="">
+          <img loading="lazy" decoding="async" fetchpriority="low" class="life-real" src="pics/IMG_0995.JPG" alt="">
         </div>
       </button>
 
@@ -615,8 +578,8 @@
           <span class="s-card__glyph"><i class="ph-light ph-blueprint"></i></span>
         </div>
         <div class="s-card__face s-card__face--life">
-          <img class="life-draw" src="pics/IMG_0216.jpg" alt="">
-          <img class="life-real" src="pics/IMG_0216.jpg" alt="">
+          <img loading="lazy" decoding="async" fetchpriority="low" class="life-draw" src="pics/IMG_0216.jpg" alt="">
+          <img loading="lazy" decoding="async" fetchpriority="low" class="life-real" src="pics/IMG_0216.jpg" alt="">
         </div>
       </button>
 
@@ -629,8 +592,8 @@
           <span class="s-card__glyph"><i class="ph-light ph-brain"></i></span>
         </div>
         <div class="s-card__face s-card__face--life">
-          <img class="life-draw" src="pics/IMG_0325.jpg" alt="">
-          <img class="life-real" src="pics/IMG_0325.jpg" alt="">
+          <img loading="lazy" decoding="async" fetchpriority="low" class="life-draw" src="pics/IMG_0325.jpg" alt="">
+          <img loading="lazy" decoding="async" fetchpriority="low" class="life-real" src="pics/IMG_0325.jpg" alt="">
         </div>
       </button>
 
@@ -643,8 +606,8 @@
           <span class="s-card__glyph"><i class="ph-light ph-hand-eye"></i></span>
         </div>
         <div class="s-card__face s-card__face--life">
-          <img class="life-draw" src="pics/IMG_0349.jpg" alt="">
-          <img class="life-real" src="pics/IMG_0349.jpg" alt="">
+          <img loading="lazy" decoding="async" fetchpriority="low" class="life-draw" src="pics/IMG_0349.jpg" alt="">
+          <img loading="lazy" decoding="async" fetchpriority="low" class="life-real" src="pics/IMG_0349.jpg" alt="">
         </div>
       </button>
 
@@ -657,8 +620,8 @@
           <span class="s-card__glyph"><i class="ph-light ph-fingerprint"></i></span>
         </div>
         <div class="s-card__face s-card__face--life">
-          <img class="life-draw" src="pics/IMG_0351.jpg" alt="">
-          <img class="life-real" src="pics/IMG_0351.jpg" alt="">
+          <img loading="lazy" decoding="async" fetchpriority="low" class="life-draw" src="pics/IMG_0351.jpg" alt="">
+          <img loading="lazy" decoding="async" fetchpriority="low" class="life-real" src="pics/IMG_0351.jpg" alt="">
         </div>
       </button>
 
@@ -671,8 +634,8 @@
           <span class="s-card__glyph"><i class="ph-light ph-flower-lotus"></i></span>
         </div>
         <div class="s-card__face s-card__face--life">
-          <img class="life-draw" src="pics/IMG_0385.jpg" alt="">
-          <img class="life-real" src="pics/IMG_0385.jpg" alt="">
+          <img loading="lazy" decoding="async" fetchpriority="low" class="life-draw" src="pics/IMG_0385.jpg" alt="">
+          <img loading="lazy" decoding="async" fetchpriority="low" class="life-real" src="pics/IMG_0385.jpg" alt="">
         </div>
       </button>
 
