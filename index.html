@@ -367,8 +367,9 @@
     /* ── Footer ───────────────────────────────────────── */
     footer { position: fixed; bottom: 1.5rem; left: 2rem; right: 2rem; display: flex; align-items: center; justify-content: space-between; background: var(--card-bg); }
     .footer-name, .footer-contact { font-family: var(--font-main); font-weight: 400; font-size: .85rem; color: var(--text-secondary); letter-spacing: -.03em; }
-    #now-playing { display: inline-flex; align-items: center; gap: .45em; text-decoration: none; }
+    #now-playing { display: inline-flex; align-items: center; gap: .55em; text-decoration: none; mix-blend-mode: normal; color: inherit !important; }
     #now-playing[hidden] { display: none; }
+    #now-playing .np-text { color: #ffffff !important; mix-blend-mode: difference; }
     .np-art {
       width: 2.4em; height: 2.4em; display: block; object-fit: cover;
       border-radius: 50%;
