@@ -372,19 +372,12 @@
     #now-playing .np-text { color: #ffffff !important; mix-blend-mode: difference; }
     .np-art-wrap {
       position: relative; display: inline-block;
-      width: 2.4em; height: 2.4em; border-radius: 50%;
-    }
-    .np-art-wrap::after {
-      content: ''; position: absolute; inset: 0;
-      border: 0.5px solid #ffffff;
-      border-radius: 50%;
-      mix-blend-mode: difference;
-      pointer-events: none;
+      width: 2.4em; height: 2.4em;
     }
     .np-art {
-      width: 100%; height: 100%; display: block; object-fit: cover;
-      border-radius: 50%;
-      animation: vinyl-spin 7s linear infinite;
+      width: 100%; height: 100%; display: block;
+      animation: vinyl-spin 5s linear infinite;
+      transform-origin: center;
     }
     @keyframes vinyl-spin { to { transform: rotate(360deg); } }
     .footer-contact { display: flex; gap: .4rem; align-items: center; }
@@ -664,8 +657,16 @@
   <footer>
     <span class="footer-name">© 2026 Bobby Kenner</span>
     <span id="now-playing" class="footer-name" hidden>
-      <span class="np-art-wrap">
-        <img class="np-art" alt="" aria-hidden="true" />
+      <span class="np-art-wrap" aria-hidden="true">
+        <svg class="np-art" viewBox="0 0 64 64">
+          <circle cx="32" cy="32" r="32" fill="#0a0a0a"/>
+          <circle cx="32" cy="32" r="28" fill="none" stroke="#1c1c1c" stroke-width="0.4"/>
+          <circle cx="32" cy="32" r="24" fill="none" stroke="#1c1c1c" stroke-width="0.4"/>
+          <circle cx="32" cy="32" r="20" fill="none" stroke="#1c1c1c" stroke-width="0.4"/>
+          <circle cx="32" cy="32" r="16" fill="none" stroke="#1c1c1c" stroke-width="0.4"/>
+          <circle cx="32" cy="32" r="11" fill="#e8e0cf"/>
+          <circle cx="32" cy="32" r="1.2" fill="#0a0a0a"/>
+        </svg>
       </span>
       <span class="np-text"></span>
     </span>
@@ -1455,23 +1456,23 @@
       document.querySelectorAll('.hero-nav > *').forEach(splitLetters);
       window.__splitLetters = splitLetters;
 
-      // Spotify "now playing" in footer (hidden when nothing is playing)
+      // Spotify "now playing" in footer (hidden when nothing is playing).
+      // The vinyl record graphic is static markup; only text + visibility change.
       (function () {
         var np = document.getElementById('now-playing');
         if (!np) return;
-        var art = np.querySelector('.np-art');
         var text = np.querySelector('.np-text');
+        var isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+        function show(t) { text.textContent = t; np.hidden = false; }
         function tick() {
           fetch('/api/spotify').then(function (r) { return r.json(); }).then(function (d) {
-            if (d && d.playing) {
-              text.textContent = d.title + ' — ' + d.artist;
-              if (d.art) art.src = d.art;
-              art.style.display = d.art ? '' : 'none';
-              np.hidden = false;
-            } else {
-              np.hidden = true;
-            }
-          }).catch(function () { np.hidden = true; });
+            if (d && d.playing) show(d.title + ' — ' + d.artist);
+            else if (isLocal)  show('Track title — Artist name');
+            else               np.hidden = true;
+          }).catch(function () {
+            if (isLocal) show('Track title — Artist name');
+            else         np.hidden = true;
+          });
         }
         tick();
         setInterval(tick, 30000);
