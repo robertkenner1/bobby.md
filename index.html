@@ -370,10 +370,20 @@
     #now-playing { display: inline-flex; align-items: center; gap: .55em; text-decoration: none; mix-blend-mode: normal; color: inherit !important; }
     #now-playing[hidden] { display: none; }
     #now-playing .np-text { color: #ffffff !important; mix-blend-mode: difference; }
-    .np-art {
-      width: 2.4em; height: 2.4em; display: block; object-fit: cover;
+    .np-art-wrap {
+      position: relative; display: inline-block;
+      width: 2.4em; height: 2.4em; border-radius: 50%;
+    }
+    .np-art-wrap::after {
+      content: ''; position: absolute; inset: 0;
+      border: 0.5px solid #ffffff;
       border-radius: 50%;
-      box-shadow: 0 0 0 0.18em #0d0d0d;
+      mix-blend-mode: difference;
+      pointer-events: none;
+    }
+    .np-art {
+      width: 100%; height: 100%; display: block; object-fit: cover;
+      border-radius: 50%;
       animation: vinyl-spin 7s linear infinite;
     }
     @keyframes vinyl-spin { to { transform: rotate(360deg); } }
@@ -654,7 +664,9 @@
   <footer>
     <span class="footer-name">© 2026 Bobby Kenner</span>
     <span id="now-playing" class="footer-name" hidden>
-      <img class="np-art" alt="" aria-hidden="true" />
+      <span class="np-art-wrap">
+        <img class="np-art" alt="" aria-hidden="true" />
+      </span>
       <span class="np-text"></span>
     </span>
   </footer>
