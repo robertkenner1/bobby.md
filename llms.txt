@@ -1,0 +1,22 @@
+# Bobby Kenner
+
+> Software designer working on design systems, identity, and privacy. Previously at Superhuman, Grammarly, and Grubhub.
+
+Bobby Kenner is a software designer based in the New York area. His portfolio is at https://bobby.md.
+
+## Work
+
+Six case studies, each describing a shipped product or design initiative:
+
+- **Cookbook (Grubhub)** — one design system unifying three brands and every platform.
+- **Grammarly Design System** — making an invisible system accessible to the organization.
+- **SYNTHIA (Superhuman)** — synthetic user evaluation surfaced wherever designers work.
+- **Privacy as a platform (Grammarly)** — consent, control, and enterprise data governance at 40M users.
+- **Identity (Superhuman)** — one identity layer for three products in motion. id.superhuman.com.
+- **Project Sunburst (Grubhub)** — the year Grubhub caught up on mobile.
+
+## Contact
+
+- Email: kennerdesign@gmail.com
+- Book time: https://calendly.com/bobbykenner
+- GitHub: https://github.com/robertkenner1
