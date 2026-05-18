@@ -1491,11 +1491,11 @@
         }
         function tick() {
           fetch('/api/spotify').then(function (r) { return r.json(); }).then(function (d) {
-            if (d && d.playing) show(d.title + ' by ' + d.artist);
-            else if (isLocal)  show('An Extremely Long Track Title That Definitely Overflows by The Long-Named Artist');
+            if (d && d.playing) show(d.title + ' • ' + d.artist);
+            else if (isLocal)  show('An Extremely Long Track Title That Definitely Overflows • The Long-Named Artist');
             else               np.hidden = true;
           }).catch(function () {
-            if (isLocal) show('An Extremely Long Track Title That Definitely Overflows by The Long-Named Artist');
+            if (isLocal) show('An Extremely Long Track Title That Definitely Overflows • The Long-Named Artist');
             else         np.hidden = true;
           });
         }
