@@ -1454,10 +1454,10 @@
         function tick() {
           fetch('/api/spotify').then(function (r) { return r.json(); }).then(function (d) {
             if (d && d.playing) show(d.title + ' by ' + d.artist);
-            else if (isLocal)  show('Track title by Artist +2');
+            else if (isLocal)  show('Track title by Artist');
             else               np.hidden = true;
           }).catch(function () {
-            if (isLocal) show('Track title by Artist +2');
+            if (isLocal) show('Track title by Artist');
             else         np.hidden = true;
           });
         }
