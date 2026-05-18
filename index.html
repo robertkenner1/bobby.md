@@ -369,7 +369,21 @@
     .footer-name, .footer-contact { font-family: var(--font-main); font-weight: 400; font-size: .85rem; color: var(--text-secondary); letter-spacing: -.03em; }
     #now-playing { display: inline-flex; align-items: center; gap: .55em; text-decoration: none; mix-blend-mode: normal; color: inherit !important; }
     #now-playing[hidden] { display: none; }
-    #now-playing .np-text { color: #ffffff !important; mix-blend-mode: difference; }
+    #now-playing .np-text { color: #ffffff !important; mix-blend-mode: difference; display: inline-block; white-space: nowrap; }
+    .np-text-wrap {
+      display: inline-block; max-width: 18em; overflow: hidden;
+    }
+    .np-text-wrap.overflowing {
+      -webkit-mask-image: linear-gradient(to right, black 82%, transparent 100%);
+      mask-image: linear-gradient(to right, black 82%, transparent 100%);
+    }
+    .np-text-wrap.overflowing:hover .np-text {
+      animation: np-marquee 7s ease-in-out infinite alternate;
+    }
+    @keyframes np-marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(var(--np-scroll, 0)); }
+    }
     .np-art {
       display: inline-block; line-height: 1;
       font-size: 1.4em;
@@ -655,7 +669,7 @@
     <span class="footer-name">© 2026 Bobby Kenner</span>
     <span id="now-playing" class="footer-name" hidden>
       <i class="ph-light ph-vinyl-record np-art" aria-hidden="true"></i>
-      <span class="np-text"></span>
+      <span class="np-text-wrap"><span class="np-text"></span></span>
     </span>
   </footer>
 
@@ -1448,9 +1462,28 @@
       (function () {
         var np = document.getElementById('now-playing');
         if (!np) return;
+        var wrap = np.querySelector('.np-text-wrap');
         var text = np.querySelector('.np-text');
         var isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-        function show(t) { text.textContent = t; np.hidden = false; }
+
+        function measureOverflow() {
+          // Strip any prior transform/scroll so we measure naturally
+          wrap.classList.remove('overflowing');
+          wrap.style.removeProperty('--np-scroll');
+          requestAnimationFrame(function () {
+            var diff = text.scrollWidth - wrap.clientWidth;
+            if (diff > 0) {
+              wrap.classList.add('overflowing');
+              wrap.style.setProperty('--np-scroll', '-' + diff + 'px');
+            }
+          });
+        }
+
+        function show(t) {
+          text.textContent = t;
+          np.hidden = false;
+          measureOverflow();
+        }
         function tick() {
           fetch('/api/spotify').then(function (r) { return r.json(); }).then(function (d) {
             if (d && d.playing) show(d.title + ' by ' + d.artist);
@@ -1463,6 +1496,7 @@
         }
         tick();
         setInterval(tick, 30000);
+        window.addEventListener('resize', measureOverflow);
       })();
 
       // Lock #copy-email width to its "Email" content size so "Copied" overflows without pushing siblings
