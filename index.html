@@ -367,9 +367,10 @@
     /* ── Footer ───────────────────────────────────────── */
     footer { position: fixed; bottom: 1.5rem; left: 2rem; right: 2rem; display: flex; align-items: center; justify-content: space-between; background: var(--card-bg); }
     .footer-name, .footer-contact { font-family: var(--font-main); font-weight: 400; font-size: .85rem; color: var(--text-secondary); letter-spacing: -.03em; }
-    #now-playing { display: inline-flex; align-items: center; gap: .55em; text-decoration: none; mix-blend-mode: normal; color: inherit !important; }
+    #now-playing { display: inline-flex; align-items: center; gap: .55em; text-decoration: none; mix-blend-mode: normal; color: inherit !important; transition: opacity .25s ease; }
     #now-playing[hidden] { display: none; }
-    #now-playing .np-text { color: #ffffff !important; mix-blend-mode: difference; display: inline-block; white-space: nowrap; }
+    #now-playing .np-text { color: #ffffff !important; mix-blend-mode: difference; display: inline-block; white-space: nowrap; background: var(--card-bg); }
+    .np-sep { margin: 0 .35em; opacity: .7; }
     .np-text-wrap {
       position: relative;
       display: inline-block; max-width: 18em; overflow: hidden;
@@ -673,8 +674,8 @@
   <footer>
     <span class="footer-name">© 2026 Bobby Kenner</span>
     <span id="now-playing" class="footer-name" hidden>
-      <i class="ph-light ph-vinyl-record np-art" aria-hidden="true"></i>
       <span class="np-text-wrap"><span class="np-text"></span></span>
+      <i class="ph-light ph-vinyl-record np-art" aria-hidden="true"></i>
     </span>
   </footer>
 
@@ -1484,19 +1485,47 @@
           });
         }
 
-        function show(t) {
-          text.textContent = t;
+        var currentKey = null;
+        var FADE_MS = 250;
+        function applyContent(title, artist) {
+          var sep = document.createElement('span');
+          sep.className = 'np-sep';
+          sep.textContent = '•';
+          text.replaceChildren(document.createTextNode(title), sep, document.createTextNode(artist));
           np.hidden = false;
           measureOverflow();
         }
+        function show(title, artist) {
+          var key = title + '' + artist;
+          if (key === currentKey && !np.hidden) return;
+          var wasHidden = np.hidden;
+          currentKey = key;
+          if (wasHidden) {
+            applyContent(title, artist);
+            np.style.opacity = '0';
+            requestAnimationFrame(function () { np.style.opacity = '1'; });
+          } else {
+            np.style.opacity = '0';
+            setTimeout(function () {
+              applyContent(title, artist);
+              requestAnimationFrame(function () { np.style.opacity = '1'; });
+            }, FADE_MS);
+          }
+        }
+        function hide() {
+          if (np.hidden) return;
+          currentKey = null;
+          np.style.opacity = '0';
+          setTimeout(function () { np.hidden = true; }, FADE_MS);
+        }
         function tick() {
           fetch('/api/spotify').then(function (r) { return r.json(); }).then(function (d) {
-            if (d && d.playing) show(d.title + ' • ' + d.artist);
-            else if (isLocal)  show('An Extremely Long Track Title That Definitely Overflows • The Long-Named Artist');
-            else               np.hidden = true;
+            if (d && d.playing) show(d.title, d.artist);
+            else if (isLocal)  show('An Extremely Long Track Title That Definitely Overflows', 'The Long-Named Artist');
+            else               hide();
           }).catch(function () {
-            if (isLocal) show('An Extremely Long Track Title That Definitely Overflows • The Long-Named Artist');
-            else         np.hidden = true;
+            if (isLocal) show('An Extremely Long Track Title That Definitely Overflows', 'The Long-Named Artist');
+            else         hide();
           });
         }
         tick();
