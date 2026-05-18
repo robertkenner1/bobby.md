@@ -65,10 +65,13 @@ export default async function handler(req, res) {
   // Mid-size image (typically 300px) — sharp on retina at our display size
   const art = images.length ? (images[1] || images[0] || images[images.length - 1]).url : null;
 
+  const artists = now.body.item.artists.map(a => a.name);
+  const artist  = artists.length > 1 ? `${artists[0]} +${artists.length - 1}` : artists[0];
+
   return res.status(200).json({
     playing: true,
     title: now.body.item.name,
-    artist: now.body.item.artists.map(a => a.name).join(', '),
+    artist,
     album: album.name,
     art
   });
