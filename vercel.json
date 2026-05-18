@@ -1,3 +1,4 @@
 {
-  "framework": null
+  "framework": null,
+  "buildCommand": "node scripts/build-pics-manifest.js"
 }

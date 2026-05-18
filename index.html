@@ -112,17 +112,17 @@
     .card-group {
       position: absolute; inset: 0; overflow: visible; pointer-events: none;
     }
-    .card-pile { position: absolute; top: 50%; }
+    .card-pile { position: absolute; top: 50%; transform-origin: center center; transition: width .65s cubic-bezier(.22,1,.36,1), height .65s cubic-bezier(.22,1,.36,1), transform .65s cubic-bezier(.22,1,.36,1); }
 
     .s-card {
       position: absolute; pointer-events: all;
       width: 175px; height: 250px;
-      background: var(--card-bg); border: 1px solid transparent;
-      border-radius: var(--radius); padding: 1rem;
+      background: var(--card-bg); border: 0;
+      border-radius: var(--radius); padding: 0; overflow: hidden;
+      clip-path: inset(0 round var(--radius));
       text-align: left; cursor: grab; font-family: var(--font-main);
-      display: flex; flex-direction: column; justify-content: space-between;
       user-select: none;
-      transition: background .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+      transition: left .65s cubic-bezier(.22,1,.36,1), top .65s cubic-bezier(.22,1,.36,1), transform .65s cubic-bezier(.22,1,.36,1), scale .65s cubic-bezier(.22,1,.36,1), border-radius .65s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
       animation: card-drop 0.7s cubic-bezier(0.16, 1, 0.3, 1) backwards;
     }
     @keyframes card-drop {
@@ -135,7 +135,39 @@
       border-radius: inherit;
       mix-blend-mode: difference;
       pointer-events: none;
+      z-index: 2;
     }
+    .s-card__face {
+      position: absolute; inset: 0;
+      background: var(--card-bg);
+      transition: opacity .35s ease;
+    }
+    .s-card__face--work {
+      padding: 1rem;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .s-card__face--life { opacity: 0; pointer-events: none; }
+    .s-card__face--life video,
+    .s-card__face--life img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      pointer-events: none;
+    }
+    .s-card__face--life .life-draw {
+      filter: brightness(var(--draw-brightness, 1.3)) contrast(var(--draw-contrast, 1.5)) url(#threshold);
+      mix-blend-mode: difference;
+      opacity: 1;
+      transition: opacity .3s steps(10, end);
+    }
+    .s-card__face--life .life-real {
+      opacity: 0;
+      transition: opacity .3s steps(10, end);
+    }
+    .s-card:hover .s-card__face--life .life-draw { opacity: 0; }
+    .s-card:hover .s-card__face--life .life-real { opacity: 1; }
+    body.view-life .s-card__face--work { opacity: 0; }
+    body.view-life .s-card__face--life { opacity: 1; }
+    body.view-life .s-card { scale: 1.28; }
 
     /* Smart auto-contrast text + icons (always visible on any bg) */
     .hero-label-inner,
@@ -145,7 +177,6 @@
     .s-card__glyph i, .footer-contact svg, .hero-nav svg,
     #modal-title, #modal-company, #modal-close, #modal-close i,
     #modal-sticky-title, #modal-sticky-close, #modal-sticky-close i,
-    #about-modal-close,
     .cs-section-header, .cs-subsection-header, .cs-body,
     .cs-label, .cs-caption, .cs-callout {
       color: #ffffff !important;
@@ -200,9 +231,9 @@
     .modal-right { width: 100%; max-width: 720px; margin: 0 auto; padding: 2rem 2rem 5rem; }
     #modal-content { width: 100%; }
 
-    .hero-nav { display: flex; gap: 1.75rem; align-items: center; font-family: var(--font-main); font-weight: 400; letter-spacing: -.03em; font-size: clamp(.85rem, 1.8vw, 1.05rem); color: var(--text-secondary); flex-wrap: wrap; }
+    .hero-nav { display: flex; gap: 2.5rem; align-items: center; font-family: var(--font-main); font-weight: 400; letter-spacing: -.03em; font-size: clamp(.85rem, 1.8vw, 1.05rem); color: var(--text-secondary); flex-wrap: wrap; }
     .hero-nav a, .hero-nav button, .hero-nav span[id] { color: var(--text-secondary); transition: color var(--transition); font: inherit; }
-    #copy-email { display: inline-block; min-width: 4em; text-align: center; }
+    #copy-email { display: inline-flex; justify-content: center; align-items: center; white-space: nowrap; overflow: visible; }
     .hero-nav a:hover, .hero-nav button:hover, .hero-nav span[id]:hover { color: var(--text-primary); }
 
     #modal-sticky-nav { display: none; }
@@ -292,10 +323,9 @@
     .footer-contact a:hover { color: var(--text-primary); }
     .footer-contact svg { width: 10px; height: 10px; flex-shrink: 0; }
 
-    /* ── About modal ──────────────────────────────────── */
-    #about-modal { position: fixed; inset: 0; z-index: 200; background: var(--card-bg); opacity: 0; pointer-events: none; transition: opacity .28s ease; }
-    #about-modal.open { opacity: 1; pointer-events: all; }
-    #about-modal-close { display: none; }
+    /* ── Views ──────────────────────────────────── */
+    .view-tab { background: none; border: 0; padding: 0; margin: 0; font: inherit; cursor: pointer; color: inherit; -webkit-appearance: none; appearance: none; line-height: inherit; text-decoration: none; }
+    .view-tab[aria-current="true"] { cursor: default; }
 
     .about-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; height: 100vh; width: 100vw; }
     .about-quad { position: relative; overflow: hidden; background: var(--bg-surface); }
@@ -438,6 +468,18 @@
 </head>
 
 <body class="calm">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <filter id="threshold">
+        <feColorMatrix type="matrix" values="0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0 0 0 1 0"/>
+        <feComponentTransfer>
+          <feFuncR type="discrete" tableValues="0 1"/>
+          <feFuncG type="discrete" tableValues="0 1"/>
+          <feFuncB type="discrete" tableValues="0 1"/>
+        </feComponentTransfer>
+      </filter>
+    </defs>
+  </svg>
   <div class="grain" aria-hidden="true"></div>
 
   <div id="ui">
@@ -450,7 +492,8 @@
     <div class="hero-logo"><span class="hero-label-inner"><i class="ph-light ph-asterisk hero-icon" aria-hidden="true"></i> Bobby designs software</span></div>
     <button class="hero-back" id="hero-back" type="button"><span class="hero-label-inner"><i class="ph-light ph-arrow-left hero-icon" aria-hidden="true"></i> Back</span></button>
     <div class="hero-nav">
-      <button id="card-about" style="background:none;border:none;padding:0;font:inherit;cursor:pointer">My life</button>
+      <a id="view-work" class="view-tab" href="#" role="button">Work</a>
+      <a id="view-life" class="view-tab" href="#life" role="button">Life</a>
       <a id="copy-email" href="mailto:kennerdesign@gmail.com">Email</a>
       <a href="https://calendly.com/bobbykenner" target="_blank" rel="noopener" class="nav-ext">Book time<span class="nav-ext-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></span></a>
     </div>
@@ -462,74 +505,90 @@
     <div class="card-pile">
 
       <button class="s-card" data-pool="cookbook">
-        <div>
-          <div class="s-card__company">Grubhub</div>
-          <span class="s-card__title">Cookbook, one design system for three brands and every platform.</span>
+        <div class="s-card__face s-card__face--work">
+          <div>
+            <div class="s-card__company">Grubhub</div>
+            <span class="s-card__title">Cookbook, one design system for three brands and every platform.</span>
+          </div>
+          <span class="s-card__glyph"><i class="ph-light ph-atom"></i></span>
         </div>
-        <span class="s-card__glyph"><i class="ph-light ph-atom"></i></span>
+        <div class="s-card__face s-card__face--life">
+          <img class="life-draw" src="pics/IMG_0995.JPG" alt="">
+          <img class="life-real" src="pics/IMG_0995.JPG" alt="">
+        </div>
       </button>
 
       <button class="s-card" data-pool="gds">
-        <div>
-          <div class="s-card__company">Grammarly</div>
-          <span class="s-card__title">Grammarly Design System, making an invisible system accessible to the org.</span>
+        <div class="s-card__face s-card__face--work">
+          <div>
+            <div class="s-card__company">Grammarly</div>
+            <span class="s-card__title">Grammarly Design System, making an invisible system accessible to the org.</span>
+          </div>
+          <span class="s-card__glyph"><i class="ph-light ph-blueprint"></i></span>
         </div>
-        <span class="s-card__glyph"><i class="ph-light ph-blueprint"></i></span>
+        <div class="s-card__face s-card__face--life">
+          <img class="life-draw" src="pics/IMG_0216.jpg" alt="">
+          <img class="life-real" src="pics/IMG_0216.jpg" alt="">
+        </div>
       </button>
 
       <button class="s-card" data-pool="synthia">
-        <div>
-          <div class="s-card__company">Superhuman</div>
-          <span class="s-card__title">SYNTHIA, synthetic user evaluation, surfaced wherever designers work.</span>
+        <div class="s-card__face s-card__face--work">
+          <div>
+            <div class="s-card__company">Superhuman</div>
+            <span class="s-card__title">SYNTHIA, synthetic user evaluation, surfaced wherever designers work.</span>
+          </div>
+          <span class="s-card__glyph"><i class="ph-light ph-brain"></i></span>
         </div>
-        <span class="s-card__glyph"><i class="ph-light ph-brain"></i></span>
+        <div class="s-card__face s-card__face--life">
+          <img class="life-draw" src="pics/IMG_0325.jpg" alt="">
+          <img class="life-real" src="pics/IMG_0325.jpg" alt="">
+        </div>
       </button>
 
       <button class="s-card" data-pool="trust">
-        <div>
-          <div class="s-card__company">Grammarly</div>
-          <span class="s-card__title">Privacy as a platform, consent, control, and enterprise data governance at 40M users.</span>
+        <div class="s-card__face s-card__face--work">
+          <div>
+            <div class="s-card__company">Grammarly</div>
+            <span class="s-card__title">Privacy as a platform, consent, control, and enterprise data governance at 40M users.</span>
+          </div>
+          <span class="s-card__glyph"><i class="ph-light ph-hand-eye"></i></span>
         </div>
-        <span class="s-card__glyph"><i class="ph-light ph-hand-eye"></i></span>
+        <div class="s-card__face s-card__face--life">
+          <img class="life-draw" src="pics/IMG_0349.jpg" alt="">
+          <img class="life-real" src="pics/IMG_0349.jpg" alt="">
+        </div>
       </button>
 
       <button class="s-card" data-pool="auth">
-        <div>
-          <div class="s-card__company">Superhuman</div>
-          <span class="s-card__title">One identity layer for three products in motion. id.superhuman.com.</span>
+        <div class="s-card__face s-card__face--work">
+          <div>
+            <div class="s-card__company">Superhuman</div>
+            <span class="s-card__title">One identity layer for three products in motion. id.superhuman.com.</span>
+          </div>
+          <span class="s-card__glyph"><i class="ph-light ph-fingerprint"></i></span>
         </div>
-        <span class="s-card__glyph"><i class="ph-light ph-fingerprint"></i></span>
+        <div class="s-card__face s-card__face--life">
+          <img class="life-draw" src="pics/IMG_0351.jpg" alt="">
+          <img class="life-real" src="pics/IMG_0351.jpg" alt="">
+        </div>
       </button>
 
       <button class="s-card" data-pool="sunburst">
-        <div>
-          <div class="s-card__company">Grubhub</div>
-          <span class="s-card__title">Project Sunburst, the year Grubhub caught up on mobile.</span>
+        <div class="s-card__face s-card__face--work">
+          <div>
+            <div class="s-card__company">Grubhub</div>
+            <span class="s-card__title">Project Sunburst, the year Grubhub caught up on mobile.</span>
+          </div>
+          <span class="s-card__glyph"><i class="ph-light ph-flower-lotus"></i></span>
         </div>
-        <span class="s-card__glyph"><i class="ph-light ph-flower-lotus"></i></span>
+        <div class="s-card__face s-card__face--life">
+          <img class="life-draw" src="pics/IMG_0385.jpg" alt="">
+          <img class="life-real" src="pics/IMG_0385.jpg" alt="">
+        </div>
       </button>
 
-
     </div>
-    </div>
-  </div>
-
-  <!-- About Modal -->
-  <div id="about-modal" aria-hidden="true">
-    <button id="about-modal-close" aria-label="Close"><span class="hero-back-arrow" aria-hidden="true">←</span> Back</button>
-    <div class="about-grid">
-      <div class="about-quad about-quad-video">
-        <video src="video/49-clip.mp4" muted playsinline preload="auto"></video>
-      </div>
-      <div class="about-quad about-quad-video">
-        <video src="video/bobby-clip.mp4" muted playsinline preload="auto" style="object-fit: cover; object-position: center 40%; width: 100%; height: 100%;"></video>
-      </div>
-      <div class="about-quad about-quad-video">
-        <video src="video/sandra-matilda-clip.mp4" muted playsinline preload="auto"></video>
-      </div>
-      <div class="about-quad about-quad-video">
-        <video src="video/building-for-matilda-clip.mp4" muted playsinline preload="auto"></video>
-      </div>
     </div>
   </div>
 
@@ -1169,11 +1228,10 @@
       if (!skipHistory) history.pushState({}, '', location.pathname);
     }
 
-    // Hero back button → close whichever modal is open
+    // Hero back button → close story modal
     var heroBack = document.getElementById('hero-back');
     if (heroBack) heroBack.addEventListener('click', function () {
-      if (aboutModal && aboutModal.classList.contains('open')) closeAboutModal();
-      else closeModal();
+      closeModal();
     });
 
 
@@ -1183,67 +1241,113 @@
       var CLICK_THRESHOLD = 4;
       var cardW = 175, cardH = 250;
 
+      var circleRotPool   = [-5, 22, -18, 14, -25, 19];
+      var lineRotPool     = [-3, 8, -6, 10, -4, 7];
+      var lineYJitterPool = [0, -15, 10, -8, 15, -5];
+      var spreadYStagger  = [0, -32, 24, -28, 18, -22];
 
-      function positionCards() {
-        var vw = window.innerWidth;
-        var n  = cards.length; // 6
-
-        // t: 0 = circular pile, 1 = horizontal line
+      // Cluster layout (work): circle ↔ horizontal line based on viewport width
+      function computeCluster(n, vw) {
         var t = Math.max(0, Math.min(1, (vw - 500) / 900));
-
-        var scale = Math.max(1, Math.min(3, vw / 1200));
-
-        // Circle params
-        var r       = Math.round(cardW * 0.5);
+        var r = Math.round(cardW * 0.5);
         var circleW = cardW + r * 2;
         var circleH = cardH + r * 2;
-        var circleRot = [-5, 22, -18, 14, -25, 19];
-
-        // Line params
         var spacing = Math.round(cardW * 0.9);
         var lineW   = (n - 1) * spacing + cardW;
         var lineH   = cardH + 60;
-        var lineYJitter = [0, -15, 10, -8, 15, -5];
-        var lineRot     = [-3, 8, -6, 10, -4, 7];
-
-        // Interpolated pile size
         var pileW = Math.round(circleW + t * (lineW - circleW));
         var pileH = Math.round(circleH + t * (lineH - circleH));
-
-        // Hero left padding matches clamp(1.5rem, 8vw, 6rem) at 18px base
-        var heroPad = Math.max(27, Math.min(108, 0.08 * vw));
-        // Pile center x: centered at t=0, left-aligned with hero at t=1
-        var pileCenterX = Math.round(vw / 2);
-
-        var pileEl = document.querySelector('.card-pile');
-        pileEl.style.width     = pileW + 'px';
-        pileEl.style.height    = pileH + 'px';
-        pileEl.style.left      = pileCenterX + 'px';
-        pileEl.style.transform = 'translate(-50%, -50%) scale(' + scale + ')';
-
         var cx = Math.round(pileW / 2 - cardW / 2);
         var cy = Math.round(pileH / 2 - cardH / 2);
+        var positions = [];
+        for (var i = 0; i < n; i++) {
+          var angle = (i / n) * Math.PI * 2;
+          var circleX = cx + Math.round(Math.cos(angle) * r);
+          var circleY = cy + Math.round(Math.sin(angle) * r);
+          var lineX = Math.round(pileW / 2 - lineW / 2 + i * spacing);
+          var lineY = cy + lineYJitterPool[i % lineYJitterPool.length];
+          var cRot = circleRotPool[i % circleRotPool.length];
+          var lRot = lineRotPool[i % lineRotPool.length];
+          positions.push({
+            x: Math.round(circleX + t * (lineX - circleX)),
+            y: Math.round(circleY + t * (lineY - circleY)),
+            rot: cRot + t * (lRot - cRot)
+          });
+        }
+        return { pileW: pileW, pileH: pileH, positions: positions };
+      }
 
-        cards.forEach(function (card, i) {
-          // Circle position
+      // Spread layout (life): cluster ↔ spread (mirrors work's interpolation, but rotation=0)
+      function computeSpread(n, vw) {
+        var t = Math.max(0, Math.min(1, (vw - 500) / 900));
+
+        // Cluster (narrow) — circle of cards, like work but no rotation
+        var r = Math.round(cardW * 0.5);
+        var circleW = cardW + r * 2;
+        var circleH = cardH + r * 2;
+
+        // Spread (wide) — separated horizontal row
+        var lifeScale   = 1.28;
+        var visualCardW = cardW * lifeScale;
+        var gap         = 12;
+        var spacing     = visualCardW + gap;
+        var lineW       = (n - 1) * spacing + visualCardW;
+        var lineH       = cardH * lifeScale + 100;
+
+        var pileW = Math.round(circleW + t * (lineW - circleW));
+        var pileH = Math.round(circleH + t * (lineH - circleH));
+        var cx    = Math.round(pileW / 2 - cardW / 2);
+        var cy    = Math.round(pileH / 2 - cardH / 2);
+
+        var positions = [];
+        for (var i = 0; i < n; i++) {
           var angle   = (i / n) * Math.PI * 2;
           var circleX = cx + Math.round(Math.cos(angle) * r);
           var circleY = cy + Math.round(Math.sin(angle) * r);
+          var lineX   = Math.round((pileW / 2 - cardW / 2) + (i - (n - 1) / 2) * spacing);
+          var lineY   = cy + spreadYStagger[i % spreadYStagger.length];
+          positions.push({
+            x: Math.round(circleX + t * (lineX - circleX)),
+            y: Math.round(circleY + t * (lineY - circleY)),
+            rot: 0
+          });
+        }
+        return { pileW: pileW, pileH: pileH, positions: positions };
+      }
 
-          // Line position — reversed so highest z-index card is leftmost
-          var lineX = Math.round(pileW / 2 - lineW / 2 + (n - 1 - i) * spacing);
-          var lineY = cy + lineYJitter[i];
+      function positionPile(pileEl) {
+        var pileCards = Array.from(pileEl.querySelectorAll('.s-card'));
+        var n = pileCards.length;
+        if (!n) return;
 
-          var x   = Math.round(circleX + t * (lineX - circleX));
-          var y   = Math.round(circleY + t * (lineY - circleY));
-          var rot = circleRot[i] + t * (lineRot[i] - circleRot[i]);
+        var vw = window.innerWidth;
+        var isLife = document.body.classList.contains('view-life');
+        var layout = isLife ? computeSpread(n, vw) : computeCluster(n, vw);
 
-          card.style.left      = x + 'px';
-          card.style.top       = y + 'px';
-          card.style.transform = 'rotate(' + rot + 'deg)';
+        var scale = Math.max(1, Math.min(3, vw / 1200));
+        if (isLife) {
+          var fit = Math.min(scale, (vw - 40) / layout.pileW);
+          scale = Math.max(0.5, fit);
+        }
+
+        pileEl.style.width     = layout.pileW + 'px';
+        pileEl.style.height    = layout.pileH + 'px';
+        pileEl.style.left      = Math.round(vw / 2) + 'px';
+        pileEl.style.transform = 'translate(-50%, -50%) scale(' + scale + ')';
+
+        pileCards.forEach(function (card, i) {
+          var pos = layout.positions[i];
+          card.style.left      = pos.x + 'px';
+          card.style.top       = pos.y + 'px';
+          card.style.transform = 'rotate(' + pos.rot + 'deg)';
         });
       }
 
+      function positionCards() {
+        document.querySelectorAll('.card-pile').forEach(positionPile);
+      }
+
+      window.__positionCards = positionCards;
       positionCards();
       window.addEventListener('resize', positionCards);
 
@@ -1274,6 +1378,16 @@
       splitLetters(document.querySelector('.hero-logo'));
       document.querySelectorAll('.hero-nav > *').forEach(splitLetters);
       window.__splitLetters = splitLetters;
+
+      // Lock #copy-email width to its "Email" content size so "Copied" overflows without pushing siblings
+      var copyEmailEl = document.getElementById('copy-email');
+      if (copyEmailEl) {
+        copyEmailEl.style.width = copyEmailEl.offsetWidth + 'px';
+        window.addEventListener('resize', function () {
+          copyEmailEl.style.width = '';
+          copyEmailEl.style.width = copyEmailEl.offsetWidth + 'px';
+        });
+      }
 
 
       // Cards: deal into place via CSS animation, staggered
@@ -1382,7 +1496,7 @@
         }
         zTop++;
         card.style.zIndex = zTop;
-        if (!moved) {
+        if (!moved && !document.body.classList.contains('view-life')) {
           var poolId = card.dataset.pool;
           if (poolId) openModal(poolId);
         }
@@ -1428,7 +1542,7 @@
         }
         zTop++;
         card.style.zIndex = zTop;
-        if (!moved) {
+        if (!moved && !document.body.classList.contains('view-life')) {
           var poolId = card.dataset.pool;
           if (poolId) openModal(poolId);
         }
@@ -1436,9 +1550,6 @@
         moved = false;
       }
     })();
-
-    const cardAbout = document.getElementById('card-about');
-    if (cardAbout) cardAbout.addEventListener('click', openAboutModal);
 
     // Desktop: copy to clipboard. Mobile: mailto href handles it natively.
     const copyEmail = document.getElementById('copy-email');
@@ -1476,105 +1587,73 @@
       closeModal();
     });
 
-    /* ── About modal ────────────────────────────────────── */
-    const aboutModal = document.getElementById('about-modal');
-    let mapInitialized = false;
-
-    function openAboutModal(push) {
-      aboutModal.classList.add('open'); aboutModal.setAttribute('aria-hidden', 'false');
-      document.body.classList.add('modal-open');
-      if (push !== false) history.pushState({ about: true }, '', '#about');
-    }
-
-    function closeAboutModal(skipHistory) {
-      aboutModal.classList.remove('open'); aboutModal.setAttribute('aria-hidden', 'true');
-      document.body.classList.remove('modal-open');
-      if (!skipHistory) history.pushState({}, '', location.pathname);
-    }
-
-    function initMap() {
-      const map = L.map('leaflet-map', { zoomControl: false, attributionControl: false, renderer: L.svg() });
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 19 }).addTo(map);
-      const stops = [
-        { coords: [41.7798,-71.4373], label: 'Cranston, RI' },
-        { coords: [40.7465,-74.0020], label: 'Chelsea, NYC' },
-        { coords: [40.7549,-74.0020], label: 'Hudson Yards' },
-        { coords: [40.7870,-73.9754], label: 'Upper West Side' },
-        { coords: [41.0395,-73.8685], label: 'Irvington, NY' },
-      ];
-      const line = L.polyline(stops.map(s => s.coords), { color: 'rgba(44,38,32,0.45)', weight: 1.5 }).addTo(map);
-      stops.forEach((stop, i) => {
-        L.circleMarker(stop.coords, { radius: i===stops.length-1?6:4, fillColor: i===stops.length-1?'#2c2620':'rgba(44,38,32,0.6)', color:'transparent', fillOpacity:1 })
-         .bindTooltip(stop.label, { permanent:false, direction:'top' }).addTo(map);
-      });
-      const initialBounds = line.getBounds();
-      const lastStop = stops[stops.length - 1];
-      map.invalidateSize();
-
-      if (window.innerWidth < 640) {
-        map.setView(lastStop.coords, 11);
-        map.dragging.disable();
-        map.touchZoom.disable();
-        map.doubleClickZoom.disable();
-        map.scrollWheelZoom.disable();
-        map.boxZoom.disable();
-        map.keyboard.disable();
-      } else {
-        map.fitBounds(initialBounds, { padding: [40, 40], maxZoom: 8 });
+    /* ── Views (My work / My life) ──────────────────────── */
+    const viewWorkBtn = document.getElementById('view-work');
+    const viewLifeBtn = document.getElementById('view-life');
+    function setView(view, push) {
+      const isLife = view === 'life';
+      document.body.classList.toggle('view-life', isLife);
+      viewWorkBtn.setAttribute('aria-current', isLife ? 'false' : 'true');
+      viewLifeBtn.setAttribute('aria-current', isLife ? 'true' : 'false');
+      if (window.__positionCards) window.__positionCards();
+      if (push !== false) {
+        const target = isLife ? '#life' : location.pathname;
+        history.pushState({ view: view }, '', target);
       }
-
-      const resetBtn = document.getElementById('map-reset');
-      let mapReady = false;
-      map.once('moveend', () => { mapReady = true; });
-
-      map.on('zoomend moveend', () => {
-        if (mapReady) resetBtn.classList.add('visible');
-      });
-
-      resetBtn.addEventListener('click', () => {
-        resetBtn.classList.remove('visible');
-        mapReady = false;
-        map.fitBounds(initialBounds, { padding: [40, 40], maxZoom: 8, animate: true });
-        map.once('moveend', () => { mapReady = true; });
-      });
     }
 
-    document.querySelectorAll('.about-quad-video').forEach(quad => {
-      const video = quad.querySelector('video');
-      video.loop = true;
+    viewWorkBtn.addEventListener('click', e => { e.preventDefault(); setView('work'); });
+    viewLifeBtn.addEventListener('click', e => { e.preventDefault(); setView('life'); });
 
-      const activate   = () => { video.style.filter = 'sepia(0) saturate(1) brightness(1)'; video.play(); };
-      const deactivate = () => { video.style.filter = ''; video.pause(); };
+    // Populate life-face images from pics/manifest.json (newest first, first 6)
+    fetch('pics/manifest.json', { cache: 'no-store' })
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(list => {
+        const faces = document.querySelectorAll('.s-card__face--life');
+        faces.forEach((face, i) => {
+          if (i >= list.length) return;
+          const src = 'pics/' + list[i];
+          const draw = face.querySelector('.life-draw');
+          const real = face.querySelector('.life-real');
+          if (draw && draw.tagName === 'IMG') draw.src = src;
+          if (real && real.tagName === 'IMG') real.src = src;
+        });
+      })
+      .catch(() => {});
 
-      quad.addEventListener('mouseenter', activate);
-      quad.addEventListener('mouseleave', deactivate);
-
-      quad.addEventListener('touchstart',  e => { e.preventDefault(); activate(); },   { passive: false });
-      quad.addEventListener('touchend',    deactivate);
-      quad.addEventListener('touchcancel', deactivate);
+    document.querySelectorAll('.s-card__face--life').forEach(face => {
+      const realVideo = face.querySelector('.life-real');
+      const drawVideo = face.querySelector('.life-draw');
+      // Pin draw-layer videos to frame 0 so the threshold renders a static "drawn" preview
+      if (drawVideo && drawVideo.tagName === 'VIDEO') {
+        drawVideo.addEventListener('loadeddata', () => { try { drawVideo.currentTime = 0; drawVideo.pause(); } catch (e) {} });
+      }
+      if (!realVideo || realVideo.tagName !== 'VIDEO') return;
+      const card = face.closest('.s-card');
+      card.addEventListener('mouseenter', () => { if (document.body.classList.contains('view-life')) realVideo.play(); });
+      card.addEventListener('mouseleave', () => realVideo.pause());
     });
 
-    document.getElementById('about-modal-close').addEventListener('click', () => closeAboutModal());
-
     window.addEventListener('popstate', e => {
-      if (e.state && e.state.modal) openModal(e.state.modal, false);
-      else if (e.state && e.state.about) openAboutModal(false);
-      else {
-        if (aboutModal.classList.contains('open')) closeAboutModal(true);
-        else closeModal(true);
-      }
+      if (e.state && e.state.modal) { openModal(e.state.modal, false); return; }
+      // Close any open story modal
+      closeModal(true);
+      // Set view based on hash
+      if (location.hash === '#life') setView('life', false);
+      else setView('work', false);
     });
 
     /* ── Hash routing on load ───────────────────────────── */
     (function () {
       const hash = location.hash.slice(1);
-      if (!hash) return;
-      if (hash === 'about') {
-        openAboutModal(false);
-        history.replaceState({ about: true }, '', '#about');
-      } else if (document.getElementById('pool-' + hash)) {
+      if (hash === 'life') {
+        setView('life', false);
+        history.replaceState({ view: 'life' }, '', '#life');
+      } else if (hash && document.getElementById('pool-' + hash)) {
         openModal(hash, false);
         history.replaceState({ modal: hash }, '', '#' + hash);
+      } else {
+        setView('work', false);
       }
     })();
 
