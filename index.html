@@ -48,7 +48,38 @@
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
 
     /* ── Hero ─────────────────────────────────────────── */
-    .hero { position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 2rem; z-index: 5; background: var(--card-bg); }
+    .hero { position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 2rem; z-index: 250; background: var(--card-bg); }
+    body.modal-open .hero { background: transparent; }
+    body.modal-open .hero { background: transparent; }
+    .hero-logo { transition: opacity .12s ease; }
+    .hero-back {
+      position: absolute; left: 2rem; top: 50%; transform: translateY(-50%);
+      margin-left: -.7em;
+      font-family: var(--font-main); font-weight: 400;
+      font-size: clamp(.85rem, 1.8vw, 1.05rem); letter-spacing: -.03em;
+      background: var(--card-bg); border: none; padding: .45em .7em;
+      border-radius: 2px;
+      cursor: pointer;
+      opacity: 0; pointer-events: none;
+      transition: opacity .12s ease;
+      line-height: 1;
+    }
+    .hero-label-inner { display: inline; }
+    .hero-icon { display: inline-block; line-height: 1; margin-right: .15em; vertical-align: -.1em; }
+    .nav-ext-arrow { display: inline-block; margin-left: 2px; vertical-align: middle; transform-origin: center center; opacity: 0; }
+    .nav-ext svg { width: 1em; height: 1em; display: block; }
+    .hero-nav a:hover .nav-ext-arrow {
+      animation: arrow-flip 0.16s ease-out 1 forwards;
+      animation-delay: 0.35s;
+    }
+    @keyframes arrow-flip {
+      0% { opacity: 0; transform: rotateY(90deg); }
+      100% { opacity: 1; transform: rotateY(0deg); }
+    }
+    .hero-nav { transition: none; }
+    body.modal-open .hero-logo { opacity: 0; pointer-events: none; }
+    body.modal-open .hero-back { opacity: 1; pointer-events: auto; }
+    body.modal-open .hero-nav { opacity: 0; pointer-events: none; }
 
     /* Letter-flip wave on hover */
     .letter { display: inline-block; transform-origin: center center; transition: transform .25s ease; }
@@ -57,11 +88,12 @@
       animation: letter-wave 0.32s ease-out 1;
       animation-delay: calc(var(--i) * 0.03s);
     }
+    #copy-email.copied:hover .letter { animation: none !important; }
     @keyframes letter-wave {
       0% { transform: rotateY(0deg); }
       100% { transform: rotateY(360deg); }
     }
-    .hero-logo { font-family: var(--font-main); font-weight: 400; font-size: clamp(.85rem, 1.8vw, 1.05rem); letter-spacing: -.03em; }
+    .hero-logo { font-family: var(--font-main); font-weight: 400; font-size: clamp(.85rem, 1.8vw, 1.05rem); letter-spacing: -.03em; background: var(--card-bg); }
 
     .hero-intro {
       font-size: clamp(1.25rem, 3.375vw, 1.8rem);
@@ -94,7 +126,7 @@
       animation: card-drop 0.7s cubic-bezier(0.16, 1, 0.3, 1) backwards;
     }
     @keyframes card-drop {
-      from { transform: translateY(120vh) rotate(0deg); }
+      from { translate: 0 120vh; }
     }
     .s-card.dragging { cursor: grabbing; transition: none; }
     .s-card::after {
@@ -106,11 +138,16 @@
     }
 
     /* Smart auto-contrast text + icons (always visible on any bg) */
-    .hero-logo,
+    .hero-label-inner,
     .hero-nav, .hero-nav a, .hero-nav button, .hero-nav span,
     .footer-name, .footer-contact, .footer-contact a,
     .s-card__company, .s-card__title, .s-card__glyph,
-    .s-card__glyph i, .footer-contact svg, .hero-nav svg {
+    .s-card__glyph i, .footer-contact svg, .hero-nav svg,
+    #modal-title, #modal-company, #modal-close, #modal-close i,
+    #modal-sticky-title, #modal-sticky-close, #modal-sticky-close i,
+    #about-modal-close,
+    .cs-section-header, .cs-subsection-header, .cs-body,
+    .cs-label, .cs-caption, .cs-callout {
       color: #ffffff !important;
       mix-blend-mode: difference;
     }
@@ -146,26 +183,21 @@
 
 
     /* ── Modal ────────────────────────────────────────── */
-    #modal { position: fixed; inset: 0; z-index: 200; background: var(--bg-base); opacity: 0; pointer-events: none; transition: opacity .28s ease; overflow: hidden; }
+    #modal { position: fixed; inset: 0; z-index: 200; background: var(--card-bg); opacity: 0; pointer-events: none; transition: opacity .28s ease; overflow: hidden; }
     #modal.open { opacity: 1; pointer-events: all; }
 
-    #modal-close { background: none; border: none; padding: 0; color: var(--text-muted); cursor: pointer; line-height: 1; transition: color var(--transition); display: block; margin-bottom: 1.5rem; }
+    #modal-close { display: none; }
     #modal-close:hover { color: var(--text-primary); }
     #modal-close i { font-size: clamp(32px, 2.81vw + 21px, 48px); display: block; }
 
-    .modal-inner { display: flex; height: 100vh; overflow: hidden; }
+    .modal-inner { display: flex; flex-direction: column; height: 100vh; overflow-y: auto; }
 
-    .modal-left { position: relative; overflow: hidden; width: 42%; flex-shrink: 0; border-right: 1px solid var(--border); padding: 5rem 4rem; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; transition: background .28s ease; }
-    .modal-left::before {
-      content: ''; position: absolute; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      background-size: 180px 180px; opacity: 0.08; pointer-events: none;
-    }
+    .modal-left { position: relative; width: 100%; max-width: 720px; margin: 0 auto; padding: 6rem 2rem 2rem; display: flex; flex-direction: column; align-items: flex-start; }
 
     #modal-title { font-size: clamp(1.1rem, 2.5vw, 2.5rem); font-weight: 500; letter-spacing: -.03em; line-height: 1.2; color: var(--text-primary); }
     #modal-company { font-family: var(--font-main); font-size: .65rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1rem; }
 
-    .modal-right { flex: 1; padding: 5rem 4rem; overflow-y: auto; display: flex; align-items: flex-start; }
+    .modal-right { width: 100%; max-width: 720px; margin: 0 auto; padding: 2rem 2rem 5rem; }
     #modal-content { width: 100%; }
 
     .hero-nav { display: flex; gap: 1.75rem; align-items: center; font-family: var(--font-main); font-weight: 400; letter-spacing: -.03em; font-size: clamp(.85rem, 1.8vw, 1.05rem); color: var(--text-secondary); flex-wrap: wrap; }
@@ -180,7 +212,7 @@
         display: none; align-items: center; gap: 1rem;
         position: sticky; top: 0; z-index: 10;
         padding: .75rem 1.5rem;
-        background: var(--bg-base); border-bottom: 1px solid var(--border);
+        background: var(--card-bg); border-bottom: 1px solid var(--border);
       }
       #modal-sticky-nav.visible { display: flex; }
       #modal-sticky-nav button { background: none; border: none; padding: 0; color: var(--text-muted); cursor: pointer; line-height: 1; }
@@ -192,7 +224,7 @@
       html, body { overflow: hidden; height: 100%; max-width: 100vw; }
       #map-reset { display: none; }
       .modal-inner { flex-direction: column; overflow-y: auto; }
-      .modal-left { width: 100%; border-right: none; border-bottom: 1px solid var(--border); padding: 1.5rem; align-items: flex-start; justify-content: flex-start; }
+      .modal-left { width: 100%; border-right: none; padding: 1.5rem; align-items: flex-start; justify-content: flex-start; }
       .modal-right { padding: 2rem 1.5rem; overflow-y: visible; }
 
       footer { position: fixed; bottom: 0; left: 0; right: 0; z-index: 1; }
@@ -261,15 +293,13 @@
     .footer-contact svg { width: 10px; height: 10px; flex-shrink: 0; }
 
     /* ── About modal ──────────────────────────────────── */
-    #about-modal { position: fixed; inset: 0; z-index: 200; background: var(--bg-base); opacity: 0; pointer-events: none; transition: opacity .28s ease; }
+    #about-modal { position: fixed; inset: 0; z-index: 200; background: var(--card-bg); opacity: 0; pointer-events: none; transition: opacity .28s ease; }
     #about-modal.open { opacity: 1; pointer-events: all; }
-    #about-modal-close { position: fixed; top: 4rem; left: 4rem; background: none; border: none; padding: 0; color: var(--text-muted); cursor: pointer; z-index: 500; line-height: 1; transition: color var(--transition); }
-    #about-modal-close:hover { color: var(--text-primary); }
-    #about-modal-close i { font-size: clamp(32px, 2.81vw + 21px, 48px); display: block; }
+    #about-modal-close { display: none; }
 
     .about-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; height: 100vh; width: 100vw; }
     .about-quad { position: relative; overflow: hidden; background: var(--bg-surface); }
-    .about-quad-video video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) brightness(0.7); transition: filter .5s ease; }
+    .about-quad-video video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) sepia(0.55) brightness(1.05); transition: filter .5s ease; }
     #leaflet-map { width: 100%; height: 100%; }
     .quad-label { position: absolute; bottom: 1.25rem; left: 1.25rem; font-family: var(--font-main); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255,0.45); z-index: 1000; pointer-events: none; }
     .leaflet-tooltip { background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-secondary); font-family: var(--font-main); font-size: .65rem; letter-spacing: .04em; box-shadow: none; border-radius: 4px; padding: .25rem .5rem; }
@@ -339,22 +369,6 @@
       object-fit: contain; border-radius: 6px;
       box-shadow: 0 8px 48px rgba(0,0,0,0.7);
     }
-    /* ── About Modal ──────────────────────────────────── */
-    #about-modal {
-      position: fixed; inset: 0; z-index: 300;
-      background: var(--bg-base);
-      opacity: 0; pointer-events: none;
-      transition: opacity .28s ease;
-    }
-    #about-modal.open { opacity: 1; pointer-events: all; }
-
-    #about-modal-close {
-      top: 1.5rem; left: 1.5rem;
-      background: rgba(0,0,0,0.45); border-radius: 50%;
-      width: 44px; height: 44px;
-      display: flex; align-items: center; justify-content: center;
-    }
-
     .about-grid {
       display: grid; grid-template-columns: 1fr 1fr;
       grid-template-rows: 1fr 1fr; height: 100vh; width: 100vw;
@@ -364,7 +378,7 @@
 
     .about-quad-video video {
       position: absolute; inset: 0; width: 100%; height: 100%;
-      object-fit: cover; filter: grayscale(1) brightness(0.7);
+      object-fit: cover; filter: grayscale(1) sepia(0.55) brightness(1.05);
       transition: filter .5s ease;
     }
 
@@ -433,11 +447,12 @@
 
   <!-- Hero -->
   <section class="hero">
-    <div class="hero-logo">Bobby designs software</div>
+    <div class="hero-logo"><span class="hero-label-inner"><i class="ph-light ph-asterisk hero-icon" aria-hidden="true"></i> Bobby designs software</span></div>
+    <button class="hero-back" id="hero-back" type="button"><span class="hero-label-inner"><i class="ph-light ph-arrow-left hero-icon" aria-hidden="true"></i> Back</span></button>
     <div class="hero-nav">
-      <button id="card-about" style="background:none;border:none;padding:0;font:inherit;cursor:pointer">About me</button>
+      <button id="card-about" style="background:none;border:none;padding:0;font:inherit;cursor:pointer">My life</button>
       <a id="copy-email" href="mailto:kennerdesign@gmail.com">Email</a>
-      <a href="https://calendly.com/bobbykenner" target="_blank" rel="noopener">Book time <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:10px;height:10px;vertical-align:middle"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></a>
+      <a href="https://calendly.com/bobbykenner" target="_blank" rel="noopener" class="nav-ext">Book time<span class="nav-ext-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></span></a>
     </div>
   </section>
 
@@ -501,13 +516,10 @@
 
   <!-- About Modal -->
   <div id="about-modal" aria-hidden="true">
-    <button id="about-modal-close" aria-label="Close">
-      <i class="ph-light ph-arrow-bend-up-left"></i>
-    </button>
+    <button id="about-modal-close" aria-label="Close"><span class="hero-back-arrow" aria-hidden="true">←</span> Back</button>
     <div class="about-grid">
-      <div class="about-quad" id="quad-map">
-        <div id="leaflet-map"></div>
-        <button id="map-reset" aria-label="Reset map view"><i class="ph-light ph-arrow-counter-clockwise"></i></button>
+      <div class="about-quad about-quad-video">
+        <video src="video/49-clip.mp4" muted playsinline preload="auto"></video>
       </div>
       <div class="about-quad about-quad-video">
         <video src="video/bobby-clip.mp4" muted playsinline preload="auto" style="object-fit: cover; object-position: center 40%; width: 100%; height: 100%;"></video>
@@ -552,7 +564,7 @@
   <!-- ── Content pools ──────────────────────────────────── -->
 
   <div id="pool-synthia" hidden
-    data-title="SYNTHIA — synthetic user evaluation, surfaced wherever designers work."
+    data-title="SYNTHIA, synthetic user evaluation, surfaced wherever designers work."
     data-company="Superhuman">
 
     <div class="cs-section">
@@ -625,7 +637,7 @@
   </div>
 
   <div id="pool-gds" hidden
-    data-title="GDS v1 — making an invisible design system accessible to the org."
+    data-title="Grammarly Design System, making an invisible system accessible to the org."
     data-company="Grammarly">
 
     <div class="cs-section">
@@ -702,7 +714,7 @@
   </div>
 
   <div id="pool-trust" hidden
-    data-title="Privacy as a platform — consent, control, and enterprise data governance at 40M users."
+    data-title="Privacy as a platform, consent, control, and enterprise data governance at 40M users."
     data-company="Grammarly">
 
     <div class="cs-section">
@@ -852,7 +864,7 @@
   </div>
 
   <div id="pool-cookbook" hidden
-    data-title="Cookbook — one design system for three brands and every platform."
+    data-title="Cookbook, one design system for three brands and every platform."
     data-company="Grubhub">
 
     <div class="cs-section">
@@ -946,7 +958,7 @@
   </div>
 
   <div id="pool-sunburst" hidden
-    data-title="Project Sunburst — the year Grubhub caught up on mobile."
+    data-title="Project Sunburst, the year Grubhub caught up on mobile."
     data-company="Grubhub">
 
     <div class="cs-section">
@@ -1115,6 +1127,7 @@
       stickyNav.classList.remove('visible');
       content.innerHTML = pool.innerHTML;
       modal.classList.add('open');
+      document.body.classList.add('modal-open');
       headerObserver.disconnect();
       headerObserver.observe(modalLeft);
       modal.setAttribute('aria-hidden', 'false');
@@ -1151,9 +1164,18 @@
     function closeModal(skipHistory) {
       if (currentPoolId) scrollPositions[currentPoolId] = modalRight.scrollTop;
       modal.classList.remove('open');
+      document.body.classList.remove('modal-open');
       modal.setAttribute('aria-hidden', 'true');
       if (!skipHistory) history.pushState({}, '', location.pathname);
     }
+
+    // Hero back button → close whichever modal is open
+    var heroBack = document.getElementById('hero-back');
+    if (heroBack) heroBack.addEventListener('click', function () {
+      if (aboutModal && aboutModal.classList.contains('open')) closeAboutModal();
+      else closeModal();
+    });
+
 
     /* ── Card drag canvas ───────────────────────────────── */
     (function () {
@@ -1251,6 +1273,7 @@
       }
       splitLetters(document.querySelector('.hero-logo'));
       document.querySelectorAll('.hero-nav > *').forEach(splitLetters);
+      window.__splitLetters = splitLetters;
 
 
       // Cards: deal into place via CSS animation, staggered
@@ -1425,9 +1448,25 @@
       copyEmail.addEventListener('click', function (e) {
         e.preventDefault();
         navigator.clipboard.writeText('kennerdesign@gmail.com').then(function () {
-          const orig = copyEmail.textContent;
-          copyEmail.textContent = 'Copied';
-          setTimeout(function () { copyEmail.textContent = orig; }, 1500);
+          var orig = copyEmail.textContent;
+          var FADE = 150, SHOW = 1500;
+          copyEmail.style.transition = 'opacity ' + (FADE / 1000) + 's ease';
+          copyEmail.classList.add('copied');
+          copyEmail.style.opacity = '0';
+          setTimeout(function () {
+            copyEmail.textContent = 'Copied';
+            if (window.__splitLetters) window.__splitLetters(copyEmail);
+            copyEmail.style.opacity = '1';
+          }, FADE);
+          setTimeout(function () {
+            copyEmail.style.opacity = '0';
+          }, FADE + SHOW);
+          setTimeout(function () {
+            copyEmail.textContent = orig;
+            copyEmail.classList.remove('copied');
+            if (window.__splitLetters) window.__splitLetters(copyEmail);
+            copyEmail.style.opacity = '1';
+          }, FADE + SHOW + FADE);
         });
       });
     }
@@ -1443,20 +1482,19 @@
 
     function openAboutModal(push) {
       aboutModal.classList.add('open'); aboutModal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('modal-open');
       if (push !== false) history.pushState({ about: true }, '', '#about');
-      if (!mapInitialized) {
-        setTimeout(() => { initMap(); mapInitialized = true; }, 350);
-      }
     }
 
     function closeAboutModal(skipHistory) {
       aboutModal.classList.remove('open'); aboutModal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-open');
       if (!skipHistory) history.pushState({}, '', location.pathname);
     }
 
     function initMap() {
       const map = L.map('leaflet-map', { zoomControl: false, attributionControl: false, renderer: L.svg() });
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 19 }).addTo(map);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 19 }).addTo(map);
       const stops = [
         { coords: [41.7798,-71.4373], label: 'Cranston, RI' },
         { coords: [40.7465,-74.0020], label: 'Chelsea, NYC' },
@@ -1464,9 +1502,9 @@
         { coords: [40.7870,-73.9754], label: 'Upper West Side' },
         { coords: [41.0395,-73.8685], label: 'Irvington, NY' },
       ];
-      const line = L.polyline(stops.map(s => s.coords), { color: 'rgba(255,255,255,0.25)', weight: 1.5 }).addTo(map);
+      const line = L.polyline(stops.map(s => s.coords), { color: 'rgba(44,38,32,0.45)', weight: 1.5 }).addTo(map);
       stops.forEach((stop, i) => {
-        L.circleMarker(stop.coords, { radius: i===stops.length-1?6:4, fillColor: i===stops.length-1?'#eaeaea':'rgba(255,255,255,0.5)', color:'transparent', fillOpacity:1 })
+        L.circleMarker(stop.coords, { radius: i===stops.length-1?6:4, fillColor: i===stops.length-1?'#2c2620':'rgba(44,38,32,0.6)', color:'transparent', fillOpacity:1 })
          .bindTooltip(stop.label, { permanent:false, direction:'top' }).addTo(map);
       });
       const initialBounds = line.getBounds();
@@ -1505,7 +1543,7 @@
       const video = quad.querySelector('video');
       video.loop = true;
 
-      const activate   = () => { video.style.filter = 'grayscale(0) brightness(1)'; video.play(); };
+      const activate   = () => { video.style.filter = 'sepia(0) saturate(1) brightness(1)'; video.play(); };
       const deactivate = () => { video.style.filter = ''; video.pause(); };
 
       quad.addEventListener('mouseenter', activate);
