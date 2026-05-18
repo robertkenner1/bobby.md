@@ -19,9 +19,19 @@ export default async function handler(req, res) {
       },
       body: `grant_type=refresh_token&refresh_token=${encodeURIComponent(SPOTIFY_REFRESH_TOKEN)}`
     });
-    const tokenJson = await tokenResp.json();
+    const tokenText = await tokenResp.text();
+    let tokenJson;
+    try { tokenJson = JSON.parse(tokenText); }
+    catch (e) {
+      return res.status(500).json({
+        stage: 'token_exchange',
+        status: tokenResp.status,
+        contentType: tokenResp.headers.get('content-type'),
+        body: tokenText.slice(0, 500)
+      });
+    }
     if (!tokenJson.access_token) {
-      return res.status(500).json({ error: 'Refresh failed', detail: tokenJson });
+      return res.status(500).json({ stage: 'token_exchange', status: tokenResp.status, detail: tokenJson });
     }
 
     // Debug mode: returns the authenticated user's identity + token scopes
