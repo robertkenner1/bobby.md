@@ -1219,7 +1219,8 @@
       const btn = document.getElementById('bg-cycle');
       if (btn) btn.style.display = 'none';
       const MS_PER_COLOR = 4500;
-      const start = performance.now();
+      // Random offset so every page load enters the palette at a different color
+      const start = performance.now() - Math.random() * MS_PER_COLOR * colors.length;
       function tick(now) {
         const pos = ((now - start) / MS_PER_COLOR) % colors.length;
         const i = Math.floor(pos);
