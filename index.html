@@ -48,7 +48,7 @@
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
 
     /* ── Hero ─────────────────────────────────────────── */
-    .hero { position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 2rem; z-index: 250; background: var(--card-bg); }
+    .hero { position: fixed; top: 0; left: 0; right: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem 1.5rem; padding: 1.5rem 2rem; z-index: 250; background: var(--card-bg); }
     body.modal-open .hero { background: transparent; }
     body.modal-open .hero { background: transparent; }
     .hero-logo { transition: opacity .12s ease; }
@@ -56,7 +56,7 @@
       position: absolute; left: 2rem; top: 50%; transform: translateY(-50%);
       margin-left: -.7em;
       font-family: var(--font-main); font-weight: 400;
-      font-size: clamp(.85rem, 1.8vw, 1.05rem); letter-spacing: -.03em;
+      font-size: 1.05rem; letter-spacing: -.03em;
       background: var(--card-bg); border: none; padding: .45em .7em;
       border-radius: 2px;
       cursor: pointer;
@@ -88,12 +88,16 @@
       animation: letter-wave 0.32s ease-out 1;
       animation-delay: calc(var(--i) * 0.03s);
     }
+    .hero-back:hover .letter {
+      animation: letter-wave 0.32s ease-out 1;
+      animation-delay: calc((4 - var(--i)) * 0.03s);
+    }
     #copy-email.copied:hover .letter { animation: none !important; }
     @keyframes letter-wave {
       0% { transform: rotateY(0deg); }
       100% { transform: rotateY(360deg); }
     }
-    .hero-logo { font-family: var(--font-main); font-weight: 400; font-size: clamp(.85rem, 1.8vw, 1.05rem); letter-spacing: -.03em; background: var(--card-bg); }
+    .hero-logo { font-family: var(--font-main); font-weight: 400; font-size: 1.05rem; letter-spacing: -.03em; background: var(--card-bg); white-space: nowrap; }
 
     .hero-intro {
       font-size: clamp(1.25rem, 3.375vw, 1.8rem);
@@ -107,7 +111,8 @@
     .hero-contact-item svg { width: 15px; height: 15px; flex-shrink: 0; }
 
     /* ── Cards ────────────────────────────────────────── */
-    #card-canvas { position: fixed; inset: 0; z-index: 10; pointer-events: none; }
+    #card-canvas { position: fixed; inset: 0; z-index: 260; pointer-events: none; }
+    body.modal-open #card-canvas { display: none; }
 
     .card-group {
       position: absolute; inset: 0; overflow: visible; pointer-events: none;
@@ -136,7 +141,9 @@
       mix-blend-mode: difference;
       pointer-events: none;
       z-index: 2;
+      transition: border-width .18s ease;
     }
+    body:not(.view-life) .s-card:hover::after { border-width: 1px; }
     .s-card__face {
       position: absolute; inset: 0;
       background: var(--card-bg);
@@ -236,7 +243,7 @@
     .modal-right { width: 100%; max-width: 720px; margin: 0 auto; padding: 2rem 2rem 5rem; }
     #modal-content { width: 100%; }
 
-    .hero-nav { display: flex; gap: 2.5rem; align-items: center; font-family: var(--font-main); font-weight: 400; letter-spacing: -.03em; font-size: clamp(.85rem, 1.8vw, 1.05rem); color: var(--text-secondary); flex-wrap: wrap; }
+    .hero-nav { display: flex; gap: 2.5rem; align-items: center; font-family: var(--font-main); font-weight: 400; letter-spacing: -.03em; font-size: 1.05rem; color: var(--text-secondary); flex-wrap: wrap; }
     .hero-nav a, .hero-nav button, .hero-nav span[id] { color: var(--text-secondary); transition: color var(--transition); font: inherit; }
     #copy-email { display: inline-flex; justify-content: center; align-items: center; white-space: nowrap; overflow: visible; }
     .hero-nav a:hover, .hero-nav button:hover, .hero-nav span[id]:hover { color: var(--text-primary); }
@@ -265,9 +272,7 @@
 
       footer { position: fixed; bottom: 0; left: 0; right: 0; z-index: 1; }
 
-      /* Stack hero: logo row 1, nav row 2 */
-      .hero { flex-direction: column; align-items: flex-start; gap: .5rem; padding: 1rem 1.25rem; }
-      .hero-nav { gap: 1.25rem; }
+      /* Hero padding + gap stay constant; flex-wrap on .hero handles stacking */
       .card-pile { top: 60%; }
     }
 
@@ -322,6 +327,8 @@
     /* ── Footer ───────────────────────────────────────── */
     footer { position: fixed; bottom: 1.5rem; left: 2rem; right: 2rem; display: flex; align-items: center; justify-content: space-between; background: var(--card-bg); }
     .footer-name, .footer-contact { font-family: var(--font-main); font-weight: 400; font-size: .85rem; color: var(--text-secondary); letter-spacing: -.03em; }
+    #now-playing { text-decoration: none; }
+    #now-playing[hidden] { display: none; }
     .footer-contact { display: flex; gap: .4rem; align-items: center; }
 
     .footer-contact a { display: inline-flex; align-items: center; gap: .3rem; color: var(--text-secondary); transition: color var(--transition); font: inherit; }
@@ -598,6 +605,7 @@
   <!-- Footer -->
   <footer>
     <span class="footer-name">© 2026 Bobby Kenner</span>
+    <a id="now-playing" class="footer-name" hidden target="_blank" rel="noopener"></a>
   </footer>
 
   <!-- Project modal -->
@@ -1337,6 +1345,7 @@
         pileEl.style.height    = layout.pileH + 'px';
         pileEl.style.left      = Math.round(vw / 2) + 'px';
         pileEl.style.transform = 'translate(-50%, -50%) scale(' + scale + ')';
+        pileEl.dataset.scale   = scale;
 
         pileCards.forEach(function (card, i) {
           var pos = layout.positions[i];
@@ -1379,8 +1388,29 @@
         Array.from(el.childNodes).forEach(walk);
       }
       splitLetters(document.querySelector('.hero-logo'));
+      splitLetters(document.getElementById('hero-back'));
       document.querySelectorAll('.hero-nav > *').forEach(splitLetters);
       window.__splitLetters = splitLetters;
+
+      // Spotify "now playing" in footer (hidden when nothing is playing)
+      (function () {
+        var np = document.getElementById('now-playing');
+        if (!np) return;
+        function tick() {
+          fetch('/api/spotify').then(function (r) { return r.json(); }).then(function (d) {
+            if (d && d.playing) {
+              np.textContent = '♫ ' + d.title + ' — ' + d.artist;
+              if (d.url) np.href = d.url;
+              np.hidden = false;
+              if (window.__splitLetters) window.__splitLetters(np);
+            } else {
+              np.hidden = true;
+            }
+          }).catch(function () { np.hidden = true; });
+        }
+        tick();
+        setInterval(tick, 30000);
+      })();
 
       // Lock #copy-email width to its "Email" content size so "Copied" overflows without pushing siblings
       var copyEmailEl = document.getElementById('copy-email');
@@ -1477,12 +1507,10 @@
           dragging.style.transition = 'none';
         }
         if (moved) {
-          var parentRect = dragging.parentElement.getBoundingClientRect();
-          var minX = -parentRect.left;
-          var maxX = window.innerWidth - parentRect.left - cardW;
-          var minY = -parentRect.top;
-          dragging.style.left = Math.max(minX, Math.min(maxX, origX + dx)) + 'px';
-          dragging.style.top  = Math.max(minY, origY + dy) + 'px';
+          var pileScale = parseFloat(dragging.parentElement.dataset.scale) || 1;
+          var sdx = dx / pileScale, sdy = dy / pileScale;
+          dragging.style.left = (origX + sdx) + 'px';
+          dragging.style.top  = (origY + sdy) + 'px';
         }
       }
 
@@ -1520,15 +1548,10 @@
             var deltaDeg = (curAngle - rotStartAngle) * 180 / Math.PI;
             dragging.style.transform = 'rotate(' + (rotInitialDeg + deltaDeg).toFixed(1) + 'deg)';
           } else {
-            var parentRect = dragging.parentElement.getBoundingClientRect();
-            var minX = -parentRect.left;
-            var maxX = window.innerWidth - parentRect.left - cardW;
-            var minY = -parentRect.top;
-            var maxY = window.innerHeight - parentRect.top - cardH;
-            var newX = Math.max(minX, Math.min(maxX, origX + dx));
-            var newY = Math.max(minY, Math.min(maxY, origY + dy));
-            dragging.style.left = newX + 'px';
-            dragging.style.top  = newY + 'px';
+            var pileScale = parseFloat(dragging.parentElement.dataset.scale) || 1;
+            var sdx = dx / pileScale, sdy = dy / pileScale;
+            dragging.style.left = (origX + sdx) + 'px';
+            dragging.style.top  = (origY + sdy) + 'px';
           }
         }
       }
