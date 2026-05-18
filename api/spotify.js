@@ -24,6 +24,20 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Refresh failed', detail: tokenJson });
     }
 
+    // Debug mode: returns the authenticated user's identity + token scopes
+    // Visit /api/spotify?debug=1 to verify which account the refresh token belongs to.
+    if (req.query && req.query.debug) {
+      const meResp = await fetch('https://api.spotify.com/v1/me', {
+        headers: { 'Authorization': `Bearer ${tokenJson.access_token}` }
+      });
+      const me = await meResp.json();
+      return res.status(200).json({
+        account: { id: me.id, display_name: me.display_name, email: me.email },
+        token_scope: tokenJson.scope,
+        token_expires_in: tokenJson.expires_in
+      });
+    }
+
     const nowResp = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: { 'Authorization': `Bearer ${tokenJson.access_token}` }
     });
@@ -32,7 +46,7 @@ export default async function handler(req, res) {
     res.setHeader('Cache-Control', 's-maxage=30, stale-while-revalidate=60');
 
     if (nowResp.status === 204) return res.status(200).json({ playing: false });
-    if (!nowResp.ok) return res.status(200).json({ playing: false });
+    if (!nowResp.ok) return res.status(200).json({ playing: false, status: nowResp.status });
 
     const data = await nowResp.json();
     if (!data || !data.is_playing || !data.item) {
