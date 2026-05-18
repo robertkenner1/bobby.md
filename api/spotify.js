@@ -62,8 +62,8 @@ export default async function handler(req, res) {
 
   const album = now.body.item.album || {};
   const images = album.images || [];
-  // Smallest image that's at least 64px wide — keeps payload tiny
-  const art = images.length ? (images[images.length - 1] || images[0]).url : null;
+  // Mid-size image (typically 300px) — sharp on retina at our display size
+  const art = images.length ? (images[1] || images[0] || images[images.length - 1]).url : null;
 
   return res.status(200).json({
     playing: true,

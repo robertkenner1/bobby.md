@@ -370,10 +370,11 @@
     #now-playing { display: inline-flex; align-items: center; gap: .45em; text-decoration: none; }
     #now-playing[hidden] { display: none; }
     .np-art {
-      width: 1.3em; height: 1.3em; display: block; object-fit: cover;
-      filter: brightness(var(--draw-brightness, 1.3)) contrast(var(--draw-contrast, 1.5)) url(#threshold);
-      mix-blend-mode: difference;
+      width: 2.4em; height: 2.4em; display: block; object-fit: cover;
+      border-radius: 50%;
+      animation: vinyl-spin 7s linear infinite;
     }
+    @keyframes vinyl-spin { to { transform: rotate(360deg); } }
     .footer-contact { display: flex; gap: .4rem; align-items: center; }
 
     .footer-contact a { display: inline-flex; align-items: center; gap: .3rem; color: var(--text-secondary); transition: color var(--transition); font: inherit; }
