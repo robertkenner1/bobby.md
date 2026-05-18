@@ -187,7 +187,7 @@
       mix-blend-mode: difference;
       pointer-events: none;
       z-index: 2;
-      transition: border-width .18s ease;
+      transition: border-width .08s ease;
     }
     body:not(.view-life) .s-card:hover::after { border-width: 1px; }
     .s-card__face {
@@ -361,12 +361,6 @@
     .cs-img-pair .cs-img { margin: 0; }
     .cs-caption { font-family: var(--font-main); font-size: .62rem; color: var(--text-muted); display: block; margin-bottom: 1.5rem; line-height: 1.55; }
 
-    .video-wrap { position: relative; cursor: pointer; background: var(--frame-bg); border-radius: 8px; overflow: hidden; margin: 1.5rem 0; }
-    .video-wrap video { width: 100%; display: block; aspect-ratio: 16 / 9; object-fit: cover; opacity: .9; }
-    .play-btn { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--card-bg) 75%, black); transition: background var(--transition), opacity .2s ease; }
-    .play-btn svg { width: 52px; height: 52px; filter: drop-shadow(0 2px 12px rgba(0,0,0,0.4)); transition: transform .15s ease-out; }
-    .video-wrap:hover .play-btn { background: color-mix(in srgb, var(--card-bg) 90%, black); }
-    .video-wrap:hover .play-btn svg { transform: scale(1.08); }
     .play-btn.hidden { opacity: 0; pointer-events: none; }
 
     /* ── Footer ───────────────────────────────────────── */
@@ -691,10 +685,6 @@
       <p class="cs-body">SYNTHIA runs five evaluation lenses: your actual design tokens and component library, WCAG accessibility checks, Nielsen's ten usability heuristics, a taxonomy of 26 UI traps and dark patterns, and synthetic users, personas built from real UXR behavioral data. A knowledge worker and a student reading your design, first-person, reacting to what they see. That last one tends to be the most interesting.</p>
       <p class="cs-body">Two agentic modes, both grounded in the same idea: only automate what doesn't require judgment. Mechanical issues, wrong token, contrast fail, font size below threshold, get fixed directly in the document. One click per finding, or batch the whole lot. Judgment calls, heuristic violations, dark patterns, persona reactions, get posted as comments pinned to the exact node in the canvas. You shouldn't auto-fix what a human needs to review.</p>
       <p class="cs-body">The Figma plugin is the primary surface, but the same evaluation engine also ships as a Claude skill for AI-native workflows and a Go agent for document contexts. Consistent command design across all three, one engine, wherever you're working.</p>
-      <div class="video-wrap">
-        <video src="video/synthia-figma.mp4" muted playsinline preload="metadata"></video>
-        <div class="play-btn"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
-      </div>
     </div>
 
     <div class="cs-section">
@@ -738,10 +728,6 @@
       <p class="cs-body">As the brand got closer, the constraint became clear: don't disrupt the Grammarly funnel. We pulled back from the pure identifier-first model, separate sign-in and sign-up flows, brought closer together. I worked with Orr, who was connecting auth into the full Superhuman.com experience, to consolidate every exploration into a single shared view. That work became the foundation for the CUJ (Critical User Journeys) playbook, a framework I built to map sign-up and sign-in quality across all products and brands. The org adopted it as the standard for measuring experience quality across the platform.</p>
       <div class="cs-img"><img src="img/superhuman-auth-converged.jpg" alt="Converged direction — familiar Grammarly UX carrying the Superhuman brand" loading="lazy"></div>
       <p class="cs-body">The last piece was active session transfer. Old model: enter a Grammarly email, get sent to Grammarly to auth, come back to Superhuman. New model: detect the existing session on entry, transfer it, sign the user in directly. Recognized account, one tap. Returning session, auto-redirect, no UI at all.</p>
-      <div class="video-wrap">
-        <video src="video/superhuman-auth-interactions.mp4" muted playsinline preload="metadata"></video>
-        <div class="play-btn"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
-      </div>
     </div>
 
     <div class="cs-section">
@@ -1265,15 +1251,6 @@
       }, { root: modalRight, threshold: 1.0 });
       completionObserver.observe(sentinel);
 
-      content.querySelectorAll('.video-wrap').forEach(wrap => {
-        const video = wrap.querySelector('video');
-        const btn   = wrap.querySelector('.play-btn');
-        if (!video || !btn) return;
-        wrap.addEventListener('click', () => {
-          if (video.paused) { video.play(); btn.classList.add('hidden'); }
-          else              { video.pause(); btn.classList.remove('hidden'); }
-        });
-      });
     }
 
     function closeModal(skipHistory) {
