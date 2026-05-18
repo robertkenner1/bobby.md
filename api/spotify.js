@@ -60,10 +60,16 @@ export default async function handler(req, res) {
   if (!now.ok) return res.status(200).json({ playing: false, status: now.status, body: now.body });
   if (!now.body || !now.body.is_playing || !now.body.item) return res.status(200).json({ playing: false });
 
+  const album = now.body.item.album || {};
+  const images = album.images || [];
+  // Smallest image that's at least 64px wide — keeps payload tiny
+  const art = images.length ? (images[images.length - 1] || images[0]).url : null;
+
   return res.status(200).json({
     playing: true,
     title: now.body.item.name,
     artist: now.body.item.artists.map(a => a.name).join(', '),
-    url: now.body.item.external_urls && now.body.item.external_urls.spotify
+    album: album.name,
+    art
   });
 }

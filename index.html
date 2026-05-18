@@ -367,8 +367,13 @@
     /* ── Footer ───────────────────────────────────────── */
     footer { position: fixed; bottom: 1.5rem; left: 2rem; right: 2rem; display: flex; align-items: center; justify-content: space-between; background: var(--card-bg); }
     .footer-name, .footer-contact { font-family: var(--font-main); font-weight: 400; font-size: .85rem; color: var(--text-secondary); letter-spacing: -.03em; }
-    #now-playing { text-decoration: none; }
+    #now-playing { display: inline-flex; align-items: center; gap: .45em; text-decoration: none; }
     #now-playing[hidden] { display: none; }
+    .np-art {
+      width: 1.3em; height: 1.3em; display: block; object-fit: cover;
+      filter: brightness(var(--draw-brightness, 1.3)) contrast(var(--draw-contrast, 1.5)) url(#threshold);
+      mix-blend-mode: difference;
+    }
     .footer-contact { display: flex; gap: .4rem; align-items: center; }
 
     .footer-contact a { display: inline-flex; align-items: center; gap: .3rem; color: var(--text-secondary); transition: color var(--transition); font: inherit; }
@@ -645,7 +650,10 @@
   <!-- Footer -->
   <footer>
     <span class="footer-name">© 2026 Bobby Kenner</span>
-    <a id="now-playing" class="footer-name" hidden target="_blank" rel="noopener"></a>
+    <span id="now-playing" class="footer-name" hidden>
+      <img class="np-art" alt="" aria-hidden="true" />
+      <span class="np-text"></span>
+    </span>
   </footer>
 
   <!-- Project modal -->
@@ -1436,13 +1444,15 @@
       (function () {
         var np = document.getElementById('now-playing');
         if (!np) return;
+        var art = np.querySelector('.np-art');
+        var text = np.querySelector('.np-text');
         function tick() {
           fetch('/api/spotify').then(function (r) { return r.json(); }).then(function (d) {
             if (d && d.playing) {
-              np.textContent = '♫ ' + d.title + ' — ' + d.artist;
-              if (d.url) np.href = d.url;
+              text.textContent = d.title + ' — ' + d.artist;
+              if (d.art) art.src = d.art;
+              art.style.display = d.art ? '' : 'none';
               np.hidden = false;
-              if (window.__splitLetters) window.__splitLetters(np);
             } else {
               np.hidden = true;
             }
