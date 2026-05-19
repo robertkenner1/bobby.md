@@ -763,28 +763,39 @@
     <div class="cs-section">
       <p class="cs-section-header">Background</p>
       <p class="cs-body">Right after the Coda acquisition, the identity team had one job: build id.superhuman.com, a single auth surface for all sign-in and sign-up traffic across Grammarly, Coda, and Superhuman Mail. We started before the brand existed.</p>
+      <p class="cs-body">The bet wasn't just unifying those three. The hope was a front door that could absorb the next acquisition without rework.</p>
     </div>
 
     <div class="cs-section">
       <p class="cs-section-header">Research + architecture</p>
       <p class="cs-body">Before drawing anything I mapped how other multi-product platforms handle this, Disney, Microsoft, Meta, and Atlassian. Disney was the clearest influence: one email field that routes to the right place, white-labeled across brands. Atlassian was the closest structural model, same auth UI, branding switch per product.</p>
-      <p class="cs-body">Grammarly had two separate modals that couldn't tell if you were new or returning. The goal was simpler: type your email once, the system figures out where you go.</p>
-      <div class="cs-img"><img src="img/superhuman-auth-research.jpg" alt="Competitive analysis — Disney, Microsoft, Meta, Atlassian multi-product auth patterns" loading="lazy"></div>
-      <p class="cs-body">The architecture we landed on was hub-and-spoke, id.superhuman.com routes and serves each product brand, but brands can't talk to each other. I pushed for something more integrated; most traffic was going to Grammarly and a direct Grammarly-to-Coda path seemed more natural than sending someone back up to the parent. Hub-and-spoke was the right call for where engineering was at the time.</p>
-      <div class="cs-img"><img src="img/superhuman-auth-definition-model.jpg" alt="Hub-and-spoke identity model — one auth surface, three branded products" loading="lazy"></div>
+      <p class="cs-body">The pattern across all four was the same. One front door. Email first. The system decides the path. The user is never asked to know which product their account lives in.</p>
+      <p class="cs-body">Grammarly's old flow went the other way. The password field appeared as soon as your cursor hit the email field, before the system knew if you had an account at all. Users were typing passwords for accounts that didn't exist. The new model inverts it, type your email once, the system figures out where you go, password comes last.</p>
+      <div class="cs-img"><img src="img/superhuman-auth/00-research.png" alt="Early market research — Disney, Microsoft, Meta, Atlassian multi-product auth patterns" loading="lazy"></div>
+      <span class="cs-caption">Pattern extraction, not example copying. Disney, Microsoft, Meta, Atlassian, looking for the shape of how multi-product identity actually works.</span>
+      <p class="cs-body">The architecture we landed on was hub-and-spoke, id.superhuman.com routes and serves each product brand, but brands can't talk to each other. I'd pushed for something more integrated; most traffic was going to Grammarly and a direct Grammarly-to-Coda path felt more natural than sending someone back up to the parent. Hub-and-spoke was the right call for where engineering was at the time.</p>
+      <div class="cs-img"><img src="img/superhuman-auth/01-definition.png" alt="Hub-and-spoke identity model — one auth surface, three branded products" loading="lazy"></div>
+      <span class="cs-caption">Definition model, one auth surface, three branded products. Built to absorb the next acquisition without rework.</span>
     </div>
 
     <div class="cs-section">
       <p class="cs-section-header">Design</p>
       <p class="cs-body">The only brand signal I had when I started was "it'll be purple." So the first visual direction came from the product itself, multi-turn interactions, chip-style controls, nothing stacked. Not standard sign-in UI. More like how Superhuman naturally behaves. I imagined those chip patterns eventually contributing back to the design system.</p>
       <p class="cs-body">I built a clickable prototype with developer controls, test accounts, and milestone staging across four brand contexts: Genesis (the internal codename), Grammarly, Coda, and Superhuman Mail. Any email from any existing user database routed correctly. The prototype helped get engineering aligned.</p>
-      <div class="cs-img-pair">
-        <div class="cs-img"><img src="img/superhuman-auth-rev1.jpg" alt="Visual design rev 1 — net-new unified auth UI, before brand assets existed" loading="lazy"></div>
-        <div class="cs-img"><img src="img/superhuman-auth-rev2.jpg" alt="Visual design rev 2 — brand starting to land, gradients, more airy" loading="lazy"></div>
-      </div>
+      <div class="cs-img"><img src="img/superhuman-auth/03-low-fi-journey.png" alt="Low fidelity user journey prototype across the four brand contexts" loading="lazy"></div>
+      <span class="cs-caption">Low-fi journey, mapping the path for every email type across Genesis, Grammarly, Coda, and Superhuman Mail.</span>
+      <div class="cs-img"><img src="img/superhuman-auth/04-interaction-prototype.png" alt="Interaction model prototype — clickable flow with developer controls and test accounts" loading="lazy"></div>
+      <span class="cs-caption">Interaction model prototype, clickable, with developer controls. Email first. The system decides the path. Password comes last.</span>
+      <div class="cs-img"><img src="img/superhuman-auth/05-rev1.png" alt="Visual design rev 1 — net-new unified auth UI, before brand assets existed" loading="lazy"></div>
+      <span class="cs-caption">Visual rev 1, net-new unified auth UI before brand assets existed. Chip-style controls, multi-turn, nothing stacked.</span>
+      <div class="cs-img"><img src="img/superhuman-auth/06-rev2.png" alt="Visual design rev 2 — brand starting to land, gradients, more airy" loading="lazy"></div>
+      <span class="cs-caption">Visual rev 2, brand starting to land, gradients, more airy.</span>
       <p class="cs-body">As the brand got closer, the constraint became clear: don't disrupt the Grammarly funnel. We pulled back from the pure identifier-first model, separate sign-in and sign-up flows, brought closer together. I worked with Orr, who was connecting auth into the full Superhuman.com experience, to consolidate every exploration into a single shared view. That work became the foundation for the CUJ (Critical User Journeys) playbook, a framework I built to map sign-up and sign-in quality across all products and brands. The org adopted it for measuring experience quality across the platform.</p>
-      <div class="cs-img"><img src="img/superhuman-auth-converged.jpg" alt="Converged direction — familiar Grammarly UX carrying the Superhuman brand" loading="lazy"></div>
-      <p class="cs-body">The last piece was active session transfer. Old model: enter a Grammarly email, get sent to Grammarly to auth, come back to Superhuman. New model: detect the existing session on entry, transfer it, sign the user in directly. Recognized account, one tap. Returning session, auto-redirect, no UI at all.</p>
+      <div class="cs-img"><img src="img/superhuman-auth/07-shipped.png" alt="Shipped visual design direction — familiar Grammarly UX carrying the Superhuman brand" loading="lazy"></div>
+      <span class="cs-caption">Shipped direction, familiar Grammarly UX carrying the Superhuman brand. Separate sign-in and sign-up brought close together.</span>
+      <p class="cs-body">The last piece was active session transfer. Old model: enter a Grammarly email, get sent to Grammarly to auth, come back to Superhuman. New model: if you're already signed into Grammarly in another tab, the Superhuman front door recognizes you. Shows your name, your email, "Signed in via Grammarly." One click. Returning session, auto-redirect, no UI at all.</p>
+      <div class="cs-img"><img src="img/superhuman-auth/08-active-session.png" alt="Active session transfer UX — recognized account with a one-click continue" loading="lazy"></div>
+      <span class="cs-caption">Active session transfer, recognized account, "Signed in via Grammarly," one-click continue.</span>
       <div class="video-wrap">
         <video src="video/superhuman-auth-interactions.mp4" poster="img/auth-poster.jpg" muted playsinline preload="metadata"></video>
         <div class="play-btn"><i class="ph-fill ph-play" aria-hidden="true"></i></div>
@@ -793,7 +804,7 @@
 
     <div class="cs-section">
       <p class="cs-section-header">Outcomes</p>
-      <p class="cs-body">Launched October 2025. Engineering source of truth from first sketch through launch, every state mapped, every error path defined.</p>
+      <p class="cs-body">Launched October 2025. 91% auth completion rate at id.superhuman.com, with most users being fresh visitors to a brand-new brand. Engineering source of truth from first sketch through launch, every state mapped, every error path defined.</p>
     </div>
   </div>
 
@@ -1030,8 +1041,14 @@
 
     <div class="cs-section">
       <p class="cs-section-header">Background</p>
-      <p class="cs-body">Three brands, same product. Grubhub, Seamless, and Eat24 shared most of their UI but had no shared system. Components were duplicated, patterns drifted, every team solving the same problems independently. The first step: centralize into a living style guide that could serve all three brands without losing their identity.</p>
+      <p class="cs-body">Three brands, same product. Grubhub, Seamless, and Eat24 shared most of their UI but had no shared system. Components were duplicated, patterns drifted, every team solving the same problems independently. The first step was to centralize into a living style guide that could serve all three brands without losing their identity.</p>
       <p class="cs-body">Grubhub didn't have a systems-first design culture when we started. Cookbook helped create one, and over time the system became a driver of product and design strategy.</p>
+    </div>
+
+    <div class="cs-section">
+      <p class="cs-section-header">The failed first attempt</p>
+      <p class="cs-body">The first attempt didn't make it. I built before I sold. No strategic framing, no executive cover, no clear story for why the org should invest beyond "the components will be nice." Product teams modified patterns during feature work without much governance. The intangible benefits, communication, velocity, quality, never got quantified, and leadership saw no return.</p>
+      <p class="cs-body">The second attempt started differently. Senior design leadership framed the work strategically before any components were drawn. A VP funded a dedicated team. Once that scaffolding was there, the system itself could be built.</p>
     </div>
 
     <div class="cs-section">
@@ -1075,7 +1092,11 @@
     <div class="cs-img"><img src="img/cookbook/what-can-i-use.png" alt="Getting started with Cookbook" loading="lazy"></div>
     <span class="cs-caption">Getting started, three entry points: Figma libraries, component docs, and the Cookbook Figma project</span>
 
-    <p class="cs-body">Impact tracked through quarterly surveys, designer-to-engineer communication, documentation quality, and development velocity. Scores improved every quarter.</p>
+    <p class="cs-body">A services menu helped. It spelled out what the systems team would do for product teams (embedded, light-touch, or consuming) versus what teams would do for themselves. The ambiguity that had killed the first attempt was the thing the menu was designed to remove.</p>
+
+    <p class="cs-body">OKRs were tied to adoption and satisfaction, not component count. Counting components shipped is vanity. The numbers we cared about were whether designers and engineers felt the system was helping them ship faster.</p>
+
+    <p class="cs-body">Impact tracked through quarterly surveys, designer-to-engineer communication, documentation quality, and development velocity. Average satisfaction moved from 0.38 to 0.52 across the categories we tracked.</p>
 
     <div class="cs-img"><img src="img/cookbook/survey-1.png" alt="Quarterly survey results" loading="lazy"></div>
     <span class="cs-caption">"The pattern library helps me communicate with the development team," survey scores, quarter over quarter</span>
@@ -1088,9 +1109,11 @@
     <div class="cs-img"><img src="img/cookbook/measuring impact 2 years.png" alt="Two-year impact scorecard" loading="lazy"></div>
     <span class="cs-caption">Two-year scorecard, patterns, time savings, and conversion goals</span>
 
-    <p class="cs-body">Experiments informed by Cookbook standards contributed +5,260 daily active guests (DAGs) and +$57.6M in annual restaurant revenue, among the largest experiment wins in Grubhub's history at the time.</p>
+    <p class="cs-body">The 2015 Grubhub rebrand took a full year to roll out without a system. After Cookbook, the same kind of work for Eat24 took a week.</p>
 
-    <p class="cs-body">The longer-lasting influence was the people. Every designer who worked on Cookbook went on to lead design systems at other companies, Spotify, Pinterest, Nike, Zendesk, and others. </p>
+    <p class="cs-body">The contribution model, more than the components, was the thing that stuck. Cookbook survived three head-of-design changes and the Eat24 acquisition because the path for a product team to add a pattern stayed the same regardless of who was running design.</p>
+
+    <p class="cs-body">The longer-lasting influence was the people. Every designer who worked on Cookbook went on to lead design systems at other companies, Spotify, Pinterest, Nike, Zendesk, and others.</p>
     </div>
 
     <div class="cs-section">
