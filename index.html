@@ -281,12 +281,12 @@
 
     .modal-inner { display: flex; flex-direction: column; height: 100vh; overflow-y: auto; }
 
-    .modal-left { position: relative; width: 100%; max-width: 720px; margin: 0 auto; padding: 6rem 2rem 2rem; display: flex; flex-direction: column; align-items: flex-start; }
+    .modal-left { position: relative; width: 100%; max-width: 820px; margin: 0 auto; padding: 6rem 2rem 2rem; display: flex; flex-direction: column; align-items: flex-start; }
 
     #modal-title { font-size: clamp(1.1rem, 2.5vw, 2.5rem); font-weight: 500; letter-spacing: -.03em; line-height: 1.2; color: var(--text-primary); }
     #modal-company { font-family: var(--font-main); font-size: .65rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1rem; }
 
-    .modal-right { width: 100%; max-width: 720px; margin: 0 auto; padding: 2rem 2rem 5rem; }
+    .modal-right { width: 100%; max-width: 820px; margin: 0 auto; padding: 1rem 2rem 5rem; }
     #modal-content { width: 100%; }
 
     .hero-nav { display: flex; gap: 2rem; align-items: center; font-family: var(--font-main); font-weight: 400; letter-spacing: -.03em; font-size: 1.05rem; color: var(--text-secondary); flex-wrap: wrap; }
@@ -326,10 +326,12 @@
     .cs-section:first-child { margin-top: 0; }
 
     .cs-section-header {
-      font-size: .875rem; font-weight: 600;
+      font-size: 1.05rem; font-weight: 500;
       color: var(--text-primary); letter-spacing: -.01em;
-      margin-bottom: .75rem;
+      margin: 0 0 .85rem;
     }
+    .cs-body strong { font-weight: inherit; }
+    .cs-body em { font-style: normal; }
 
     .cs-section-group .cs-section { margin-top: 2.5rem; }
     .cs-section-group .cs-section:first-child { margin-top: 2.5rem; }
@@ -349,25 +351,25 @@
     .cs-img-quad { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin: 1.5rem 0; }
     .cs-img-quad .cs-img { margin: 0; }
 
-    .cs-body { font-size: .95rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: .25rem; }
+    .cs-body { font-size: .95rem; color: var(--text-secondary); line-height: 1.7; margin: 0 0 1rem; }
+    .cs-body:last-child { margin-bottom: 0; }
 
     .cs-callout { font-size: .95rem; color: var(--text-secondary); line-height: 1.7; border-left: 2px solid var(--border-highlight); padding-left: 1rem; margin-top: 2rem; }
 
     .cs-divider { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
 
-    .cs-img { border-radius: 8px; overflow: hidden; margin: 1.5rem 0; background: var(--frame-bg); }
+    .cs-img { border-radius: var(--radius); overflow: hidden; margin: 1.5rem 0; background: var(--frame-bg); }
     .cs-img img { width: 100%; display: block; opacity: .92; }
     .cs-img-pair { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin: 1.5rem 0 .5rem; }
     .cs-img-pair .cs-img { margin: 0; }
     .cs-caption { font-family: var(--font-main); font-size: .62rem; color: var(--text-muted); display: block; margin-bottom: 1.5rem; line-height: 1.55; }
 
-    .video-wrap { position: relative; cursor: pointer; background: var(--frame-bg); border-radius: 8px; overflow: hidden; margin: 1.5rem 0; }
-    .video-wrap video { width: 100%; display: block; aspect-ratio: 16 / 9; object-fit: cover; opacity: .9; }
-    .play-btn { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--card-bg) 75%, black); transition: background var(--transition), opacity .2s ease; }
-    .play-btn svg { width: 52px; height: 52px; filter: drop-shadow(0 2px 12px rgba(0,0,0,0.4)); transition: transform .15s ease-out; }
-    .video-wrap:hover .play-btn { background: color-mix(in srgb, var(--card-bg) 90%, black); }
-    .video-wrap:hover .play-btn svg { transform: scale(1.08); }
-    .play-btn.hidden { opacity: 0; pointer-events: none; }
+    .video-wrap { position: relative; cursor: pointer; background: var(--frame-bg); border-radius: var(--radius); overflow: hidden; margin: 0; }
+    .video-wrap video { width: 100%; display: block; height: auto; }
+    .play-btn { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: flex-end; padding: 1rem; transition: opacity .2s ease; pointer-events: none; }
+    .play-btn i { font-size: 22px; color: #fff; line-height: 1; transition: transform .15s ease-out; }
+    .video-wrap:hover .play-btn i { transform: scale(1.1); }
+    .play-btn.hidden { opacity: 0; }
 
     /* ── Footer ───────────────────────────────────────── */
     footer { position: fixed; bottom: 1.5rem; left: 2rem; right: 2rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem 1.5rem; background: var(--card-bg); }
@@ -681,30 +683,75 @@
     data-title="SYNTHIA, synthetic user evaluation, surfaced wherever designers work."
     data-company="Superhuman">
 
-    <div class="cs-section">
-      <p class="cs-section-header">Background</p>
-      <p class="cs-body">The question I kept coming back to: what would it look like if the same knowledge that informs a senior design review, heuristics, accessibility standards, your actual design system, was available on demand, directly in the canvas, before anything went to engineering?</p>
+    <div class="video-wrap">
+      <video src="video/synthia-figma.mp4" poster="img/synthia-poster.jpg" muted playsinline preload="metadata"></video>
+      <div class="play-btn"><i class="ph-fill ph-play" aria-hidden="true"></i></div>
     </div>
 
     <div class="cs-section">
-      <p class="cs-section-header">What it does</p>
-      <p class="cs-body">SYNTHIA runs five evaluation lenses: your actual design tokens and component library, WCAG accessibility checks, Nielsen's ten usability heuristics, a taxonomy of 26 UI traps and dark patterns, and synthetic users, personas built from real UXR behavioral data. A knowledge worker and a student reading your design, first-person, reacting to what they see. That last one tends to be the most interesting.</p>
-      <p class="cs-body">Two agentic modes, both grounded in the same idea: only automate what doesn't require judgment. Mechanical issues, wrong token, contrast fail, font size below threshold, get fixed directly in the document. One click per finding, or batch the whole lot. Judgment calls, heuristic violations, dark patterns, persona reactions, get posted as comments pinned to the exact node in the canvas. You shouldn't auto-fix what a human needs to review.</p>
-      <p class="cs-body">The Figma plugin is the primary surface, but the same evaluation engine also ships as a Claude skill for AI-native workflows and a Go agent for document contexts. Consistent command design across all three, one engine, wherever you're working.</p>
-      <div class="video-wrap">
-        <video src="video/synthia-figma.mp4" muted playsinline preload="metadata"></video>
-        <div class="play-btn"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
-      </div>
+      <p class="cs-section-header">Background</p>
+      <p class="cs-body">Inclusive design depends on a senior reviewer catching what would exclude someone. Can a low-vision user read this? Does the touch target work with motor impairment? Is this confusing for someone outside the power-user mental model? Those questions come up in senior reviews, late, after the design has shipped to engineering. Or they don't come up at all.</p>
+      <p class="cs-body">I built SYNTHIA so the knowledge that informs that review, accessibility standards, usability heuristics, the behavioral patterns of different users, sits in the canvas, before the bottleneck.</p>
+    </div>
+
+    <div class="cs-section">
+      <p class="cs-section-header">The original vision</p>
+      <p class="cs-body">Before I built anything, I designed the vision. A context-aware feedback system. The zoom level and the stage of the design would dictate the kind of feedback. Zoomed out at the artboard level, suggestion badges sat in the corner of each frame, summarizing what needed attention. Zoom in, and the feedback got more granular, specific patterns, specific traps, specific accessibility issues. An inline assistant at the bottom of the canvas tied it together, ask any question, get an answer in context.</p>
+      <div class="cs-img"><img src="img/synthia-vision.png" alt="Original SYNTHIA vision — context-aware feedback in Figma. Artboard-level suggestion badges in the corners of each frame; a 'Ask Synthia' command bar at the bottom of the canvas with prompts like 'Identify usability issues' and 'Detect global contrast issues'"></div>
+      <p class="cs-body">This vision needed Figma to build it. Artboard-level badges, zoom-aware UI, a command bar woven into the canvas, that's Figma's surface, not a plugin's. The design was for a version of Figma that doesn't exist yet.</p>
+    </div>
+
+    <div class="cs-section">
+      <p class="cs-section-header">The bet</p>
+      <p class="cs-body">The plugin is different. A plugin can read the canvas, post comments, modify variables. It can't render UI at the zoom level you're working at or sit ambient in the canvas. The design problem became: how do you do context-aware feedback inside those limits.</p>
+      <p class="cs-body">I went with constraint. Instead of one open-ended assistant, five distinct evaluation lenses, each with a defined scope and a defined output.</p>
+      <p class="cs-body">A lot of AI design tools I'd seen were chasing personality, confidence, strong opinions. The instinct is to make the design voice loud, especially when it's sitting in a shared config alongside engineering ("always optimize for performance") and product ("always ship faster").</p>
+      <p class="cs-body">I tried the other way. SYNTHIA's findings don't push direction or argue for taste. They cite. WCAG 1.4.3. Heuristic #4. Trap #14.</p>
+    </div>
+
+    <div class="cs-section">
+      <p class="cs-section-header">Five lenses</p>
+      <p class="cs-body">Select anything in Figma. SYNTHIA runs five evaluations against it.</p>
+      <p class="cs-body"><strong>Design system.</strong> Token usage, style adoption, missed component swaps. The mechanical stuff that's easy to fix and easy to miss.</p>
+      <p class="cs-body"><strong>Accessibility.</strong> WCAG 2.2 contrast, touch targets, font sizes. Math the browser can do.</p>
+      <p class="cs-body"><strong>Heuristics.</strong> Nielsen's ten. The classics, scoped to the element you selected, not a generic critique.</p>
+      <p class="cs-body"><strong>UI traps.</strong> I digitized the full Tenets &amp; Traps card deck, twenty-six patterns, every one grounded in a real historical failure. Trap #6 (poor grouping) cites the 2000 butterfly ballot. Trap #1 (invisible element) cites Windows 8 removing the Start Menu.</p>
+      <p class="cs-body"><strong>Synthetic users.</strong> A knowledge worker and a student "read" your design and react in first person. <em>"I see five sign-in options and I don't know which one is for me."</em></p>
+    </div>
+
+    <div class="cs-section">
+      <p class="cs-section-header">Fix or comment, never both</p>
+      <p class="cs-body">Mechanical issues, wrong token, contrast fail, font size off, get fixed directly in the document. Bind the variable, apply the style, set the value. One click per finding or batch the whole lot.</p>
+      <p class="cs-body">Judgment calls, heuristic violations, dark patterns, persona reactions, get posted as comments pinned to the exact node in the canvas.</p>
+    </div>
+
+    <div class="cs-section">
+      <p class="cs-section-header">How it's built</p>
+      <p class="cs-body">The first version was too eager. The model wanted to comment on everything, every visible element, even when there was nothing meaningful to say. It hallucinated standards, cited heuristics that didn't apply, made up rules that sounded plausible.</p>
+      <p class="cs-body">The 80% confidence threshold came first. If the model wasn't certain, it stayed quiet.</p>
+      <p class="cs-body">Then the citation requirement. Every finding had to point to a named standard or it didn't get to comment.</p>
+      <p class="cs-body">The three-tier triage was the last big shift. I noticed the model trying to use AI for contrast math, which the browser can do, or making calls about brand voice, which needs a human. I added new rules: tier one is math, tier two is pattern matching that needs context ("these buttons compete for attention"), tier three escalates to a human.</p>
+      <p class="cs-body">It runs on a four-layer prompt architecture so each constraint can change without breaking the others. Layer one is the rules every agent follows. Layer two is which lens you're acting as, an accessibility specialist talks differently than a Nielsen reviewer. Layer three is the reference material, the heuristics, the trap taxonomy, your design tokens. Layer four is the live Figma data.</p>
+      <p class="cs-body">The synthetic users lens needed its own tuning. Personas drift. The student kept sounding like a designer; the knowledge worker kept saying "this is intuitive" too much. I added behavioral anchors from real UXR findings about how each persona actually reads interfaces.</p>
+    </div>
+
+    <div class="cs-section">
+      <p class="cs-section-header">Questions for the DevEx team</p>
+      <p class="cs-body">SYNTHIA paired with a separate generation skill. Generation is the persuasive part, the one that pushes direction and aesthetic. SYNTHIA was the grounding part, referencing standards rather than stating preferences. The same shape, the triage, the citations, the four-layer prompt, applies to the next design skill in the library.</p>
+      <p class="cs-body">The bigger value wasn't the plugin. It was the architecture it tested for the skill library. I brought five questions to the DevEx team.</p>
+      <p class="cs-body">Where does a design skill live in an org-wide config? How do skills with different voices interact? Who governs taste versus standards? Can a skill escalate to humans instead of solving everything? How do we make sure design guidance gets heard over engineering and product rules?</p>
+      <p class="cs-body">The plugin was the way to test the framework with something concrete.</p>
     </div>
 
     <div class="cs-section">
       <p class="cs-section-header">Outcomes</p>
-      <p class="cs-body">Won "Most Innovative" at Superhuman's global hackathon, 200+ entries. Published to the org plugin library. First designer to demo a coded prototype org-wide.</p>
+      <p class="cs-body">It won "Most Innovative" at Superhuman's global hackathon, 200+ entries. Got published to the org plugin library.</p>
+      <p class="cs-body">The synthetic users lens was the most divisive. Engineers liked it. Some designers found it uncomfortable, having a student tell you they don't get your sign-in screen feels personal.</p>
     </div>
 
     <div class="cs-section">
       <p class="cs-section-header">What's next</p>
-      <p class="cs-body">The vision was a consistent evaluation layer across the entire product lifecycle, the same quality bar whether you're writing a spec, designing in Figma, reviewing code, or shipping to production. The Figma plugin was the proof of concept. The engine was always meant to go further.</p>
+      <p class="cs-body">The Figma plugin was the proof of concept. The hope is a consistent evaluation layer across the product lifecycle, same quality bar whether you're writing a spec, designing in Figma, reviewing code, or shipping to production. The engine ships next as a Claude skill and a Go agent.</p>
     </div>
 
   </div>
@@ -730,17 +777,17 @@
     <div class="cs-section">
       <p class="cs-section-header">Design</p>
       <p class="cs-body">The only brand signal I had when I started was "it'll be purple." So the first visual direction came from the product itself, multi-turn interactions, chip-style controls, nothing stacked. Not standard sign-in UI. More like how Superhuman naturally behaves. I imagined those chip patterns eventually contributing back to the design system.</p>
-      <p class="cs-body">I built a clickable prototype with developer controls, test accounts, and milestone staging across four brand contexts: Genesis (the internal codename), Grammarly, Coda, and Superhuman Mail. Any email from any existing user database routed correctly. That prototype was the artifact that got engineering aligned.</p>
+      <p class="cs-body">I built a clickable prototype with developer controls, test accounts, and milestone staging across four brand contexts: Genesis (the internal codename), Grammarly, Coda, and Superhuman Mail. Any email from any existing user database routed correctly. The prototype helped get engineering aligned.</p>
       <div class="cs-img-pair">
         <div class="cs-img"><img src="img/superhuman-auth-rev1.jpg" alt="Visual design rev 1 — net-new unified auth UI, before brand assets existed" loading="lazy"></div>
         <div class="cs-img"><img src="img/superhuman-auth-rev2.jpg" alt="Visual design rev 2 — brand starting to land, gradients, more airy" loading="lazy"></div>
       </div>
-      <p class="cs-body">As the brand got closer, the constraint became clear: don't disrupt the Grammarly funnel. We pulled back from the pure identifier-first model, separate sign-in and sign-up flows, brought closer together. I worked with Orr, who was connecting auth into the full Superhuman.com experience, to consolidate every exploration into a single shared view. That work became the foundation for the CUJ (Critical User Journeys) playbook, a framework I built to map sign-up and sign-in quality across all products and brands. The org adopted it as the standard for measuring experience quality across the platform.</p>
+      <p class="cs-body">As the brand got closer, the constraint became clear: don't disrupt the Grammarly funnel. We pulled back from the pure identifier-first model, separate sign-in and sign-up flows, brought closer together. I worked with Orr, who was connecting auth into the full Superhuman.com experience, to consolidate every exploration into a single shared view. That work became the foundation for the CUJ (Critical User Journeys) playbook, a framework I built to map sign-up and sign-in quality across all products and brands. The org adopted it for measuring experience quality across the platform.</p>
       <div class="cs-img"><img src="img/superhuman-auth-converged.jpg" alt="Converged direction — familiar Grammarly UX carrying the Superhuman brand" loading="lazy"></div>
       <p class="cs-body">The last piece was active session transfer. Old model: enter a Grammarly email, get sent to Grammarly to auth, come back to Superhuman. New model: detect the existing session on entry, transfer it, sign the user in directly. Recognized account, one tap. Returning session, auto-redirect, no UI at all.</p>
       <div class="video-wrap">
-        <video src="video/superhuman-auth-interactions.mp4" muted playsinline preload="metadata"></video>
-        <div class="play-btn"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
+        <video src="video/superhuman-auth-interactions.mp4" poster="img/auth-poster.jpg" muted playsinline preload="metadata"></video>
+        <div class="play-btn"><i class="ph-fill ph-play" aria-hidden="true"></i></div>
       </div>
     </div>
 
@@ -757,7 +804,7 @@
     <div class="cs-section">
       <p class="cs-section-header">Background</p>
       <p class="cs-body">Grammarly had a design system, it just lived entirely in code. The Lemma Design System was a robust set of tokens and components deeply integrated into SDUI, Grammarly's server-driven UI platform that delivered a consistent experience across browser extensions and its emerging desktop surfaces. It worked. But as Grammarly expanded to new platforms, the design decisions were entangled in SDUI in ways that made change expensive. The design org was small when we started, closer to ten people, but growing fast, and there was no Figma library, no documentation, no shared way to access or reason about what was already built.</p>
-      <p class="cs-body">Mark and I were brought in by Florian, the sole designer on the systems team at the time, to help scale it. We wanted to redesign things. Florian wanted to redesign things. But the risk of breaking changes in a system this tightly coupled was real. So we made a different call: put the creative ambitions aside and build the infrastructure around what already worked. Figma components that mapped to what was in code. Token naming conventions. Documentation. A way for designers and engineers to access the system without depending on the systems team for every decision. The system was already load-bearing, tightly coupled to SDUI, and breaking changes carried real risk. We chose infrastructure over redesign, the right call when the foundation is already working and the org needs to scale around it.</p>
+      <p class="cs-body">Mark and I were brought in by Florian, the sole designer on the systems team at the time, to help scale it. We wanted to redesign things. Florian wanted to redesign things. But the risk of breaking changes in a system this tightly coupled was real. So we made a different call: put the creative ambitions aside and build the infrastructure around what already worked. Figma components that mapped to what was in code. Token naming conventions. Documentation. A way for designers and engineers to access the system without depending on the systems team for every decision. The system was already load-bearing, tightly coupled to SDUI, and breaking changes carried real risk. We chose infrastructure over redesign.</p>
     </div>
 
     <div class="cs-section">
@@ -803,7 +850,7 @@
 
     <div class="cs-section">
       <p class="cs-section-header">Outcomes</p>
-      <p class="cs-body">Adopted across the org. Fragmentation reduced. The system survived the Superhuman acquisition and a full brand overhaul, and the token names held. That was the real test.</p>
+      <p class="cs-body">Adopted across the org. Fragmentation reduced. The system survived the Superhuman acquisition and a full brand overhaul, and the token names held.</p>
     </div>
 
     <div class="cs-section">
@@ -842,7 +889,7 @@
     <div class="cs-section">
       <p class="cs-section-header">CDTC, AI Training Control</p>
       <p class="cs-body">People hear "AI training toggle" and picture a switch. This one took weeks to design, not the UI, the logic. Before a single pixel moved, I was in rooms with the PM, the privacy engineer, and the backend engineer working out the decision matrix: who sees a control at all, when is it editable, what does "locked" mean for a managed user versus an EU user, and what happens when someone moves between account types and their previous state needs to be restored.</p>
-      <p class="cs-body">The most important design decision wasn't a UI decision. It was a product stance: we will not train on EU or UK user data, full stop. No toggle. No opt-in. GDPR meant the answer was baked in, and the right interface for that wasn't a switch, it was an explanation. EU users see a message where the control would be, not a control they can't use.</p>
+      <p class="cs-body">The most important design decision wasn't a UI decision. It was a product stance: we will not train on EU or UK user data. No toggle. No opt-in. GDPR meant the answer was baked in, and the right interface for that wasn't a switch, it was an explanation. EU users see a message where the control would be, not a control they can't use.</p>
       <div class="cs-img"><img src="img/cdtc/logic-design.png" alt="CDTC state matrix — five control states mapped across user geography, account type, and account history" loading="lazy"></div>
       <span class="cs-caption">State matrix, who sees a control, who doesn't, and what happens when account context changes</span>
       <p class="cs-body">The managed client case was the other hard one. Enterprise admins set the training policy for their org, and their users have no control. But there are two locked states: locked and active (admin enabled training) and locked and deactivated (admin disabled it). Each communicates both the current status and the reason. A user shouldn't see a disabled switch and wonder if something is broken. They should know their org made the call.</p>
@@ -972,8 +1019,8 @@
 
     <div class="cs-section">
       <p class="cs-section-header">Outcomes</p>
-      <p class="cs-body">CDTC launched June 20, 2024, the same day Grammarly emailed 70 million users about the privacy policy update. A few months later, a random LinkedIn post about Grammarly's data practices surfaced in the comments with a screenshot of exactly the EU state we'd designed: "Since you created your account in the EU or UK, Grammarly will not use your content to train its models." The reply: "Ah, brilliant." The design was working in the wild, legible to people who weren't looking for it.</p>
-      <p class="cs-body">The CMP framework scaled across product teams without needing design on every feature. Privacy became a first-class surface, its own nav item, not a buried subsection. BYOK opened enterprise procurement conversations that wouldn't have happened otherwise.</p>
+      <p class="cs-body">CDTC launched June 20, 2024, the same day Grammarly emailed 70 million users about the privacy policy update. A few months later, a random LinkedIn post about Grammarly's data practices surfaced in the comments with a screenshot of exactly the EU state we'd designed: "Since you created your account in the EU or UK, Grammarly will not use your content to train its models." The reply: "Ah, brilliant." The design was working in the wild.</p>
+      <p class="cs-body">The CMP framework scaled across product teams without needing design on every feature. Privacy became a first-class surface, its own nav item, not a buried subsection. BYOK opened enterprise procurement conversations.</p>
     </div>
   </div>
 
@@ -984,14 +1031,14 @@
     <div class="cs-section">
       <p class="cs-section-header">Background</p>
       <p class="cs-body">Three brands, same product. Grubhub, Seamless, and Eat24 shared most of their UI but had no shared system. Components were duplicated, patterns drifted, every team solving the same problems independently. The first step: centralize into a living style guide that could serve all three brands without losing their identity.</p>
-      <p class="cs-body">Grubhub didn't have a systems-first design culture when we started. Cookbook helped create one. Over time the system became a driver of product and design strategy, not just a repository of decisions that had already been made elsewhere.</p>
+      <p class="cs-body">Grubhub didn't have a systems-first design culture when we started. Cookbook helped create one, and over time the system became a driver of product and design strategy.</p>
     </div>
 
     <div class="cs-section">
     <p class="cs-section-header">Foundation</p>
     <p class="cs-body">The system hierarchy came from interviews, how designers and engineers actually started features, where they got stuck, and what information they wished they had. Those conversations shaped every structural decision.</p>
 
-    <div class="cs-img" style="aspect-ratio: 2674 / 1504; border-radius: 8px 8px 0 0;"><img src="img/cookbook/stakeholder-interviews.png" alt="Stakeholder interview guide" loading="lazy" style="height: 100%; object-fit: cover; object-position: top;"></div>
+    <div class="cs-img" style="aspect-ratio: 2674 / 1504; border-radius: var(--radius) var(--radius) 0 0;"><img src="img/cookbook/stakeholder-interviews.png" alt="Stakeholder interview guide" loading="lazy" style="height: 100%; object-fit: cover; object-position: top;"></div>
     <span class="cs-caption">Interview guide, mapping how teams build features and where they get stuck</span>
 
     <div class="cs-img"><img src="img/cookbook/development-plan.png" alt="Living Style Guide 2.0 development plan" loading="lazy"></div>
@@ -1041,9 +1088,9 @@
     <div class="cs-img"><img src="img/cookbook/measuring impact 2 years.png" alt="Two-year impact scorecard" loading="lazy"></div>
     <span class="cs-caption">Two-year scorecard, patterns, time savings, and conversion goals</span>
 
-    <p class="cs-body">Experiments informed by Cookbook standards contributed +5,260 daily active guests (DAGs) and +$57.6M in annual restaurant revenue, the largest experiment wins in Grubhub's history at the time.</p>
+    <p class="cs-body">Experiments informed by Cookbook standards contributed +5,260 daily active guests (DAGs) and +$57.6M in annual restaurant revenue, among the largest experiment wins in Grubhub's history at the time.</p>
 
-    <p class="cs-body">The longer-lasting influence was the people. Every designer who worked on Cookbook went on to lead design systems at other companies, Spotify, Pinterest, Nike, Zendesk, and others. That's the kind of influence that doesn't show up in a component count.</p>
+    <p class="cs-body">The longer-lasting influence was the people. Every designer who worked on Cookbook went on to lead design systems at other companies, Spotify, Pinterest, Nike, Zendesk, and others. </p>
     </div>
 
     <div class="cs-section">
@@ -1134,13 +1181,13 @@
 
     <div class="cs-section">
     <p class="cs-section-header">The rollout</p>
-    <p class="cs-body">Before the wider launch, we stitched the full end-to-end flow and produced a sizzle reel with the help of a motion designer we called Sizzle. The CEO and founder of Grubhub saw it. It landed.</p>
-    <p class="cs-body">Rollout was phased, 5% smoke test scaling to 50%, with conversion, reorder rate, and launch time tracked at each gate. Grubhub was an experimentation company, but you can't A/B test a brand new experience the same way you gate a button color. The organizational trust to ship it was a metric in itself.</p>
+    <p class="cs-body">Before the wider launch, we stitched the full end-to-end flow and produced a sizzle reel with the help of a motion designer we called Sizzle. The CEO and founder of Grubhub saw it.</p>
+    <p class="cs-body">Rollout was phased, 5% smoke test scaling to 50%, with conversion, reorder rate, and launch time tracked at each gate. Grubhub was an experimentation company, but you can't A/B test a brand new experience the same way you gate a button color. </p>
     </div>
 
     <div class="cs-section">
     <p class="cs-section-header">Outcomes</p>
-    <p class="cs-body">Navigation, search, filtering, and reskinned light and dark modes all shipped. The patterns ran in the driver app, restaurant app, and web. The most impactful experience push in Grubhub's history at that point, presented to the C-suite, extended across every major surface.</p>
+    <p class="cs-body">Navigation, search, filtering, and reskinned light and dark modes all shipped. The patterns ran in the driver app, restaurant app, and web. One of the most impactful experience pushes in Grubhub's history at that point, presented to the C-suite, extended across every major surface.</p>
     </div>
   </div>
   </div><!-- /#ui -->
@@ -1267,12 +1314,13 @@
 
       content.querySelectorAll('.video-wrap').forEach(wrap => {
         const video = wrap.querySelector('video');
-        const btn   = wrap.querySelector('.play-btn');
-        if (!video || !btn) return;
+        const icon  = wrap.querySelector('.play-btn i');
+        if (!video || !icon) return;
         wrap.addEventListener('click', () => {
-          if (video.paused) { video.play(); btn.classList.add('hidden'); }
-          else              { video.pause(); btn.classList.remove('hidden'); }
+          if (video.paused) { video.play();  icon.classList.replace('ph-play', 'ph-pause'); }
+          else              { video.pause(); icon.classList.replace('ph-pause', 'ph-play'); }
         });
+        video.addEventListener('ended', () => icon.classList.replace('ph-pause', 'ph-play'));
       });
     }
 
